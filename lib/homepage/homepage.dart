@@ -80,6 +80,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    BluetoothDevice? disconnect;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -124,7 +125,7 @@ class _HomepageState extends State<Homepage> {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               print(
-                                  "Connection State: ${snapshot.connectionState}\n");
+                                  "SnapShot State: ${snapshot.connectionState}\n");
                               return Center(
                                 child: CircularProgressIndicator(),
                               );
@@ -172,6 +173,7 @@ class _HomepageState extends State<Homepage> {
                                 itemCount: filtered.length,
                                 itemBuilder: (context, index) {
                                   final device = filtered[index];
+                                  disconnect = device;
                                   return Center(
                                     child: Padding(
                                       padding: EdgeInsets.only(top: 10),
@@ -180,22 +182,24 @@ class _HomepageState extends State<Homepage> {
                                         height: 75,
                                         child: FloatingActionButton(
                                           onPressed: () async {
-                                            var subscription =
-                                                device.connectionState.listen(
-                                                    (BluetoothConnectionState
-                                                        state) async {
+                                            await device.connect();
+                                            device.connectionState.listen(
+                                                (BluetoothConnectionState
+                                                    state) async {
                                               if (state ==
                                                   BluetoothConnectionState
                                                       .disconnected) {
                                                 print(
                                                     "${device.disconnectReason?.code} ${device.disconnectReason?.description}");
+                                              } else {
+                                                print(
+                                                    "=========================");
+                                                print(
+                                                    "Connection State: ${state}");
+                                                print(
+                                                    "=========================");
                                               }
                                             });
-                                            device.cancelWhenDisconnected(
-                                                subscription,
-                                                delayed: true,
-                                                next: true);
-                                            await device.connect();
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -283,7 +287,8 @@ class _HomepageState extends State<Homepage> {
                   onPressed: isScanning
                       ? null
                       : () async {
-                          askBluetoothPermission();
+                          await disconnect!.disconnect();
+                          await askBluetoothPermission();
                         },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
