@@ -4,6 +4,7 @@ import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/Widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Homepage extends StatefulWidget {
@@ -19,13 +20,63 @@ class _HomepageState extends State<Homepage> {
   Color color_3 = Color.fromRGBO(26, 25, 68, 1);
   Color color_4 = Color.fromRGBO(2, 1, 34, 1);
 
-  bool isScanning = false;
-  String mainButtonText = "";
+  BluetoothDevice? connectedDevice;
 
+  bool isScanning = false;
+  String mainButtonText = "", deviceMessage = "";
+
+  // Turns the main button off and on
   void buttonFunctions() async {
     isSearching(); //disable button
     await BluetoothController().scanDevices(); //Start Scanning for devices
     isSearching(); //re-enable button
+  }
+
+  Future<void> listenToConnectionState(BluetoothDevice device) async {
+    //Connection State Listener
+    device.connectionState.listen((BluetoothConnectionState state) async {
+      //if state is disconnected
+      if (state == BluetoothConnectionState.disconnected) {
+        print(
+            "Disconnet: ${device.disconnectReason?.code}:${device.disconnectReason?.description}");
+      }
+      //if it's connected
+      else {
+        print("=========================");
+        print("Connection State: $state");
+        print("=========================");
+        List<BluetoothService> services = await device.discoverServices();
+
+        for (BluetoothService service in services) {
+          for (BluetoothCharacteristic characteristic
+              in service.characteristics) {
+            if (characteristic.uuid.toString() ==
+                '4fafc201-1fb5-459e-8fcc-c5c9c331914b') {
+              var value = await characteristic.read();
+              setState(() {
+                mainButtonText = String.fromCharCodes(value);
+              });
+            }
+          }
+        }
+      }
+    });
+  }
+
+  Future<void> connectToDevice(BluetoothDevice device) async {
+    //Connect/Pair to the ESP32
+    await device.connect();
+    setState(() {
+      connectedDevice = device;
+    });
+    listenToConnectionState(device);
+  }
+
+  Future<void> disconnect() async {
+    if (connectedDevice != null) {
+      await connectedDevice!.disconnect();
+      listenToConnectionState(connectedDevice!);
+    }
   }
 
   Future<bool> askBluetoothPermission() async {
@@ -80,7 +131,6 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    BluetoothDevice? disconnect;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -134,7 +184,6 @@ class _HomepageState extends State<Homepage> {
                               List<ScanResult> results = snapshot.data ?? [];
                               List<BluetoothDevice> filtered = [];
                               print('Snapshot Data: ${snapshot.data}\n');
-
                               if (results.isEmpty) {
                                 print("Results: $results");
                                 return Center(
@@ -147,6 +196,7 @@ class _HomepageState extends State<Homepage> {
                                   ),
                                 );
                               }
+                              //filtering devices by putting esp devices in their own list
                               for (ScanResult device in results) {
                                 if (device.device.platformName ==
                                     "Clean-Flow") {
@@ -173,7 +223,6 @@ class _HomepageState extends State<Homepage> {
                                 itemCount: filtered.length,
                                 itemBuilder: (context, index) {
                                   final device = filtered[index];
-                                  disconnect = device;
                                   return Center(
                                     child: Padding(
                                       padding: EdgeInsets.only(top: 10),
@@ -182,24 +231,11 @@ class _HomepageState extends State<Homepage> {
                                         height: 75,
                                         child: FloatingActionButton(
                                           onPressed: () async {
-                                            await device.connect();
-                                            device.connectionState.listen(
-                                                (BluetoothConnectionState
-                                                    state) async {
-                                              if (state ==
-                                                  BluetoothConnectionState
-                                                      .disconnected) {
-                                                print(
-                                                    "${device.disconnectReason?.code} ${device.disconnectReason?.description}");
-                                              } else {
-                                                print(
-                                                    "=========================");
-                                                print(
-                                                    "Connection State: ${state}");
-                                                print(
-                                                    "=========================");
-                                              }
+                                            setState(() {
+                                              connectedDevice = device;
                                             });
+                                            connectToDevice(device);
+                                            //Put bluetooth pair feature here
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -287,7 +323,7 @@ class _HomepageState extends State<Homepage> {
                   onPressed: isScanning
                       ? null
                       : () async {
-                          await disconnect!.disconnect();
+                          // await disconnect!.disconnect();
                           await askBluetoothPermission();
                         },
                   child: Row(
@@ -316,6 +352,18 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: 300,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    disconnect();
+                  },
+                  child: Text("Disconnect"),
+                ),
+              )
             ],
           ),
         ),

@@ -1,4 +1,41 @@
 /*
+
+#define SERVICE_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define CHARACTERISTIC_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+
+
+List<BluetoothService> services = await device.discoverServices();
+
+for (BluetoothService service in services) {
+          for (BluetoothCharacteristic characteristic
+              in service.characteristics) {
+            if (characteristic.uuid.toString() ==
+                "beb5483e-36e1-4688-b7f5-ea07361b26a8") {
+              var value = characteristic.read();
+              print("ESP32 Message: $value");
+            }
+          }
+        }
+
+if (characteristic.uuid.toString() == '4fafc201-1fb5-459e-8fcc-c5c9c331914b') {
+          var value = await characteristic.read();
+          setState(() {
+            deviceMessage = String.fromCharCodes(value);
+          });
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 FlutterBluePlus.scanResults.listen((results) {
         if (results.isNotEmpty) {
           for (ScanResult result in results) {
