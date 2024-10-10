@@ -13,10 +13,9 @@ class BluetoothController {
       print("\t\t\t\t\t\tSTARTING SCAN");
       print(
           "==================================================================================================================================");
-      //Start BLuetooth Scanning for 5s
-      FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+      FlutterBluePlus.startScan();
 
-      //Wait for 5s before executing the following codes
+      // //Wait for 5s before executing the following codes
       await Future.delayed(Duration(seconds: 5));
 
       print(

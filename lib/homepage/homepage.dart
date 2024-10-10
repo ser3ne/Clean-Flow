@@ -4,7 +4,6 @@ import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/Widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Homepage extends StatefulWidget {
@@ -20,63 +19,14 @@ class _HomepageState extends State<Homepage> {
   Color color_3 = Color.fromRGBO(26, 25, 68, 1);
   Color color_4 = Color.fromRGBO(2, 1, 34, 1);
 
-  BluetoothDevice? connectedDevice;
-
   bool isScanning = false;
-  String mainButtonText = "", deviceMessage = "";
+  String mainButtonText = "";
+  BluetoothDevice? globalDevice;
 
-  // Turns the main button off and on
   void buttonFunctions() async {
     isSearching(); //disable button
     await BluetoothController().scanDevices(); //Start Scanning for devices
     isSearching(); //re-enable button
-  }
-
-  Future<void> listenToConnectionState(BluetoothDevice device) async {
-    //Connection State Listener
-    device.connectionState.listen((BluetoothConnectionState state) async {
-      //if state is disconnected
-      if (state == BluetoothConnectionState.disconnected) {
-        print(
-            "Disconnet: ${device.disconnectReason?.code}:${device.disconnectReason?.description}");
-      }
-      //if it's connected
-      else {
-        print("=========================");
-        print("Connection State: $state");
-        print("=========================");
-        List<BluetoothService> services = await device.discoverServices();
-
-        for (BluetoothService service in services) {
-          for (BluetoothCharacteristic characteristic
-              in service.characteristics) {
-            if (characteristic.uuid.toString() ==
-                '4fafc201-1fb5-459e-8fcc-c5c9c331914b') {
-              var value = await characteristic.read();
-              setState(() {
-                mainButtonText = String.fromCharCodes(value);
-              });
-            }
-          }
-        }
-      }
-    });
-  }
-
-  Future<void> connectToDevice(BluetoothDevice device) async {
-    //Connect/Pair to the ESP32
-    await device.connect();
-    setState(() {
-      connectedDevice = device;
-    });
-    listenToConnectionState(device);
-  }
-
-  Future<void> disconnect() async {
-    if (connectedDevice != null) {
-      await connectedDevice!.disconnect();
-      listenToConnectionState(connectedDevice!);
-    }
   }
 
   Future<bool> askBluetoothPermission() async {
@@ -175,7 +125,7 @@ class _HomepageState extends State<Homepage> {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               print(
-                                  "SnapShot State: ${snapshot.connectionState}\n");
+                                  "Snapshot State: ${snapshot.connectionState}\n");
                               return Center(
                                 child: CircularProgressIndicator(),
                               );
@@ -184,6 +134,7 @@ class _HomepageState extends State<Homepage> {
                               List<ScanResult> results = snapshot.data ?? [];
                               List<BluetoothDevice> filtered = [];
                               print('Snapshot Data: ${snapshot.data}\n');
+
                               if (results.isEmpty) {
                                 print("Results: $results");
                                 return Center(
@@ -196,7 +147,6 @@ class _HomepageState extends State<Homepage> {
                                   ),
                                 );
                               }
-                              //filtering devices by putting esp devices in their own list
                               for (ScanResult device in results) {
                                 if (device.device.platformName ==
                                     "Clean-Flow") {
@@ -222,64 +172,82 @@ class _HomepageState extends State<Homepage> {
                               return ListView.builder(
                                 itemCount: filtered.length,
                                 itemBuilder: (context, index) {
-                                  final device = filtered[index];
+                                  globalDevice = filtered[index];
                                   return Center(
                                     child: Padding(
                                       padding: EdgeInsets.only(top: 10),
                                       child: SizedBox(
-                                        width: 250,
-                                        height: 75,
-                                        child: FloatingActionButton(
-                                          onPressed: () async {
-                                            setState(() {
-                                              connectedDevice = device;
-                                            });
-                                            connectToDevice(device);
-                                            //Put bluetooth pair feature here
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Expanded(
-                                                  flex: 1,
-                                                  child: Icon(Icons
-                                                      .bluetooth_searching)),
-                                              Expanded(
-                                                  flex: 5,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(5),
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          "Device Name: ${device.platformName.isEmpty ? "Unknown Device" : device.platformName}",
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                        Text(
-                                                            "Device ID: ${device.remoteId}",
+                                          width: 250,
+                                          height: 75,
+                                          child: FloatingActionButton(
+                                            onPressed: () async {
+                                              var subscription = globalDevice!
+                                                  .connectionState
+                                                  .listen(
+                                                      (BluetoothConnectionState
+                                                          state) async {
+                                                if (state ==
+                                                    BluetoothConnectionState
+                                                        .disconnected) {
+                                                  print(
+                                                      "${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}");
+                                                }
+                                              });
+                                              await globalDevice!.connect();
+
+                                              if (globalDevice!.isConnected) {
+                                                print("================");
+                                                print(
+                                                    "Connection State: Connected");
+                                                print("================");
+                                              } else {
+                                                print("Disconnected");
+                                              }
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Expanded(
+                                                    flex: 1,
+                                                    child: Icon(Icons
+                                                        .bluetooth_searching)),
+                                                Expanded(
+                                                    flex: 5,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              5),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            "Device Name: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}",
                                                             overflow:
                                                                 TextOverflow
-                                                                    .ellipsis),
-                                                        Text(
-                                                            "Extra Info: ${device.advName.isEmpty ? "--:--" : device.advName}",
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis)
-                                                      ],
-                                                    ),
-                                                  ))
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                                                    .ellipsis,
+                                                          ),
+                                                          Text(
+                                                              "Device ID: ${globalDevice!.remoteId}",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
+                                                          Text(
+                                                              "Extra Info: ${globalDevice!.advName.isEmpty ? "--:--" : globalDevice!.advName}",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis)
+                                                        ],
+                                                      ),
+                                                    ))
+                                              ],
+                                            ),
+                                          )),
                                     ),
                                   );
                                 },
@@ -323,8 +291,7 @@ class _HomepageState extends State<Homepage> {
                   onPressed: isScanning
                       ? null
                       : () async {
-                          // await disconnect!.disconnect();
-                          await askBluetoothPermission();
+                          askBluetoothPermission();
                         },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -352,17 +319,12 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                width: 300,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    disconnect();
-                  },
-                  child: Text("Disconnect"),
-                ),
+              SizedBox(height: 10),
+              FloatingActionButton(
+                onPressed: () async {
+                  await globalDevice!.disconnect();
+                },
+                child: Icon(Icons.remove),
               )
             ],
           ),
