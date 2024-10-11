@@ -1,11 +1,11 @@
 // ignore_for_file: avoid_print, prefer_const_constructors, collection_methods_unrelated_type
 
+import 'package:capstone/homepage/homepage.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BluetoothController {
   //This tells the app to target all ESP32 with this service uuid
   Guid targetServiceUUID = Guid("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
-
   Future<void> scanDevices() async {
     try {
       print(
@@ -16,7 +16,7 @@ class BluetoothController {
       FlutterBluePlus.startScan();
 
       // //Wait for 5s before executing the following codes
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(Duration(seconds: 1));
 
       print(
           "==================================================================================================================================");

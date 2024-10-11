@@ -1,5 +1,55 @@
 /*
 
+
+Expanded(
+                                                    flex: 5,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              5),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            "Device Name: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}",
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                          Text(
+                                                              "Device ID: ${globalDevice!.remoteId}",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis),
+                                                          Text(
+                                                              "Extra Info: ${globalDevice!.advName.isEmpty ? "--:--" : globalDevice!.advName}",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis)
+                                                        ],
+                                                      ),
+                                                    ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #define SERVICE_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define CHARACTERISTIC_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 

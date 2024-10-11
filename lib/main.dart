@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:capstone/Widgets/device_profiles.dart';
 import 'package:capstone/homepage/homepage.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/',
-      routes: {'/': (context) => Homepage()},
+      routes: {
+        '/': (context) => Homepage(),
+        '/deviceProfile': (context) => DeviceProfiles()
+      },
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

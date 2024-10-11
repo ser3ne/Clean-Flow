@@ -2,6 +2,7 @@
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/Widgets/widgets.dart';
+import 'package:capstone/miscellaneous/args.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -45,7 +46,7 @@ class _HomepageState extends State<Homepage> {
       //if bluetooth is on
       if (isOn) {
         setState(() {
-          mainButtonText = "Add Device";
+          mainButtonText = "Connect New Device";
         });
         buttonFunctions();
       }
@@ -59,7 +60,7 @@ class _HomepageState extends State<Homepage> {
     //if bluetooth is on
     else {
       setState(() {
-        mainButtonText = "Add Device";
+        mainButtonText = "Connect New Device";
       });
       buttonFunctions();
     }
@@ -98,18 +99,13 @@ class _HomepageState extends State<Homepage> {
               //Drape
               Container(
                 height: 500,
-                width: 300,
+                width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [color_1, color_2, color_2, color_3, color_4],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(75),
-                    bottomRight: Radius.circular(75),
-                  ),
-                ),
+                    gradient: LinearGradient(
+                  colors: [color_1, color_2, color_2, color_3, color_4],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                )),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -177,10 +173,18 @@ class _HomepageState extends State<Homepage> {
                                     child: Padding(
                                       padding: EdgeInsets.only(top: 10),
                                       child: SizedBox(
-                                          width: 250,
-                                          height: 75,
+                                          width: 350,
+                                          height: 300,
+                                          //Device Profile Button
                                           child: FloatingActionButton(
+                                            heroTag: null,
                                             onPressed: () async {
+                                              Navigator.pushNamed(
+                                                  context, '/deviceProfile',
+                                                  arguments: DeviceArguments(
+                                                      globalDevice!,
+                                                      globalDevice!.platformName
+                                                          .toString()));
                                               var subscription = globalDevice!
                                                   .connectionState
                                                   .listen(
@@ -190,19 +194,17 @@ class _HomepageState extends State<Homepage> {
                                                     BluetoothConnectionState
                                                         .disconnected) {
                                                   print(
-                                                      "${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}");
+                                                      "Global Device is Disconnected: ${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}");
+                                                  Navigator.pop(context);
                                                 }
                                               });
+                                              globalDevice!
+                                                  .cancelWhenDisconnected(
+                                                      subscription,
+                                                      delayed: true,
+                                                      next: true);
                                               await globalDevice!.connect();
-
-                                              if (globalDevice!.isConnected) {
-                                                print("================");
-                                                print(
-                                                    "Connection State: Connected");
-                                                print("================");
-                                              } else {
-                                                print("Disconnected");
-                                              }
+                                              subscription.cancel();
                                             },
                                             child: Row(
                                               mainAxisAlignment:
@@ -277,10 +279,6 @@ class _HomepageState extends State<Homepage> {
               SizedBox(
                 height: 25,
               ),
-              SizedBox(
-                height: 25,
-              ),
-
               //Add Devices
               SizedBox(
                 width: 300,
@@ -319,12 +317,17 @@ class _HomepageState extends State<Homepage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              FloatingActionButton(
-                onPressed: () async {
-                  await globalDevice!.disconnect();
-                },
-                child: Icon(Icons.remove),
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                width: 100,
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    await globalDevice!.disconnect();
+                  },
+                  child: Text("Disconnect"),
+                ),
               )
             ],
           ),
