@@ -1,6 +1,4 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
-
-import 'package:capstone/homepage/homepage.dart';
 import 'package:capstone/miscellaneous/args.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -37,12 +35,14 @@ class _DeviceProfilesState extends State<DeviceProfiles> {
             onChanged: (bool value) {
               setState(() {
                 isSwitch = value;
-                if (isSwitch == false) {
-                  args.device.disconnect();
-                  print("Disconnected from Profile");
-                  Navigator.pop(context);
-                }
               });
+              if (isSwitch == false) {
+                args.device.disconnect();
+                print("Disconnected from Profile");
+                Navigator.pop(context);
+              } else {
+                args.device.connect();
+              }
             }),
       ),
     );

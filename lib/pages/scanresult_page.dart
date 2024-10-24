@@ -1,20 +1,19 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
-import 'package:capstone/Widgets/widgets.dart';
 import 'package:capstone/miscellaneous/args.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+class Scanresult_Page extends StatefulWidget {
+  const Scanresult_Page({super.key});
 
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<Scanresult_Page> createState() => _Scanresult_PageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _Scanresult_PageState extends State<Scanresult_Page> {
   Color color_1 = Color.fromRGBO(119, 117, 241, 1);
   Color color_2 = Color.fromRGBO(69, 66, 250, 1);
   Color color_3 = Color.fromRGBO(26, 25, 68, 1);
@@ -94,8 +93,6 @@ class _HomepageState extends State<Homepage> {
         child: Center(
           child: Column(
             children: [
-              Header(),
-              SizedBox(height: 20),
               //Drape
               Container(
                 height: 500,
@@ -277,7 +274,7 @@ class _HomepageState extends State<Homepage> {
               ),
               //Drape end
               SizedBox(
-                height: 25,
+                height: 10,
               ),
               //Add Devices
               SizedBox(
