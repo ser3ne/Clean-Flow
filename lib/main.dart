@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:capstone/Widgets/device_profiles.dart';
-import 'package:capstone/miscellaneous/routes.dart';
+import 'package:capstone/global/routes.dart';
 import 'package:capstone/pages/main_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';

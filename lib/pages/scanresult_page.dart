@@ -1,8 +1,8 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types, unnecessary_null_comparison
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
-import 'package:capstone/miscellaneous/args.dart';
-import 'package:capstone/miscellaneous/routes.dart';
+import 'package:capstone/global/args.dart';
+import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,9 +22,8 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
 
   bool isScanning = false;
   String mainButtonText = "";
-  BluetoothDevice? globalDevice;
 
-  void buttonFunctions() async {
+  void scan() async {
     isSearching(); //disable button
     await BluetoothController().scanDevices(); //Start Scanning for devices
     isSearching(); //re-enable button
@@ -48,7 +47,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
         setState(() {
           mainButtonText = "Connect New Device";
         });
-        buttonFunctions();
+        scan();
       }
       // if bluetooth is off
       else if (!isOn) {
@@ -62,7 +61,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
       setState(() {
         mainButtonText = "Connect New Device";
       });
-      buttonFunctions();
+      scan();
     }
     return isOn;
   }
@@ -82,7 +81,8 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+        body: Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [color_1, color_2, color_3, color_4],
@@ -166,7 +166,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                             return ListView.builder(
                               itemCount: results.length,
                               itemBuilder: (context, index) {
-                                globalDevice = results[index].device;
+                                final device = results[index].device;
                                 return Center(
                                   child: Padding(
                                     padding: EdgeInsets.only(top: 10),
@@ -177,34 +177,14 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                         child: FloatingActionButton(
                                           heroTag: index,
                                           onPressed: () async {
-                                            Navigator.pushNamed(
+                                            final result = Navigator.pushNamed(
                                               context,
                                               deviceprofile,
-                                              arguments: DeviceArguments(
-                                                  globalDevice!,
-                                                  globalDevice!.platformName),
+                                              arguments: PairArguments(device),
                                             );
 
-                                            var subscription = globalDevice!
-                                                .connectionState
-                                                .listen(
-                                                    (BluetoothConnectionState
-                                                        state) async {
-                                              if (state ==
-                                                  BluetoothConnectionState
-                                                      .disconnected) {
-                                                print(
-                                                    "Global Device is Disconnected: ${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}");
-                                                Navigator.pop(context);
-                                              }
-                                            });
-                                            globalDevice!
-                                                .cancelWhenDisconnected(
-                                                    subscription,
-                                                    delayed: true,
-                                                    next: true);
-                                            // await globalDevice!.connect();
-                                            subscription.cancel();
+                                            if (result != null &&
+                                                result is PairArguments) {}
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -228,17 +208,17 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          "Device Name: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}",
+                                                          "Device Name: ${device!.platformName.isEmpty ? "Unknown Device" : device!.platformName}",
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                         ),
                                                         Text(
-                                                            "Device ID: ${globalDevice!.remoteId}",
+                                                            "Device ID: ${device!.remoteId}",
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis),
                                                         Text(
-                                                            "Extra Info: ${globalDevice!.advName.isEmpty ? "--:--" : globalDevice!.advName}",
+                                                            "Extra Info: ${device!.advName.isEmpty ? "--:--" : device!.advName}",
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis)
@@ -262,7 +242,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                       //Stream end
                     ),
                     Container(
-                        decoration: BoxDecoration(border: Border.all(width: 5)),
+                        // decoration: BoxDecoration(border: Border.all(width: 5)),
                         height: 50,
                         width: 250,
                         child: Center(
@@ -319,18 +299,9 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
             SizedBox(
               height: 10,
             ),
-            SizedBox(
-              width: 100,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  await globalDevice!.disconnect();
-                },
-                child: Text("Disconnect"),
-              ),
-            )
           ],
         ),
       ),
-    );
+    ));
   }
 }

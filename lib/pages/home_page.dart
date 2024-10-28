@@ -1,7 +1,7 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
 import 'package:capstone/Widgets/device_overview.dart';
-import 'package:capstone/miscellaneous/routes.dart';
+import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 
 class Home_Page extends StatefulWidget {
@@ -45,8 +45,9 @@ class Home_StatePage extends State<Home_Page> {
             child: FloatingActionButton(
               elevation: 0,
               backgroundColor: Color.fromARGB(255, 33, 150, 243),
-              onPressed: () {
-                Navigator.pushNamed(context, scanresult);
+              onPressed: () async {
+                final result = await Navigator.pushNamed(context, scanresult);
+                //Make the logic when you comeback
               },
               child: Text("Connect new Device"),
             ),
