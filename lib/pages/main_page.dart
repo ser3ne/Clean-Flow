@@ -1,9 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:capstone/pages/home_page.dart';
-import 'package:capstone/pages/scanresult_page.dart';
+import 'package:capstone/pages/shit.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -14,15 +13,15 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int currentIndex = 0;
-  final List<Widget> _pages = [Scanresult_Page(), Home_Page()];
+  final List<Widget> _pages = [Home_Page(), Temp()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: "Home"),
           NavigationDestination(
-              icon: Icon(Icons.bluetooth_searching), label: "Scan"),
-          NavigationDestination(icon: Icon(Icons.home), label: "Home")
+              icon: Icon(Icons.crop_square_sharp), label: "Shit")
         ],
         onDestinationSelected: (int index) {
           setState(() {

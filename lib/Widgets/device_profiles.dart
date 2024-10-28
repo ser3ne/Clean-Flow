@@ -13,38 +13,37 @@ class DeviceProfiles extends StatefulWidget {
 }
 
 class _DeviceProfilesState extends State<DeviceProfiles> {
-  bool isSwitch = true;
+  bool isSwitch = false;
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as DeviceArguments;
 
     String name = args.deviceName.toString();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(name),
-        actions: [Icon(Icons.gamepad)],
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: Color.fromARGB(164, 111, 111, 111),
-        child: Switch.adaptive(
-            value: isSwitch,
-            //value = true
-            //isSwitch = false
-            onChanged: (bool value) {
-              setState(() {
-                isSwitch = value;
-              });
-              if (isSwitch == false) {
-                args.device.disconnect();
-                print("Disconnected from Profile");
-                Navigator.pop(context);
-              } else {
-                args.device.connect();
-              }
-            }),
-      ),
-    );
+        body: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            color: Color.fromARGB(164, 111, 111, 111),
+            child: Center(
+              child: Column(
+                children: [
+                  Text("Connect to device?"),
+                  Switch(
+                      value: isSwitch,
+                      onChanged: (bool value) async {
+                        setState(() {
+                          isSwitch = value;
+                        });
+                        if (isSwitch == true) {
+                          args.device.connect();
+                          await Future.delayed(Duration(milliseconds: 1300));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text("Connectedd to Device a Successfuly")));
+                        }
+                      }),
+                ],
+              ),
+            )));
   }
 }

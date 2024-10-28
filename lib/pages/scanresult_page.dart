@@ -2,6 +2,7 @@
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/miscellaneous/args.dart';
+import 'package:capstone/miscellaneous/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -81,253 +82,253 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [color_1, color_2, color_3, color_4],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color_1, color_2, color_3, color_4],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        child: Center(
-          child: Column(
-            children: [
-              //Drape
-              Container(
-                height: 500,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                  colors: [color_1, color_2, color_2, color_3, color_4],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                )),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                        height: 425,
-                        width: 300,
-                        //Stream
-                        child: StreamBuilder<List<ScanResult>>(
-                          stream: FlutterBluePlus.scanResults,
-                          initialData: [],
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              print(
-                                  "Snapshot State: ${snapshot.connectionState}\n");
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            //Drape
+            Container(
+              //take 80% of device's height resolution
+              height: (MediaQuery.of(context).size.height * 0.8),
+              //take the device's max width resolution
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 5),
+                  gradient: LinearGradient(
+                    colors: [color_1, color_2, color_2, color_3, color_4],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                  )),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      height: 425, //425
+                      width: 300,
+                      //put Stream here xd
+                      child: StreamBuilder<List<ScanResult>>(
+                        stream: FlutterBluePlus.scanResults,
+                        initialData: [],
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            print(
+                                "Snapshot State: ${snapshot.connectionState}\n");
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasData &&
+                              snapshot.data != null) {
+                            List<ScanResult> results = snapshot.data ?? [];
+                            // List<BluetoothDevice> filtered = [];
+                            print('Snapshot Data: ${snapshot.data}\n');
+
+                            if (results.isEmpty) {
+                              print("Results: $results");
                               return Center(
-                                child: CircularProgressIndicator(),
+                                child: Text(
+                                  "No Devices Found.\n",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
                               );
-                            } else if (snapshot.hasData &&
-                                snapshot.data != null) {
-                              List<ScanResult> results = snapshot.data ?? [];
-                              List<BluetoothDevice> filtered = [];
-                              print('Snapshot Data: ${snapshot.data}\n');
+                            }
+                            // for (ScanResult device in results) {
+                            //   if (device.device.platformName == "Clean-Flow") {
+                            //     filtered.add(device.device);
+                            //   }
+                            // }
 
-                              if (results.isEmpty) {
-                                print("Results: $results");
+                            // if (filtered.isEmpty) {
+                            //   return Center(
+                            //     child: Text(
+                            //       "No Devices Found.\n",
+                            //       style: TextStyle(
+                            //         fontSize: 30,
+                            //         fontWeight: FontWeight.w900,
+                            //       ),
+                            //     ),
+                            //   );
+                            // }
+
+                            //Devices
+                            return ListView.builder(
+                              itemCount: results.length,
+                              itemBuilder: (context, index) {
+                                globalDevice = results[index].device;
                                 return Center(
-                                  child: Text(
-                                    "No Devices Found.\n",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                );
-                              }
-                              for (ScanResult device in results) {
-                                if (device.device.platformName ==
-                                    "Clean-Flow") {
-                                  filtered.add(device.device);
-                                } else {
-                                  continue;
-                                }
-                              }
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 10),
+                                    child: SizedBox(
+                                        width: 350,
+                                        height: 300,
+                                        //Device Profile Button
+                                        child: FloatingActionButton(
+                                          heroTag: index,
+                                          onPressed: () async {
+                                            Navigator.pushNamed(
+                                              context,
+                                              deviceprofile,
+                                              arguments: DeviceArguments(
+                                                  globalDevice!,
+                                                  globalDevice!.platformName),
+                                            );
 
-                              if (filtered.isEmpty) {
-                                return Center(
-                                  child: Text(
-                                    "No Devices Found.\n",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              //Devices
-                              return ListView.builder(
-                                itemCount: filtered.length,
-                                itemBuilder: (context, index) {
-                                  globalDevice = filtered[index];
-                                  return Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(top: 10),
-                                      child: SizedBox(
-                                          width: 350,
-                                          height: 300,
-                                          //Device Profile Button
-                                          child: FloatingActionButton(
-                                            heroTag: null,
-                                            onPressed: () async {
-                                              Navigator.pushNamed(
-                                                  context, '/deviceProfile',
-                                                  arguments: DeviceArguments(
-                                                      globalDevice!,
-                                                      globalDevice!.platformName
-                                                          .toString()));
-                                              var subscription = globalDevice!
-                                                  .connectionState
-                                                  .listen(
-                                                      (BluetoothConnectionState
-                                                          state) async {
-                                                if (state ==
-                                                    BluetoothConnectionState
-                                                        .disconnected) {
-                                                  print(
-                                                      "Global Device is Disconnected: ${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}");
-                                                  Navigator.pop(context);
-                                                }
-                                              });
-                                              globalDevice!
-                                                  .cancelWhenDisconnected(
-                                                      subscription,
-                                                      delayed: true,
-                                                      next: true);
-                                              await globalDevice!.connect();
-                                              subscription.cancel();
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Expanded(
-                                                    flex: 1,
-                                                    child: Icon(Icons
-                                                        .bluetooth_searching)),
-                                                Expanded(
-                                                    flex: 5,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            "Device Name: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}",
+                                            var subscription = globalDevice!
+                                                .connectionState
+                                                .listen(
+                                                    (BluetoothConnectionState
+                                                        state) async {
+                                              if (state ==
+                                                  BluetoothConnectionState
+                                                      .disconnected) {
+                                                print(
+                                                    "Global Device is Disconnected: ${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}");
+                                                Navigator.pop(context);
+                                              }
+                                            });
+                                            globalDevice!
+                                                .cancelWhenDisconnected(
+                                                    subscription,
+                                                    delayed: true,
+                                                    next: true);
+                                            // await globalDevice!.connect();
+                                            subscription.cancel();
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: Icon(Icons
+                                                      .bluetooth_searching)),
+                                              Expanded(
+                                                  flex: 5,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(5),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "Device Name: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}",
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                        Text(
+                                                            "Device ID: ${globalDevice!.remoteId}",
                                                             overflow:
                                                                 TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                          Text(
-                                                              "Device ID: ${globalDevice!.remoteId}",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
-                                                          Text(
-                                                              "Extra Info: ${globalDevice!.advName.isEmpty ? "--:--" : globalDevice!.advName}",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis)
-                                                        ],
-                                                      ),
-                                                    ))
-                                              ],
-                                            ),
-                                          )),
-                                    ),
-                                  );
-                                },
-                              );
-                              //Devices end
-                            } else {
-                              return Center(
-                                  child: Text("Error Scanning Devices."));
-                            }
-                          },
-                        ),
-                        //Stream end
-                      ),
-                      SizedBox(
-                          height: 45,
-                          width: 250,
-                          child: Center(
-                              child: Text(
-                            isScanning ? "Searching..." : "Devices",
-                            style: TextStyle(fontSize: isScanning ? 30 : 15),
-                          )))
-                    ],
-                  ),
-                ),
-              ),
-              //Drape end
-              SizedBox(
-                height: 10,
-              ),
-              //Add Devices
-              SizedBox(
-                width: 300,
-                child: FloatingActionButton(
-                  backgroundColor: isScanning
-                      ? const Color.fromARGB(255, 179, 221, 255)
-                      : Color.fromARGB(255, 37, 157, 255),
-                  onPressed: isScanning
-                      ? null
-                      : () async {
-                          askBluetoothPermission();
+                                                                    .ellipsis),
+                                                        Text(
+                                                            "Extra Info: ${globalDevice!.advName.isEmpty ? "--:--" : globalDevice!.advName}",
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis)
+                                                      ],
+                                                    ),
+                                                  ))
+                                            ],
+                                          ),
+                                        )),
+                                  ),
+                                );
+                              },
+                            );
+                            //Devices end
+                          } else {
+                            return Center(
+                                child: Text("Error Scanning Devices."));
+                          }
                         },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Icon(Icons.bluetooth_searching,
-                          size: 40,
-                          color: isScanning
-                              ? const Color.fromARGB(255, 131, 131, 131)
-                              : Colors.black),
-                      Text(
-                        mainButtonText,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                            color: isScanning
-                                ? const Color.fromARGB(255, 131, 131, 131)
-                                : Colors.black),
                       ),
-                      Icon(Icons.add_rounded,
-                          size: 45,
+                      //Stream end
+                    ),
+                    Container(
+                        decoration: BoxDecoration(border: Border.all(width: 5)),
+                        height: 50,
+                        width: 250,
+                        child: Center(
+                            child: Text(
+                          isScanning ? "Searching..." : "Devices",
+                          style: TextStyle(fontSize: isScanning ? 30 : 15),
+                        )))
+                  ],
+                ),
+              ),
+            ),
+            //Drape end
+            SizedBox(
+              height: 10,
+            ),
+            //Add Devices
+            SizedBox(
+              width: 300,
+              child: FloatingActionButton(
+                backgroundColor: isScanning
+                    ? const Color.fromARGB(255, 179, 221, 255)
+                    : Color.fromARGB(255, 37, 157, 255),
+                onPressed: isScanning
+                    ? null
+                    : () async {
+                        askBluetoothPermission();
+                      },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.bluetooth_searching,
+                        size: 40,
+                        color: isScanning
+                            ? const Color.fromARGB(255, 131, 131, 131)
+                            : Colors.black),
+                    Text(
+                      mainButtonText,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
                           color: isScanning
                               ? const Color.fromARGB(255, 131, 131, 131)
                               : Colors.black),
-                    ],
-                  ),
+                    ),
+                    Icon(Icons.add_rounded,
+                        size: 45,
+                        color: isScanning
+                            ? const Color.fromARGB(255, 131, 131, 131)
+                            : Colors.black),
+                  ],
                 ),
               ),
-              SizedBox(
-                height: 10,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              width: 100,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  await globalDevice!.disconnect();
+                },
+                child: Text("Disconnect"),
               ),
-              SizedBox(
-                width: 100,
-                child: FloatingActionButton(
-                  onPressed: () async {
-                    await globalDevice!.disconnect();
-                  },
-                  child: Text("Disconnect"),
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

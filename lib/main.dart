@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:capstone/Widgets/device_overview.dart';
-import 'package:capstone/pages/home_page.dart';
+import 'package:capstone/Widgets/device_profiles.dart';
+import 'package:capstone/miscellaneous/routes.dart';
 import 'package:capstone/pages/main_page.dart';
+import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,11 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: root,
       routes: {
-        '/': (context) => MainPage()
-        // '/': (context) => Scanresult_Page(),
-        // '/deviceProfile': (context) => DeviceProfiles()
+        root: (context) => MainPage(),
+        deviceprofile: (context) => DeviceProfiles(),
+        scanresult: (context) => Scanresult_Page(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(

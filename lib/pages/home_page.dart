@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
 import 'package:capstone/Widgets/device_overview.dart';
+import 'package:capstone/miscellaneous/routes.dart';
 import 'package:flutter/material.dart';
 
 class Home_Page extends StatefulWidget {
@@ -19,9 +20,6 @@ class Home_StatePage extends State<Home_Page> {
           Container(
             width: MediaQuery.of(context).size.width * 0.90,
             height: MediaQuery.of(context).size.height * 0.70,
-            // decoration: BoxDecoration(
-            //     border: Border.all(
-            //         style: BorderStyle.solid, color: Colors.black, width: 5)),
             child: SingleChildScrollView(
               child: Center(
                 child: Column(
@@ -47,8 +45,10 @@ class Home_StatePage extends State<Home_Page> {
             child: FloatingActionButton(
               elevation: 0,
               backgroundColor: Color.fromARGB(255, 33, 150, 243),
-              onPressed: () {},
-              child: Text("Hey nigga"),
+              onPressed: () {
+                Navigator.pushNamed(context, scanresult);
+              },
+              child: Text("Connect new Device"),
             ),
           )
         ],

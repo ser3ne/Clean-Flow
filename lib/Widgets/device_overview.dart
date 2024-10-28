@@ -15,8 +15,8 @@ class _DeviceOverviewState extends State<DeviceOverview> {
     return Padding(
       padding: EdgeInsets.only(top: 25),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.90,
-        height: MediaQuery.of(context).size.height * 0.50,
+        width: MediaQuery.of(context).size.width * 0.70,
+        height: MediaQuery.of(context).size.height * 0.70,
         color: Colors.orange,
       ),
     );
