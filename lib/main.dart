@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:capstone/Widgets/device_profiles.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:capstone/pages/main_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
@@ -20,7 +19,6 @@ class MyApp extends StatelessWidget {
       initialRoute: root,
       routes: {
         root: (context) => MainPage(),
-        deviceprofile: (context) => DeviceProfiles(),
         scanresult: (context) => Scanresult_Page(),
       },
       title: 'Flutter Demo',

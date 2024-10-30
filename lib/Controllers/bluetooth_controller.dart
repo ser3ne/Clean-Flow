@@ -1,18 +1,32 @@
 // ignore_for_file: avoid_print, prefer_const_constructors, collection_methods_unrelated_type
 
+import 'dart:async';
+import 'package:capstone/global/args.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BluetoothController {
   //This tells the app to target all ESP32 with this service uuid
   Guid targetServiceUUID = Guid("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
+
   Future<void> scanDevices() async {
+    var subscription = FlutterBluePlus.scanResults.listen(
+      (results) {
+        if (results.isNotEmpty) {
+          ScanResult r = results.last; // the most recently found device
+          print(
+              '${r.device.remoteId}: "${r.advertisementData.advName}" found!');
+        }
+      },
+      onError: (e) => print(e),
+    );
+
     try {
       print("================================================================");
       print("\t\t\t\t\t\tSTARTING SCAN");
       print("================================================================");
-      FlutterBluePlus.startScan();
+      await FlutterBluePlus.startScan();
 
-      // //Wait for 5s before executing the following codes
+      //Wait for 5s before executing the following codes
       await Future.delayed(Duration(seconds: 1));
 
       print("================================================================");
@@ -22,8 +36,24 @@ class BluetoothController {
       //Scan will automatically stop if you put a timeout attribute in it
       //this stopScan() will ensure bluetooth will not scan longer than 5s
       FlutterBluePlus.stopScan();
+
+      FlutterBluePlus.cancelWhenScanComplete(subscription);
     } catch (e) {
       print("BLUETOOTH ERROR: $e");
     }
+  }
+
+  StreamSubscription<BluetoothConnectionState> bluetoothConnectState() {
+    var subscription = globalDevice!.connectionState
+        .listen((BluetoothConnectionState state) async {
+      if (state == BluetoothConnectionState.disconnected) {
+        // await BluetoothController().scanDevices();
+        print(
+            "Global Device is Disconnected: ${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}\n");
+        // Navigator.pop(context);
+      }
+    });
+
+    return subscription;
   }
 }

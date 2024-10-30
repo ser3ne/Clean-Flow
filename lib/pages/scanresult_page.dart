@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types, unnecessary_null_comparison
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
+import 'package:capstone/Widgets/device_profiles.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,6 +21,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
   Color color_4 = Color.fromRGBO(2, 1, 34, 1);
 
   bool isScanning = false;
+  bool isSwitch = false;
   String mainButtonText = "";
 
   void scan() async {
@@ -109,10 +110,10 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                   )),
               child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      height: 425, //425
+                      height: 600, //425
                       width: 300,
                       //put Stream here xd
                       child: StreamBuilder<List<ScanResult>>(
@@ -169,22 +170,28 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                 final device = results[index].device;
                                 return Center(
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 10),
+                                    padding:
+                                        EdgeInsets.only(top: 5, bottom: 10),
                                     child: SizedBox(
-                                        width: 350,
-                                        height: 300,
+                                        width: 300,
+                                        height: 250,
                                         //Device Profile Button
                                         child: FloatingActionButton(
                                           heroTag: index,
                                           onPressed: () async {
-                                            final result = Navigator.pushNamed(
-                                              context,
-                                              deviceprofile,
-                                              arguments: PairArguments(device),
-                                            );
+                                            setState(() {
+                                              globalDevice = device;
+                                            });
+                                            var subscription =
+                                                BluetoothController()
+                                                    .bluetoothConnectState();
 
-                                            if (result != null &&
-                                                result is PairArguments) {}
+                                            await showModalBottomSheet(
+                                              context: context,
+                                              builder: (context) {
+                                                return DeviceProfiles();
+                                              },
+                                            );
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -208,17 +215,17 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          "Device Name: ${device!.platformName.isEmpty ? "Unknown Device" : device!.platformName}",
+                                                          "Device Name: ${device.platformName.isEmpty ? "Unknown Device" : device.platformName}",
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                         ),
                                                         Text(
-                                                            "Device ID: ${device!.remoteId}",
+                                                            "Device ID: ${device.remoteId}",
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis),
                                                         Text(
-                                                            "Extra Info: ${device!.advName.isEmpty ? "--:--" : device!.advName}",
+                                                            "Extra Info: ${device.advName.isEmpty ? "--:--" : device.advName}",
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis)
@@ -248,7 +255,9 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                         child: Center(
                             child: Text(
                           isScanning ? "Searching..." : "Devices",
-                          style: TextStyle(fontSize: isScanning ? 30 : 15),
+                          style: TextStyle(
+                              fontSize: isScanning ? 30 : 20,
+                              fontWeight: FontWeight.w900),
                         )))
                   ],
                 ),
