@@ -15,6 +15,25 @@ class DeviceProfiles extends StatefulWidget {
 class _DeviceProfilesState extends State<DeviceProfiles> {
   bool isSwitch = false;
   String platformName = globalDevice!.platformName;
+
+  void yes() async {
+    var sub = BluetoothController().bluetoothConnectState();
+    //Disconnecting first to make sure connection can be properly established
+    await globalDevice!.connect();
+    if (globalDevice!.isDisconnected) {
+      yes();
+    } else {
+      print("Latest Connection State: ${globalDevice!.isConnected.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "Successfully Connected to: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}")));
+      setState(() {
+        savedDevices.add(globalDevice!);
+      });
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // String remoteId = device!.remoteId.toString();
@@ -31,45 +50,55 @@ class _DeviceProfilesState extends State<DeviceProfiles> {
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 20),
-              Text("Connect to device?"),
-              Switch(
-                  value: isSwitch,
-                  onChanged: (bool value) async {
-                    setState(() {
-                      isSwitch = value;
-                    });
-                    if (isSwitch == true) {
-                      var sub = BluetoothController().bluetoothConnectState();
-                      await globalDevice!.connect();
-                      if (globalDevice!.isConnected) {
-                        print("Conneccted");
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content:
-                              Text("Successfully connected to: $platformName"),
-                          action: SnackBarAction(
-                            label: "Got it",
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          duration: Duration(seconds: 2),
-                        ));
-                      } else {
-                        print("Not Connected");
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Unable to connect to: $platformName"),
-                          action: SnackBarAction(
-                            label: "Got it",
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          duration: Duration(seconds: 2),
-                        ));
-                        sub.cancel();
-                      }
-                    }
-                  }),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Connect to this device?"),
+                  Switch(
+                      activeColor: Colors.green,
+                      activeTrackColor: Color.fromARGB(255, 27, 61, 28),
+                      value: isSwitch,
+                      onChanged: (bool value) async {
+                        setState(() {
+                          isSwitch = value;
+                        });
+                        if (isSwitch == true) {
+                          await showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title:
+                                  Text(globalDevice!.platformName.toString()),
+                              content: Text("Connect to this device?"),
+                              actions: [
+                                MaterialButton(
+                                    color: Colors.lightBlue,
+                                    onPressed: () {
+                                      setState(() {
+                                        isSwitch = false;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("No")),
+                                SizedBox(
+                                  width: 60,
+                                ),
+                                MaterialButton(
+                                    color: Colors.lightBlue,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      yes();
+                                    },
+                                    child: Text(
+                                      "Yes",
+                                      style: TextStyle(color: Colors.white),
+                                    ))
+                              ],
+                            ),
+                          );
+                        }
+                      })
+                ],
+              )
             ],
           ),
         ));

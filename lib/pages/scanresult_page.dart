@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types, unnecessary_null_comparison
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
+import 'package:capstone/Widgets/custom.dart';
 import 'package:capstone/Widgets/device_profiles.dart';
 import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
@@ -136,12 +137,10 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                             if (results.isEmpty) {
                               print("Results: $results");
                               return Center(
-                                child: Text(
-                                  "No Devices Found.\n",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                                child: CustomText(
+                                  text: "No Devices Found.\n",
+                                  size: 30,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               );
                             }
@@ -267,7 +266,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
             SizedBox(
               height: 10,
             ),
-            //Add Devices
+            //Main Buttton
             SizedBox(
               width: 300,
               child: FloatingActionButton(

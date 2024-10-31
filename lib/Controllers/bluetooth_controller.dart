@@ -14,7 +14,7 @@ class BluetoothController {
         if (results.isNotEmpty) {
           ScanResult r = results.last; // the most recently found device
           print(
-              '${r.device.remoteId}: "${r.advertisementData.advName}" found!');
+              '${r.device.remoteId}: "${r.advertisementData.advName}" found!\n');
         }
       },
       onError: (e) => print(e),

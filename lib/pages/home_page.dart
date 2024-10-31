@@ -1,6 +1,8 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
+import 'package:capstone/Widgets/custom.dart';
 import 'package:capstone/Widgets/device_overview.dart';
+import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -15,44 +17,48 @@ class Home_StatePage extends State<Home_Page> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.90,
-            height: MediaQuery.of(context).size.height * 0.70,
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  children: [
-                    DeviceOverview(),
-                    DeviceOverview(),
-                    DeviceOverview(),
-                    DeviceOverview(),
-                    DeviceOverview(),
-                    DeviceOverview(),
-                    DeviceOverview(),
-                    DeviceOverview()
-                  ],
-                ),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.90,
+        height: MediaQuery.of(context).size.height * 0.70,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.90,
+              height: MediaQuery.of(context).size.height * 0.60,
+              child: ListView.builder(
+                itemCount: savedDevices.isEmpty ? 1 : savedDevices.length,
+                itemBuilder: (context, index) {
+                  return savedDevices.isEmpty
+                      ? Center(
+                          child: CustomText(
+                              text: "No Devices",
+                              size: 15,
+                              fontWeight: FontWeight.w900))
+                      : DeviceOverview(
+                          device: savedDevices[index],
+                          platformName: savedDevices[index].platformName);
+                },
               ),
             ),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.90,
-            child: FloatingActionButton(
-              elevation: 0,
-              backgroundColor: Color.fromARGB(255, 33, 150, 243),
-              onPressed: () async {
-                final result = await Navigator.pushNamed(context, scanresult);
-                //Make the logic when you comeback
-              },
-              child: Text("Connect new Device"),
+            SizedBox(
+              height: 20,
+              child: Text("Devices: ${savedDevices.length}"),
             ),
-          )
-        ],
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.90,
+              child: FloatingActionButton(
+                elevation: 0,
+                backgroundColor: Color.fromARGB(255, 33, 150, 243),
+                onPressed: () async {
+                  await Navigator.pushNamed(context, scanresult);
+                  //Make the logic when you comeback
+                },
+                child: Text("Connect new Device"),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
