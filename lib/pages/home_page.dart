@@ -1,6 +1,6 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
-import 'package:capstone/Widgets/custom.dart';
+import 'package:capstone/Widgets/custom_text.dart';
 import 'package:capstone/pages/device_overview.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';

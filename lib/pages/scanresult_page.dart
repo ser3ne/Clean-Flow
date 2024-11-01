@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types, unnecessary_null_comparison
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
-import 'package:capstone/Widgets/custom.dart';
+import 'package:capstone/Widgets/custom_text.dart';
 import 'package:capstone/pages/device_bottomsheet.dart';
 import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
