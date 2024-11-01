@@ -2,7 +2,8 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 BluetoothDevice? globalDevice;
 String absoluteFilePath = "";
-List<BluetoothDevice> savedDevices = FlutterBluePlus.connectedDevices;
+List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
+bool globalBoolean = false;
 
 class PairArguments {
   final BluetoothDevice device;

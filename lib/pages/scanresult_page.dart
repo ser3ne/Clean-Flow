@@ -2,7 +2,7 @@
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/Widgets/custom.dart';
-import 'package:capstone/Widgets/device_profiles.dart';
+import 'package:capstone/pages/device_bottomsheet.dart';
 import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -181,14 +181,11 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                             setState(() {
                                               globalDevice = device;
                                             });
-                                            var subscription =
-                                                BluetoothController()
-                                                    .bluetoothConnectState();
 
                                             await showModalBottomSheet(
                                               context: context,
                                               builder: (context) {
-                                                return DeviceProfiles();
+                                                return DeviceBottomSheet();
                                               },
                                             );
                                           },

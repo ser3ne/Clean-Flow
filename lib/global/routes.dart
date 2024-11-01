@@ -3,6 +3,7 @@ import 'package:path_provider/path_provider.dart';
 
 const root = '/';
 const deviceprofile = '/deviceprofile';
+const devicebottomsheet = '/devicebottomsheet';
 const scanresult = '/scanresult';
 
 class FilePath {

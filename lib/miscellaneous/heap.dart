@@ -1,4 +1,14 @@
 /*
+
+if (!isConnected) {
+                        var sub = BluetoothController().bluetoothConnectState();
+                        await widget.device.disconnect();
+                        await sub.cancel();
+                        savedDevices.remove(widget.device);
+                      }
+
+
+
 /////////
 StreamBuilder<List<ScanResult>>(
                           stream: FlutterBluePlus.scanResults,

@@ -1,36 +1,36 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
-import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
+import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 
-class DeviceProfiles extends StatefulWidget {
-  const DeviceProfiles({
+class DeviceBottomSheet extends StatefulWidget {
+  const DeviceBottomSheet({
     super.key,
   });
 
   @override
-  State<DeviceProfiles> createState() => _DeviceProfilesState();
+  State<DeviceBottomSheet> createState() => _DeviceBottomSheetState();
 }
 
-class _DeviceProfilesState extends State<DeviceProfiles> {
+class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
   bool isSwitch = false;
   String platformName = globalDevice!.platformName;
+  bool canINowGoToAnotherPagePlease = false;
 
-  void yes() async {
-    var sub = BluetoothController().bluetoothConnectState();
-    //Disconnecting first to make sure connection can be properly established
+  Future<void> yes() async {
     await globalDevice!.connect();
-    if (globalDevice!.isDisconnected) {
-      yes();
-    } else {
+    if (globalDevice!.isConnected) {
       print("Latest Connection State: ${globalDevice!.isConnected.toString()}");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               "Successfully Connected to: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}")));
       setState(() {
-        savedDevices.add(globalDevice!);
+        connectedDevices.add(globalDevice!);
       });
       Navigator.pop(context);
+      setState(() {
+        canINowGoToAnotherPagePlease = true;
+      });
     }
   }
 
@@ -84,9 +84,8 @@ class _DeviceProfilesState extends State<DeviceProfiles> {
                                 ),
                                 MaterialButton(
                                     color: Colors.lightBlue,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      yes();
+                                    onPressed: () async {
+                                      await yes();
                                     },
                                     child: Text(
                                       "Yes",
@@ -95,6 +94,14 @@ class _DeviceProfilesState extends State<DeviceProfiles> {
                               ],
                             ),
                           );
+                          if (canINowGoToAnotherPagePlease) {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, root, (Route<dynamic> route) => false);
+                          } else {
+                            setState(() {
+                              isSwitch = false;
+                            });
+                          }
                         }
                       })
                 ],
