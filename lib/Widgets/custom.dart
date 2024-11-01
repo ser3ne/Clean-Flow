@@ -58,6 +58,7 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
           await widget.device.disconnect();
           await sub.cancel();
           await connectedDevices.remove(widget.device);
+          await Future.delayed(Duration(milliseconds: 302));
           Navigator.pushNamedAndRemoveUntil(
               context, root, (Route<dynamic> route) => false);
         }
