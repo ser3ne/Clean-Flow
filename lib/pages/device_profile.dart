@@ -18,8 +18,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, root, (Route<dynamic> route) => false);
+              Navigator.pushNamed(context, deviceprofile);
             },
             icon: const Icon(Icons.chevron_left_rounded)),
         title: Text(args.device.platformName),
@@ -30,19 +29,17 @@ class _DeviceProfileState extends State<DeviceProfile> {
             Expanded(
               flex: 5,
               child: Container(
-                // height: MediaQuery.of(context).size.height * .68,
-                // width: MediaQuery.of(context).size.width * .9,
                 decoration: BoxDecoration(border: Border.all(width: 5)),
               ),
             ),
             Expanded(
               flex: 1,
               child: Container(
-                // height: MediaQuery.of(context).size.height * .2,
-                // width: MediaQuery.of(context).size.width * .9,
                 decoration: BoxDecoration(border: Border.all(width: 5)),
                 child: CustomSwitchButton(
                   device: args.device,
+                  dialogueText: "Are you Sure you want to Disconnect?",
+                  size: 55,
                 ),
               ),
             )

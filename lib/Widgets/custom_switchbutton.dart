@@ -7,31 +7,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class CustomSwitchButton extends StatefulWidget {
-  const CustomSwitchButton({super.key, required this.device});
+  const CustomSwitchButton(
+      {super.key,
+      required this.device,
+      required this.dialogueText,
+      required this.size});
   final BluetoothDevice device;
+  final String dialogueText;
+  final double size;
 
   @override
   State<CustomSwitchButton> createState() => _CustomSwitchButtonState();
 }
 
-/*
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
-  NEED TO ADD CONFIRMATION WHEN DISCONNECTING!
- */
 class _CustomSwitchButtonState extends State<CustomSwitchButton> {
-  Future<bool> confirmDisconnection() async {
+  void dialogueActionDisconnect() async {
+    var sub = BluetoothController().bluetoothConnectState();
+    await widget.device.disconnect();
+    await sub.cancel();
+    if (widget.device.isDisconnected) {
+      connectedDevices.remove(widget.device);
+      Navigator.pushNamedAndRemoveUntil(
+          context, root, (Route<dynamic> route) => false);
+    } else {
+      setState(() {
+        isConnected = false;
+      });
+    }
+  }
+
+  Future<bool> confirmDisconnectionDialogue() async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(widget.device.platformName),
         contentPadding: EdgeInsets.all(10),
-        content: Text("Are you Sure you want to Disconnect?"),
+        content: Text(widget.dialogueText),
         actions: [
           MaterialButton(
             color: Colors.lightBlue,
@@ -45,19 +56,8 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
           ),
           MaterialButton(
             color: Colors.lightBlue,
-            onPressed: () async {
-              var sub = BluetoothController().bluetoothConnectState();
-              await widget.device.disconnect();
-              await sub.cancel();
-              if (widget.device.isDisconnected) {
-                connectedDevices.remove(widget.device);
-                Navigator.pushNamedAndRemoveUntil(
-                    context, root, (Route<dynamic> route) => false);
-              } else {
-                setState(() {
-                  isConnected = false;
-                });
-              }
+            onPressed: () {
+              dialogueActionDisconnect();
             },
             child: Text(
               "Yes",
@@ -80,7 +80,7 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
           //starts as false, then become true
           isConnected = !isConnected;
         });
-        confirmDisconnection();
+        confirmDisconnectionDialogue();
       },
       child: Center(
         child: Container(
@@ -101,16 +101,21 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
                     alignment: Alignment.centerLeft,
                     children: [
                       ChevLeft(
-                          color: Color.fromARGB(255, 255, 255, 255), left: 0),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          left: 0,
+                          size: widget.size),
                       ChevLeft(
                           color: Color.fromARGB(210, 216, 237, 255),
-                          left: isConnected ? 0 : 20),
+                          left: isConnected ? 0 : 20,
+                          size: widget.size),
                       ChevLeft(
                           color: Color.fromARGB(180, 187, 222, 251),
-                          left: isConnected ? 0 : 40),
+                          left: isConnected ? 0 : 40,
+                          size: widget.size),
                       ChevLeft(
                           color: Color.fromARGB(140, 167, 215, 255),
-                          left: isConnected ? 0 : 60),
+                          left: isConnected ? 0 : 60,
+                          size: widget.size),
                       AnimatedPositioned(
                           left: isConnected ? 120 : 105.5,
                           duration: Duration(milliseconds: 350),
@@ -155,9 +160,11 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
 }
 
 class ChevLeft extends StatefulWidget {
-  const ChevLeft({super.key, required this.color, required this.left});
+  const ChevLeft(
+      {super.key, required this.color, required this.left, required this.size});
   final Color color;
   final double left;
+  final double size;
   @override
   State<ChevLeft> createState() => _ChevLeftState();
 }
@@ -170,7 +177,35 @@ class _ChevLeftState extends State<ChevLeft> {
       duration: Duration(milliseconds: 300),
       child: Icon(
         Icons.chevron_left_rounded,
-        size: 55,
+        size: widget.size,
+        color: widget.color,
+      ),
+    );
+  }
+}
+
+class ChevRight extends StatefulWidget {
+  const ChevRight(
+      {super.key,
+      required this.color,
+      required this.size,
+      required this.right});
+  final Color color;
+  final double right;
+  final double size;
+  @override
+  State<ChevRight> createState() => _ChevRightState();
+}
+
+class _ChevRightState extends State<ChevRight> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedPositioned(
+      right: widget.right,
+      duration: Duration(milliseconds: 300),
+      child: Icon(
+        Icons.chevron_right,
+        size: widget.size,
         color: widget.color,
       ),
     );

@@ -45,7 +45,9 @@ class Home_StatePage extends State<Home_Page> {
                           : DeviceOverview(
                               device: connectedDevices[index],
                               platformName:
-                                  connectedDevices[index].platformName);
+                                  connectedDevices[index].platformName,
+                              size: 20,
+                            );
                     },
                   ),
                 )),
