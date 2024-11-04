@@ -7,7 +7,7 @@ class DeviceBottomSheet extends StatefulWidget {
   const DeviceBottomSheet({
     super.key,
   });
-
+  //No parameters for taking in bluetooth device, so we use globaldevice
   @override
   State<DeviceBottomSheet> createState() => _DeviceBottomSheetState();
 }
