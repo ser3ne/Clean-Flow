@@ -18,7 +18,6 @@ class _CustomSwitchbuttonSmallState extends State<CustomSwitchbuttonSmall> {
   bool isConnected = false;
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
     return GestureDetector(
       onTap: () async {
         setState(() {
