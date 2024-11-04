@@ -6,8 +6,116 @@ import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-class CustomSwitchButton extends StatefulWidget {
-  const CustomSwitchButton(
+class CustomSwitchbuttonSmall extends StatefulWidget {
+  const CustomSwitchbuttonSmall({super.key});
+
+  @override
+  State<CustomSwitchbuttonSmall> createState() =>
+      _CustomSwitchbuttonSmallState();
+}
+
+class _CustomSwitchbuttonSmallState extends State<CustomSwitchbuttonSmall> {
+  bool isConnected = false;
+  @override
+  Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
+    return GestureDetector(
+      onTap: () async {
+        setState(() {
+          //starts as active, then press to de-activate
+          //starts as false, then become true
+          isConnected = !isConnected;
+          // _savedDevices(context);
+        });
+        print(isConnected ? "Device is NOT Saved" : "Device is Saved");
+      },
+      child: Center(
+        child: Container(
+          // decoration: BoxDecoration(border: Border.all(width: 1)),
+          height: 50,
+          width: MediaQuery.of(context).size.width * .4,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AnimatedContainer(
+                color: Colors.black,
+                height: MediaQuery.of(context).size.height * .08,
+                width: MediaQuery.of(context).size.width * .5,
+                duration: Duration(milliseconds: 350),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: isConnected ? Colors.blueGrey : Colors.blue,
+                      borderRadius: BorderRadius.circular(25)),
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      ChevLeft(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          left: isConnected ? 1 : 10,
+                          size: 20),
+                      ChevLeft(
+                          color: Color.fromARGB(210, 216, 237, 255),
+                          left: isConnected ? 1 : 20,
+                          size: 20),
+                      ChevLeft(
+                          color: Color.fromARGB(180, 187, 222, 251),
+                          left: isConnected ? 1 : 30,
+                          size: 20),
+                      ChevRight(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          size: 20,
+                          right: isConnected ? 6 : 1),
+                      ChevRight(
+                          color: Color.fromARGB(255, 236, 239, 241),
+                          size: 20,
+                          right: isConnected ? 16 : 1),
+                      ChevRight(
+                          color: Color.fromARGB(255, 176, 190, 197),
+                          size: 20,
+                          right: isConnected ? 26 : 1),
+                      AnimatedPositioned(
+                          left: isConnected ? 50 : 65,
+                          duration: Duration(milliseconds: 350),
+                          child: Text(
+                            isConnected ? "Save Device?" : "Saved",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 10,
+                                color: Colors.white),
+                          ))
+                    ],
+                  ),
+                ),
+              ),
+              AnimatedPositioned(
+                left: isConnected
+                    ? (MediaQuery.of(context).size.width * .02)
+                    : (MediaQuery.of(context).size.width * .30),
+                duration: Duration(milliseconds: 300),
+                child: Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: isConnected
+                          ? Color.fromARGB(255, 219, 219, 219)
+                          : Colors.white),
+                  child: Icon(
+                    isConnected ? Icons.bluetooth_disabled : Icons.bluetooth,
+                    color: isConnected ? Colors.blueGrey : Colors.blue,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomSwitchButtonBig extends StatefulWidget {
+  const CustomSwitchButtonBig(
       {super.key,
       required this.device,
       required this.dialogueText,
@@ -17,10 +125,10 @@ class CustomSwitchButton extends StatefulWidget {
   final double size;
 
   @override
-  State<CustomSwitchButton> createState() => _CustomSwitchButtonState();
+  State<CustomSwitchButtonBig> createState() => _CustomSwitchButtonBigState();
 }
 
-class _CustomSwitchButtonState extends State<CustomSwitchButton> {
+class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
   void dialogueActionDisconnect() async {
     var sub = BluetoothController().bluetoothConnectState();
     await widget.device.disconnect();
@@ -67,7 +175,7 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
         ],
       ),
     );
-    return false;
+    return isConnected;
   }
 
   bool isConnected = globalBoolean;
@@ -90,9 +198,10 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
             alignment: Alignment.center,
             children: [
               AnimatedContainer(
+                curve: Easing.emphasizedDecelerate,
                 height: MediaQuery.of(context).size.height * .08,
                 width: MediaQuery.of(context).size.width * .9,
-                duration: Duration(milliseconds: 350),
+                duration: Duration(milliseconds: 800),
                 child: Container(
                   decoration: BoxDecoration(
                       color: isConnected ? Colors.blueGrey : Colors.blue,
@@ -131,10 +240,11 @@ class _CustomSwitchButtonState extends State<CustomSwitchButton> {
                 ),
               ),
               AnimatedPositioned(
+                curve: Curves.easeInOut,
                 left: isConnected
                     ? (MediaQuery.of(context).size.width * .07)
                     : (MediaQuery.of(context).size.width * .78),
-                duration: Duration(milliseconds: 300),
+                duration: Duration(milliseconds: 400),
                 child: Container(
                   height: 50,
                   width: 50,

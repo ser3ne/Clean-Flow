@@ -17,21 +17,24 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
   String platformName = globalDevice!.platformName;
   bool canINowGoToAnotherPagePlease = false;
 
-  Future<void> yes() async {
+  Future<bool> yes() async {
     await globalDevice!.connect();
     if (globalDevice!.isConnected) {
       print("Latest Connection State: ${globalDevice!.isConnected.toString()}");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
           content: Text(
-              "Successfully Connected to: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}")));
+              "Successfully Connected to: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}"),
+        ),
+      );
       setState(() {
         connectedDevices.add(globalDevice!);
-      });
-      Navigator.pop(context);
-      setState(() {
         canINowGoToAnotherPagePlease = true;
       });
+    } else {
+      yes();
     }
+    return canINowGoToAnotherPagePlease;
   }
 
   @override
@@ -76,7 +79,8 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
                                       setState(() {
                                         isSwitch = false;
                                       });
-                                      Navigator.pop(context);
+                                      Navigator.pop(
+                                          context); //closes the pop-up
                                     },
                                     child: Text("No")),
                                 SizedBox(
@@ -85,7 +89,16 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
                                 MaterialButton(
                                     color: Colors.lightBlue,
                                     onPressed: () async {
-                                      await yes();
+                                      bool redirect = await yes();
+                                      //if true, pops all pre-ceding pages, then reoutes to new page, essentially refreshing the pages
+                                      if (redirect) {
+                                        Navigator.pushNamedAndRemoveUntil(
+                                            context,
+                                            deviceprofile,
+                                            (Route<dynamic> route) => false,
+                                            arguments: PairArguments(
+                                                globalDevice!, 15));
+                                      }
                                     },
                                     child: Text(
                                       "Yes",

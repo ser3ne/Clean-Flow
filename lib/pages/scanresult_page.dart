@@ -99,7 +99,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
             //Drape
             Container(
               //take 80% of device's height resolution
-              height: (MediaQuery.of(context).size.height * 0.8),
+              height: (MediaQuery.of(context).size.height * 0.67),
               //take the device's max width resolution
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
@@ -111,10 +111,10 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                   )),
               child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     SizedBox(
-                      height: 600, //425
+                      height: 475, //425
                       width: 300,
                       //put Stream here xd
                       child: StreamBuilder<List<ScanResult>>(
@@ -224,7 +224,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                                             "Extra Info: ${device.advName.isEmpty ? "--:--" : device.advName}",
                                                             overflow:
                                                                 TextOverflow
-                                                                    .ellipsis)
+                                                                    .ellipsis),
                                                       ],
                                                     ),
                                                   ))

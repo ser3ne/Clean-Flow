@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
@@ -10,40 +12,103 @@ class DeviceProfile extends StatefulWidget {
 }
 
 class _DeviceProfileState extends State<DeviceProfile> {
+  bool isConnected = false;
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as ConnectedArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, deviceprofile);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, root, (Route<dynamic> route) => false);
             },
             icon: const Icon(Icons.chevron_left_rounded)),
         title: Text(args.device.platformName),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Expanded(
-              flex: 5,
-              child: Container(
-                decoration: BoxDecoration(border: Border.all(width: 5)),
+      body: Container(
+        color: const Color.fromARGB(255, 219, 219, 219),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * .55,
+                width: MediaQuery.of(context).size.width * .9,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Center(child: Text("Image.jpeg")),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: BoxDecoration(border: Border.all(width: 5)),
-                child: CustomSwitchButton(
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5, bottom: 5),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * .15,
+                      width: MediaQuery.of(context).size.width * .42,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.all(17),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isConnected ? "Saved" : "Tap to Save Device",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 15),
+                            ),
+                            Switch(
+                              inactiveTrackColor: Colors.white,
+                              activeTrackColor: Colors.blueAccent,
+                              inactiveThumbColor: Colors.black,
+                              value: isConnected,
+                              onChanged: (value) {
+                                setState(() {
+                                  isConnected = value;
+                                });
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5, bottom: 5),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * .15,
+                      width: MediaQuery.of(context).size.width * .43,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white),
+                      child: Center(child: Text("Sample Data/Volts")),
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * .1, //10%
+                width: MediaQuery.of(context).size.width,
+                child: CustomSwitchButtonBig(
                   device: args.device,
-                  dialogueText: "Are you Sure you want to Disconnect?",
+                  dialogueText:
+                      isConnected ? "Are You Sure?" : "Disconnect Device",
                   size: 55,
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
