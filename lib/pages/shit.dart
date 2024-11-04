@@ -15,7 +15,7 @@ class _TempState extends State<Temp> {
       appBar: AppBar(
         title: Text("Lorem Ipsum"),
       ),
-      body: CustomAlert(device: "Lorem Ipsum"),
+      body: Center(child: CustomAlert(device: "Lorem Ipsum")),
     );
   }
 }
