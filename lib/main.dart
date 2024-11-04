@@ -2,7 +2,6 @@
 
 import 'package:capstone/global/routes.dart';
 import 'package:capstone/pages/device_profile.dart';
-import 'package:capstone/pages/main_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:capstone/pages/shit.dart';
 import 'package:flutter/material.dart';
