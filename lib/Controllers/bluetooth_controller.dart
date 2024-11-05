@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:capstone/global/args.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BluetoothController {
@@ -55,5 +56,46 @@ class BluetoothController {
     });
 
     return subscription;
+  }
+}
+
+class OnBluetoothValueReceived extends StatefulWidget {
+  const OnBluetoothValueReceived({super.key, required this.characteristic});
+  final BluetoothCharacteristic characteristic;
+
+  @override
+  State<OnBluetoothValueReceived> createState() =>
+      _OnBluetoothValueReceivedState();
+}
+
+class _OnBluetoothValueReceivedState extends State<OnBluetoothValueReceived> {
+  String? notifiedData;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _initializeBLEDataListener();
+    super.initState();
+  }
+
+  void _initializeBLEDataListener() async {
+    // Enable notifications for the characteristic
+    await widget.characteristic.setNotifyValue(true);
+
+    // Listen for incoming data
+    widget.characteristic.onValueReceived.listen((value) {
+      if (value.isNotEmpty) {
+        // Update the data received, here assuming it's an integer for example
+        int receivedInt = value[0];
+        setState(() {
+          notifiedData = "Received integer: $receivedInt";
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(notifiedData.toString());
   }
 }

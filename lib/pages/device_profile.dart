@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:capstone/Controllers/services.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
@@ -7,12 +8,15 @@ import 'package:flutter/material.dart';
 
 class DeviceProfile extends StatefulWidget {
   const DeviceProfile({super.key});
+
   @override
   State<DeviceProfile> createState() => _DeviceProfileState();
 }
 
 class _DeviceProfileState extends State<DeviceProfile> {
   bool isConnected = false;
+  String text = "", displayedData = "";
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
@@ -92,7 +96,12 @@ class _DeviceProfileState extends State<DeviceProfile> {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white),
-                      child: Center(child: Text("Sample Data/Volts")),
+                      child: Center(
+                        //this is where the data goes
+                        child: BLEDataDisplay(
+                          device: args.device,
+                        ),
+                      ),
                     ),
                   )
                 ],

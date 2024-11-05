@@ -131,7 +131,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                           } else if (snapshot.hasData &&
                               snapshot.data != null) {
                             List<ScanResult> results = snapshot.data ?? [];
-                            // List<BluetoothDevice> filtered = [];
+                            List<BluetoothDevice> filtered = [];
                             print('Snapshot Data: ${snapshot.data}\n');
 
                             if (results.isEmpty) {
@@ -144,29 +144,29 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                                 ),
                               );
                             }
-                            // for (ScanResult device in results) {
-                            //   if (device.device.platformName == "Clean-Flow") {
-                            //     filtered.add(device.device);
-                            //   }
-                            // }
+                            for (ScanResult device in results) {
+                              if (device.device.platformName == "Clean-Flow") {
+                                filtered.add(device.device);
+                              }
+                            }
 
-                            // if (filtered.isEmpty) {
-                            //   return Center(
-                            //     child: Text(
-                            //       "No Devices Found.\n",
-                            //       style: TextStyle(
-                            //         fontSize: 30,
-                            //         fontWeight: FontWeight.w900,
-                            //       ),
-                            //     ),
-                            //   );
-                            // }
+                            if (filtered.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  "No Devices Found.\n",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              );
+                            }
 
                             //Devices
                             return ListView.builder(
-                              itemCount: results.length,
+                              itemCount: filtered.length,
                               itemBuilder: (context, index) {
-                                final device = results[index].device;
+                                final device = filtered[index];
                                 return Center(
                                   child: Padding(
                                     padding:

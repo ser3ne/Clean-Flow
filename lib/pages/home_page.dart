@@ -50,11 +50,12 @@ class Home_StatePage extends State<Home_Page> {
                 ),
               ),
             ),
+            //Dapat Dito sa sizedbox lalabas ung connected Device hindi sa Container
             SizedBox(
               child: connectedDevices.isEmpty
                   ?
                   //true
-                  Center(child: Text("BLA BLA"))
+                  Center(child: Text("Put Connected Device Here"))
                   //false
                   : Text("COnnected blabla"),
             ),
