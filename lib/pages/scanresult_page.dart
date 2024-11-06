@@ -71,9 +71,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
     var aState = await FlutterBluePlus.adapterState.first;
     var isOn = (aState == BluetoothAdapterState.on);
     await Permission.bluetooth.request();
-
     askBluetoothPermission(isOn);
-
     return isOn;
   }
 
@@ -102,13 +100,6 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
     return Scaffold(
         body: Container(
       color: color_1,
-      // decoration: BoxDecoration(
-      //   gradient: LinearGradient(
-      //     colors: [color_1, color_2, color_3, color_4],
-      //     begin: Alignment.topCenter,
-      //     end: Alignment.bottomCenter,
-      //   ),
-      // ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -318,7 +309,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                     : () async {
                         bool isOn = await checkAdapterState();
                         if (isOn) {
-                          askBluetoothPermission(isOn);
+                          await askBluetoothPermission(isOn);
                         }
                       },
                 child: Row(

@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
-import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
@@ -9,17 +8,22 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceOverview extends StatefulWidget {
-  final BluetoothDevice device;
   final String platformName;
+  final BluetoothDevice device;
+  final void Function(int) function;
+  final int index;
   const DeviceOverview(
-      {super.key, required this.device, required this.platformName});
+      {super.key,
+      required this.device,
+      required this.platformName,
+      required this.function,
+      required this.index});
 
   @override
   State<DeviceOverview> createState() => _DeviceOverviewState();
 }
 
 class _DeviceOverviewState extends State<DeviceOverview> {
-  bool isConnected = true;
   Future<void> _savedDevices(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -48,11 +52,19 @@ class _DeviceOverviewState extends State<DeviceOverview> {
     return Container(
       margin: EdgeInsets.all(30),
       width: MediaQuery.of(context).size.width * 0.50,
-      height: MediaQuery.of(context).size.height * 0.15,
+      height: MediaQuery.of(context).size.height * 0.1,
       child: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, deviceprofile,
-              arguments: PairArguments(widget.device, 15));
+          setState(() {
+            globalDevice = bookmarked[widget.index];
+          });
+          if (connectedDevices.contains(globalDevice) &&
+              globalDevice!.isConnected) {
+            Navigator.pushNamed(context, deviceprofile,
+                arguments: PairArguments(globalDevice!, 15));
+          } else {
+            widget.function(widget.index);
+          }
         },
         child: Padding(
           padding: const EdgeInsets.all(15),
@@ -60,10 +72,10 @@ class _DeviceOverviewState extends State<DeviceOverview> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(
-                height: 20,
+                height: 17,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.50,
@@ -73,10 +85,13 @@ class _DeviceOverviewState extends State<DeviceOverview> {
                           : widget.platformName,
                       softWrap: true,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                   ),
-                  ChevRight(color: Colors.black, size: 50, right: 0)
+                  Icon(
+                    Icons.bluetooth_disabled_rounded,
+                    size: 20,
+                  )
                 ],
               ),
             ],

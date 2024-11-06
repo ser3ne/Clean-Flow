@@ -17,13 +17,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: root,
       routes: {
         root: (context) => MainPage(),
         deviceprofile: (context) => DeviceProfile(),
         scanresult: (context) => Scanresult_Page(),
       },
-      title: 'Flutter Demo',
+      title: 'Clean-Flow',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

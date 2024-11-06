@@ -22,12 +22,15 @@ class _DeviceProfileState extends State<DeviceProfile> {
   Color color_6 = Color.fromRGBO(18, 15, 69, 1);
   Color color_7 = Color.fromRGBO(0, 0, 0, 1);
 
-  bool isConnected = false;
+  bool isConnected = bookmarked.contains(globalDevice);
   String text = "", displayedData = "";
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
+    setState(() {
+      globalDevice = args.device;
+    });
     return Scaffold(
       appBar: AppBar(
         backgroundColor: color_7,
@@ -101,6 +104,8 @@ class _DeviceProfileState extends State<DeviceProfile> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 15),
                             ),
+                            //Make the shared preferences here
+                            //currently it does nothing
                             Switch(
                               inactiveTrackColor: Colors.white,
                               activeTrackColor: Colors.blueAccent,
@@ -110,6 +115,11 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                 setState(() {
                                   isConnected = value;
                                 });
+                                if (!bookmarked.contains(globalDevice)) {
+                                  bookmarked.add(globalDevice!);
+                                } else {
+                                  bookmarked.remove(globalDevice);
+                                }
                               },
                             )
                           ],

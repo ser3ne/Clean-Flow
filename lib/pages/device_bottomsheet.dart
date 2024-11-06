@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, avoid_print
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
+import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
@@ -19,21 +20,33 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
   bool canINowGoToAnotherPagePlease = false;
 
   Future<bool> yes() async {
-    await globalDevice!.connect();
-    if (globalDevice!.isConnected) {
-      print("Latest Connection State: ${globalDevice!.isConnected.toString()}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              "Successfully Connected to: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}"),
-        ),
-      );
-      setState(() {
-        connectedDevices.add(globalDevice!);
-        canINowGoToAnotherPagePlease = true;
-      });
+    int? x;
+    print("iteration: $x");
+    var sub = BluetoothController().bluetoothConnectState();
+    //disconnect and remove all currently connected devices from connected devices List
+    if (connectedDevices.contains(globalDevice)) {
+      await globalDevice!.disconnect();
+      connectedDevices.clear();
+      await sub.cancel();
     } else {
-      yes();
+      await globalDevice!.connect();
+      if (globalDevice!.isConnected) {
+        print(
+            "Latest Connection State: ${globalDevice!.isConnected.toString()}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                "Successfully Connected to: ${globalDevice!.platformName.isEmpty ? "Unknown Device" : globalDevice!.platformName}"),
+          ),
+        );
+        setState(() {
+          connectedDevices.add(globalDevice!); //take device
+          canINowGoToAnotherPagePlease = true;
+        });
+      } else {
+        x = x! + 1;
+        yes();
+      }
     }
     return canINowGoToAnotherPagePlease;
   }
@@ -77,6 +90,7 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
                                   Text(globalDevice!.platformName.toString()),
                               content: Text("Connect to this device?"),
                               actions: [
+                                //No
                                 MaterialButton(
                                     color: Colors.lightBlue,
                                     onPressed: () {
@@ -90,6 +104,7 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
                                 SizedBox(
                                   width: 60,
                                 ),
+                                //Yes
                                 MaterialButton(
                                     color: Colors.lightBlue,
                                     onPressed: () async {
