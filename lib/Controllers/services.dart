@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -46,7 +48,15 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError || snapshot.data == null) {
-          return Center(child: Text("Characteristic stream not found"));
+          return Center(
+              child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Text(
+              "No Data Transmitted",
+              softWrap: true,
+              textAlign: TextAlign.center,
+            ),
+          ));
         }
 
         // Use StreamBuilder to listen to the characteristic's data stream
@@ -66,7 +76,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             int receivedValue = int.tryParse(receivedString) ?? 0;
 
             // Check if the value exceeds 50 and display an alert if so
-            if (receivedValue > 20 && !isAnAlertActive) {
+            if (receivedValue > 300 && !isAnAlertActive) {
               isAnAlertActive = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 showDialog(
@@ -74,8 +84,11 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: Text("Alert"),
-                      content:
-                          Text("Received value exceeded 50: $receivedValue"),
+                      content: Text(
+                        "Received value exceeded 50: $receivedValue",
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () {

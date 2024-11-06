@@ -2,6 +2,7 @@
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class DeviceBottomSheet extends StatefulWidget {
   const DeviceBottomSheet({
@@ -41,25 +42,28 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
   Widget build(BuildContext context) {
     // String remoteId = device!.remoteId.toString();
     return Container(
+        margin: EdgeInsets.all(20),
         height: 250,
         color: Colors.white,
         child: Center(
           child: Column(
             children: [
               Text(
-                globalDevice!.platformName,
+                //Device Name
+                globalDevice!.advName.isEmpty
+                    ? globalDevice!.platformName
+                    : globalDevice!.advName,
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
+                softWrap: true, textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text("Connect to this device?"),
                   Switch(
-                      activeColor: Colors.green,
-                      activeTrackColor: Color.fromARGB(255, 27, 61, 28),
+                      activeColor: Colors.white,
+                      activeTrackColor: Colors.blueAccent,
                       value: isSwitch,
                       onChanged: (bool value) async {
                         setState(() {
@@ -116,7 +120,25 @@ class _DeviceBottomSheetState extends State<DeviceBottomSheet> {
                             });
                           }
                         }
-                      })
+                      }),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MaterialButton(
+                          color: Colors.blue,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("Dismiss"),
+                        )
+                      ],
+                    ),
+                  )
                 ],
               )
             ],

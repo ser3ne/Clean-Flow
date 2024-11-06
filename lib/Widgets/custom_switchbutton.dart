@@ -1,4 +1,4 @@
-// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors
+// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
@@ -203,6 +203,13 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
                 duration: Duration(milliseconds: 800),
                 child: Container(
                   decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 7,
+                            color: Color.fromARGB(20, 0, 0, 0),
+                            spreadRadius: 3,
+                            offset: Offset(0, 5)),
+                      ],
                       color: isConnected ? Colors.blueGrey : Colors.blue,
                       borderRadius: BorderRadius.circular(25)),
                   child: Stack(
@@ -313,7 +320,7 @@ class _ChevRightState extends State<ChevRight> {
       right: widget.right,
       duration: Duration(milliseconds: 300),
       child: Icon(
-        Icons.chevron_right,
+        Icons.chevron_right_rounded,
         size: widget.size,
         color: widget.color,
       ),

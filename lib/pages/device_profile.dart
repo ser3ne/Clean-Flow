@@ -14,6 +14,14 @@ class DeviceProfile extends StatefulWidget {
 }
 
 class _DeviceProfileState extends State<DeviceProfile> {
+  Color color_1 = Color.fromRGBO(255, 255, 255, 1);
+  Color color_2 = Color.fromRGBO(194, 193, 216, 1);
+  Color color_3 = Color.fromRGBO(140, 138, 184, 1);
+  Color color_4 = Color.fromRGBO(83, 80, 139, 1);
+  Color color_5 = Color.fromRGBO(54, 50, 124, 1);
+  Color color_6 = Color.fromRGBO(18, 15, 69, 1);
+  Color color_7 = Color.fromRGBO(0, 0, 0, 1);
+
   bool isConnected = false;
   String text = "", displayedData = "";
 
@@ -22,31 +30,45 @@ class _DeviceProfileState extends State<DeviceProfile> {
     final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: color_7,
         leading: IconButton(
             onPressed: () {
               Navigator.pushNamedAndRemoveUntil(
                   context, root, (Route<dynamic> route) => false);
             },
-            icon: const Icon(Icons.chevron_left_rounded)),
-        title: Text(args.device.platformName),
+            icon: const Icon(
+              Icons.chevron_left_rounded,
+              color: Colors.white,
+            )),
+        title: Text(
+          args.device.platformName,
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Container(
-        color: const Color.fromARGB(255, 219, 219, 219),
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          colors: [
+            color_1,
+            color_1,
+            color_1,
+            color_2,
+            color_3,
+            color_4,
+            color_5,
+            color_6,
+            color_7
+          ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        )),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                height: MediaQuery.of(context).size.height * .55,
-                width: MediaQuery.of(context).size.width * .9,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Center(child: Text("Image.jpeg")),
-              ),
               SizedBox(
                 height: 5,
               ),
@@ -59,6 +81,13 @@ class _DeviceProfileState extends State<DeviceProfile> {
                       height: MediaQuery.of(context).size.height * .15,
                       width: MediaQuery.of(context).size.width * .42,
                       decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 7,
+                                color: Color.fromARGB(20, 0, 0, 0),
+                                spreadRadius: 3,
+                                offset: Offset(0, 5)),
+                          ],
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white),
                       child: Padding(
@@ -94,6 +123,13 @@ class _DeviceProfileState extends State<DeviceProfile> {
                       height: MediaQuery.of(context).size.height * .15,
                       width: MediaQuery.of(context).size.width * .43,
                       decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 7,
+                                color: Color.fromARGB(20, 0, 0, 0),
+                                spreadRadius: 3,
+                                offset: Offset(0, 5)),
+                          ],
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white),
                       child: Center(
