@@ -138,7 +138,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         SizedBox(
-                          height: 475, //425
+                          height: 468, //425
                           width: 300,
                           //put Stream here xd
                           child: StreamBuilder<List<ScanResult>>(
