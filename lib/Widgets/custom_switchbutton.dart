@@ -128,8 +128,8 @@ class CustomSwitchButtonBig extends StatefulWidget {
 }
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
-  void dialogueActionDisconnect() async {
-    var sub = BluetoothController().bluetoothConnectState();
+  void dialogueActionDisconnect(BluetoothDevice device) async {
+    var sub = BluetoothController().bluetoothConnectState(device);
     await widget.device.disconnect();
     await sub.cancel();
     if (widget.device.isDisconnected) {
@@ -148,7 +148,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
     }
   }
 
-  Future<bool> confirmDisconnectionDialogue() async {
+  Future<bool> confirmDisconnectionDialogue(BluetoothDevice device) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -169,7 +169,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           MaterialButton(
             color: Colors.lightBlue,
             onPressed: () {
-              dialogueActionDisconnect();
+              dialogueActionDisconnect(device);
             },
             child: Text(
               "Yes",
@@ -192,7 +192,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           //starts as false, then become true
           isConnected = !isConnected;
         });
-        confirmDisconnectionDialogue();
+        confirmDisconnectionDialogue(widget.device);
       },
       child: Center(
         child: Container(

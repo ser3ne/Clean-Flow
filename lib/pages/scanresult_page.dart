@@ -1,11 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types, unnecessary_null_comparison
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
-import 'package:capstone/pages/device_bottomsheet.dart';
-import 'package:capstone/global/args.dart';
+import 'package:capstone/Controllers/bluetooth_scan.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class Scanresult_Page extends StatefulWidget {
   const Scanresult_Page({super.key});
@@ -27,59 +24,25 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
   bool isSwitch = false;
   String mainButtonText = "";
 
-  void scan() async {
+  bool canINowGoToAnotherPagePlease = false;
+
+  void buttonControls(bool isOn) async {
     isSearching(); //disable button
-    await BluetoothController().scanDevices(); //Start Scanning for devices
+    await BluetoothController()
+        .askBluetoothPermission(isOn); //Start Scanning for devices
     isSearching(); //re-enable button
   }
 
-  Future<bool> askBluetoothPermission(bool state) async {
-    bool isOn = state;
-    //if bluetooth is off
-    if (!isOn) {
-      setState(() {
-        mainButtonText = "Open Bluetooth";
-      });
-      //prompt user to turn on bluetooth
-      await FlutterBluePlus.turnOn();
-
-      //if bluetooth is on
-      if (isOn) {
-        setState(() {
-          mainButtonText = "Scan for Devices";
-        });
-        scan();
-      }
-      // if bluetooth is off
-      else if (!isOn) {
-        setState(() {
-          mainButtonText = "Open Bluetooth";
-        });
-      }
-    }
-    //if bluetooth is on
-    else {
-      setState(() {
-        mainButtonText = "Connect New Device";
-      });
-      scan();
-    }
-    return isOn;
-  }
-
-  Future<bool> checkAdapterState() async {
-    var aState = await FlutterBluePlus.adapterState.first;
-    var isOn = (aState == BluetoothAdapterState.on);
-    await Permission.bluetooth.request();
-    askBluetoothPermission(isOn);
-    return isOn;
-  }
-
-  void init2() {
-    bool isOn = true;
-    if (isOn == checkAdapterState()) {
-      askBluetoothPermission(isOn);
-    }
+  void init2() async {
+    bool isOn = await BluetoothController().checkAdapterState();
+    setState(() {
+      isOn
+          ? mainButtonText = "Scan for device"
+          : mainButtonText = "Open Bluetooth";
+    });
+    //if bluetooth is ON, does a Scan
+    //else it asks to turn it on
+    buttonControls(isOn);
   }
 
   @override
@@ -140,139 +103,9 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                         SizedBox(
                           height: 468, //425
                           width: 300,
-                          //put Stream here xd
-                          child: StreamBuilder<List<ScanResult>>(
-                            stream: FlutterBluePlus.scanResults,
-                            initialData: [],
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                print(
-                                    "Snapshot State: ${snapshot.connectionState}\n");
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else if (snapshot.hasData &&
-                                  snapshot.data != null) {
-                                List<ScanResult> results = snapshot.data ?? [];
-                                // List<BluetoothDevice> filtered = [];
-                                print('Snapshot Data: ${snapshot.data}\n');
-
-                                // if (results.isEmpty) {
-                                //   print("Results: $results");
-                                //   return Center(
-                                //     child: CustomText(
-                                //       text: "No Devices Found.\n",
-                                //       size: 30,
-                                //       fontWeight: FontWeight.w900,
-                                //     ),
-                                //   );
-                                // }
-                                // for (ScanResult device in results) {
-                                //   if (device.device.platformName == "Clean-Flow") {
-                                //     filtered.add(device.device);
-                                //   }
-                                // }
-
-                                // if (filtered.isEmpty) {
-                                //   return Center(
-                                //     child: Text(
-                                //       "No Devices Found.\n",
-                                //       style: TextStyle(
-                                //         fontSize: 30,
-                                //         fontWeight: FontWeight.w900,
-                                //       ),
-                                //     ),
-                                //   );
-                                // }
-
-                                //Devices
-                                return ListView.builder(
-                                  itemCount: results.length,
-                                  itemBuilder: (context, index) {
-                                    final device = results[index].device;
-                                    return Center(
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.only(top: 5, bottom: 10),
-                                        child: SizedBox(
-                                            width: 300,
-                                            height: 100,
-                                            //Device Profile Button
-                                            child: FloatingActionButton(
-                                              heroTag: index,
-                                              onPressed: () async {
-                                                bool isOn =
-                                                    await checkAdapterState();
-                                                if (isOn) {
-                                                  setState(() {
-                                                    globalDevice = device;
-                                                  });
-
-                                                  await showModalBottomSheet(
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return DeviceBottomSheet();
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Expanded(
-                                                      flex: 1,
-                                                      child: Icon(Icons
-                                                          .bluetooth_searching)),
-                                                  Expanded(
-                                                      flex: 5,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(1),
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              "Device Name: ${device.advName.isEmpty ? device.platformName : device.advName}",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                            Text(
-                                                                "Device ID: ${device.remoteId}",
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
-                                                            Text(
-                                                                "AdvName: ${device.advName.isEmpty ? "None" : device.advName}",
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis),
-                                                          ],
-                                                        ),
-                                                      ))
-                                                ],
-                                              ),
-                                            )),
-                                      ),
-                                    );
-                                  },
-                                );
-                                //Devices end
-                              } else {
-                                return Center(
-                                    child: Text("Error Scanning Devices."));
-                              }
-                            },
+                          //Call Scan Results here
+                          child: BluetoothScan(
+                            mac: '00',
                           ),
                           //Stream end
                         ),
@@ -307,10 +140,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                 onPressed: isScanning
                     ? null
                     : () async {
-                        bool isOn = await checkAdapterState();
-                        if (isOn) {
-                          await askBluetoothPermission(isOn);
-                        }
+                        init2();
                       },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,13 +1,65 @@
 // ignore_for_file: avoid_print, prefer_const_constructors, collection_methods_unrelated_type
 
 import 'dart:async';
-import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class BluetoothController {
   //This tells the app to target all ESP32 with this service uuid
   Guid targetServiceUUID = Guid("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
+
+  // Checks if bluetooth is ON or OFF
+  //returns true if ON, else it's false
+  Future<bool> checkAdapterState() async {
+    // Check each permission and log the result
+    var bluetoothPermission = await Permission.bluetooth.status;
+    print('Bluetooth Permission Status: $bluetoothPermission');
+    if (!bluetoothPermission.isGranted) {
+      await Permission.bluetooth.request();
+    }
+
+    var scanPermission = await Permission.bluetoothScan.status;
+    print('Bluetooth Scan Permission Status: $scanPermission');
+    if (!scanPermission.isGranted) {
+      await Permission.bluetoothScan.request();
+    }
+
+    var connectPermission = await Permission.bluetoothConnect.status;
+    print('Bluetooth Connect Permission Status: $connectPermission');
+    if (!connectPermission.isGranted) {
+      await Permission.bluetoothConnect.request();
+    }
+
+    // Now check the Bluetooth adapter state
+    var aState = await FlutterBluePlus.adapterState.first;
+    print("aState: $aState");
+    var isOn = (aState == BluetoothAdapterState.on);
+    print("Controller isOn: $isOn");
+
+    //true = on (ask to Scan)
+    //false = off (ask to turn on)
+    return isOn;
+  }
+
+  Future<bool> askBluetoothPermission(bool isOn) async {
+    print("Permission: $isOn");
+    //if bluetooth is off
+    if (!isOn) {
+      //prompt user to turn on bluetooth
+      await FlutterBluePlus.turnOn();
+
+      //if bluetooth is on
+      if (isOn) {
+        await scanDevices();
+      }
+    }
+    //if bluetooth is on
+    else {
+      await scanDevices();
+    }
+    return isOn;
+  }
 
   Future<void> scanDevices() async {
     var subscription = FlutterBluePlus.scanResults.listen(
@@ -28,7 +80,7 @@ class BluetoothController {
       await FlutterBluePlus.startScan();
 
       //Wait for 5s before executing the following codes
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(seconds: 2));
 
       print("================================================================");
       print("\t\t\t\t\t\tSTOPPING SCAN");
@@ -44,13 +96,14 @@ class BluetoothController {
     }
   }
 
-  StreamSubscription<BluetoothConnectionState> bluetoothConnectState() {
-    var subscription = globalDevice!.connectionState
-        .listen((BluetoothConnectionState state) async {
+  StreamSubscription<BluetoothConnectionState> bluetoothConnectState(
+      BluetoothDevice device) {
+    var subscription =
+        device.connectionState.listen((BluetoothConnectionState state) async {
       if (state == BluetoothConnectionState.disconnected) {
         // await BluetoothController().scanDevices();
         print(
-            "Global Device is Disconnected: ${globalDevice!.disconnectReason?.code} ${globalDevice!.disconnectReason?.description}\n");
+            "Global Device is Disconnected: ${device.disconnectReason?.code} ${device.disconnectReason?.description}\n");
         // Navigator.pop(context);
       }
     });
@@ -59,6 +112,7 @@ class BluetoothController {
   }
 }
 
+//It's Vital, I don't know what this does, but it's important...
 class OnBluetoothValueReceived extends StatefulWidget {
   const OnBluetoothValueReceived({super.key, required this.characteristic});
   final BluetoothCharacteristic characteristic;

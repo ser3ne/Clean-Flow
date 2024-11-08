@@ -76,33 +76,33 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             int receivedValue = int.tryParse(receivedString) ?? 0;
 
             // Check if the value exceeds 50 and display an alert if so
-            if (receivedValue > 300 && !isAnAlertActive) {
-              isAnAlertActive = true;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("Alert"),
-                      content: Text(
-                        "Received value exceeded 50: $receivedValue",
-                        softWrap: true,
-                        textAlign: TextAlign.center,
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            isAnAlertActive = false;
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("OK"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              });
-            }
+            // if (receivedValue > 300 && !isAnAlertActive) {
+            //   isAnAlertActive = true;
+            //   WidgetsBinding.instance.addPostFrameCallback((_) {
+            //     showDialog(
+            //       context: context,
+            //       builder: (BuildContext context) {
+            //         return AlertDialog(
+            //           title: Text("Alert"),
+            //           content: Text(
+            //             "Received value exceeded 50: $receivedValue",
+            //             softWrap: true,
+            //             textAlign: TextAlign.center,
+            //           ),
+            //           actions: [
+            //             TextButton(
+            //               onPressed: () {
+            //                 isAnAlertActive = false;
+            //                 Navigator.of(context).pop();
+            //               },
+            //               child: Text("OK"),
+            //             ),
+            //           ],
+            //         );
+            //       },
+            //     );
+            //   });
+            // }
 
             // Display the received data in the widget
             return Center(

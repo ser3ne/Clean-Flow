@@ -1,10 +1,13 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
-import 'package:capstone/Controllers/services.dart';
+import 'dart:convert';
+
+import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceProfile extends StatefulWidget {
   const DeviceProfile({super.key});
@@ -14,6 +17,47 @@ class DeviceProfile extends StatefulWidget {
 }
 
 class _DeviceProfileState extends State<DeviceProfile> {
+  Future<void> _savedDevices(
+      BuildContext context, String macAdd, String pfName) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? jsonString = prefs.getString('savedDevices');
+    List<dynamic> savedDevices =
+        jsonString != null ? jsonDecode(jsonString) : [];
+
+    bool deviceExists = savedDevices.any(
+      (device) => device['mac'] == macAdd,
+    );
+
+    if (!deviceExists) {
+      savedDevices.add({'mac': macAdd, 'pfname': pfName});
+
+      await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+      const snackBar =
+          SnackBar(content: Text("Device added to saved devices."));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      const snackBar =
+          SnackBar(content: Text("Device is already in the saved list."));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  // Future<void> _removeDevice(BluetoothDevice globalDevice) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   String? jsonString = prefs.getString('savedDevices');
+  //   if (jsonString != null) {
+  //     savedDevices
+  //         .remove({'Device': globalDevice, 'Name': globalDevice.platformName});
+
+  //     await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+  //     const snackBar = SnackBar(content: Text("Device unsaved."));
+  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  //   }
+  // }
+
   Color color_1 = Color.fromRGBO(255, 255, 255, 1);
   Color color_2 = Color.fromRGBO(194, 193, 216, 1);
   Color color_3 = Color.fromRGBO(140, 138, 184, 1);
@@ -22,22 +66,23 @@ class _DeviceProfileState extends State<DeviceProfile> {
   Color color_6 = Color.fromRGBO(18, 15, 69, 1);
   Color color_7 = Color.fromRGBO(0, 0, 0, 1);
 
-  bool isConnected = bookmarked.contains(globalDevice);
+  bool? isConnected;
   String text = "", displayedData = "";
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
-    setState(() {
-      globalDevice = args.device;
-    });
     return Scaffold(
       appBar: AppBar(
         backgroundColor: color_7,
         leading: IconButton(
             onPressed: () {
               Navigator.pushNamedAndRemoveUntil(
-                  context, root, (Route<dynamic> route) => false);
+                  context, root, (Route<dynamic> route) => false,
+                  arguments: PairArguments(
+                      args.device,
+                      args.device.platformName,
+                      args.device.remoteId.toString()));
             },
             icon: const Icon(
               Icons.chevron_left_rounded,
@@ -100,7 +145,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isConnected ? "Saved" : "Tap to Save Device",
+                              isConnected! ? "Saved" : "Tap to Save Device",
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 15),
                             ),
@@ -110,15 +155,14 @@ class _DeviceProfileState extends State<DeviceProfile> {
                               inactiveTrackColor: Colors.white,
                               activeTrackColor: Colors.blueAccent,
                               inactiveThumbColor: Colors.black,
-                              value: isConnected,
+                              value: isConnected!,
                               onChanged: (value) {
                                 setState(() {
                                   isConnected = value;
                                 });
-                                if (!bookmarked.contains(globalDevice)) {
-                                  bookmarked.add(globalDevice!);
-                                } else {
-                                  bookmarked.remove(globalDevice);
+                                if (isConnected == true) {
+                                  _savedDevices(
+                                      context, args.macAddress, args.pfName);
                                 }
                               },
                             )
@@ -158,7 +202,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                 child: CustomSwitchButtonBig(
                   device: args.device,
                   dialogueText:
-                      isConnected ? "Are You Sure?" : "Disconnect Device",
+                      isConnected! ? "Are You Sure?" : "Disconnect Device",
                   size: 55,
                 ),
               )

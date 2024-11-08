@@ -1,12 +1,13 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
+import 'dart:convert';
+
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/Widgets/custom_text.dart';
 import 'package:capstone/global/routes.dart';
-import 'package:capstone/pages/device_overview.dart';
 import 'package:capstone/global/args.dart';
+import 'package:capstone/pages/device_overview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,24 @@ class Home_Page extends StatefulWidget {
 }
 
 class Home_StatePage extends State<Home_Page> {
+  List<dynamic> savedDevices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedDevices();
+  }
+
+  Future<void> _loadSavedDevices() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString('savedDevices');
+    if (jsonString != null) {
+      setState(() {
+        savedDevices = jsonDecode(jsonString);
+      });
+    }
+  }
+
   Color color_1 = Color.fromRGBO(255, 255, 255, 1);
   Color color_2 = Color.fromRGBO(194, 193, 216, 1);
   Color color_3 = Color.fromRGBO(140, 138, 184, 1);
@@ -31,7 +50,7 @@ class Home_StatePage extends State<Home_Page> {
 
   //Start of Bluetooth Stuff Dont mind
 
-  Future<bool> askBluetoothPermission(int index) async {
+  Future<bool> askBluetoothPermission(BluetoothDevice device) async {
     var isOn = await FlutterBluePlus.adapterState.first;
     var state = (isOn == BluetoothAdapterState.on);
     await Permission.bluetooth.request();
@@ -45,37 +64,25 @@ class Home_StatePage extends State<Home_Page> {
       //checks if its on this time
       if (state) {
         //recursion to loop through the function again
-        askBluetoothPermission(index);
+        askBluetoothPermission(device);
       }
     }
     //if bluetooth is on
     else {
-      await globalDevice!.connect();
-      if (globalDevice!.isConnected) {
-        connectedDevices.add(globalDevice!);
+      await device.connect();
+      if (device.isConnected) {
+        connectedDevices.add(device);
         Navigator.pushNamedAndRemoveUntil(
             context, deviceprofile, (Route<dynamic> route) => false,
-            arguments: PairArguments(globalDevice!, 15));
+            arguments: PairArguments(
+                device, device.platformName, device.remoteId.toString()));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-              "Successfully Connected to: ${bookmarked[index].platformName.isEmpty ? "Unknown Device" : bookmarked[index].platformName}"),
+              "Successfully Connected to: ${device.platformName.isEmpty ? "Unknown Device" : device.platformName}"),
         ));
       }
     }
     return state;
-  }
-
-  //End of Bluetooth stuff... You can now do whatever you want
-
-  Future<void> initPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    initPreferences();
-    super.initState();
   }
 
   @override
@@ -123,7 +130,9 @@ class Home_StatePage extends State<Home_Page> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.75,
               height: MediaQuery.of(context).size.height * .120,
+              //checks if there are not connected devices
               child: connectedDevices.isEmpty
+                  //true
                   ? Text("No Connected Devices",
                       softWrap: true,
                       textAlign: TextAlign.center,
@@ -131,14 +140,15 @@ class Home_StatePage extends State<Home_Page> {
                           fontSize: 25,
                           fontWeight: FontWeight.w600,
                           color: Colors.white))
+                  //false
                   : FloatingActionButton(
                       onPressed: () {
                         if (connectedDevices.isNotEmpty) {
-                          setState(() {
-                            globalDevice = connectedDevices[0];
-                          });
                           Navigator.pushNamed(context, deviceprofile,
-                              arguments: PairArguments(globalDevice!, 15));
+                              arguments: PairArguments(
+                                  connectedDevices[0],
+                                  connectedDevices[0].platformName,
+                                  connectedDevices[0].remoteId.toString()));
                         }
                       },
                       child: Row(
@@ -170,12 +180,15 @@ class Home_StatePage extends State<Home_Page> {
                 decoration: BoxDecoration(
                     color: Color.fromARGB(55, 255, 255, 255),
                     borderRadius: BorderRadius.circular(20)),
-                //ListView for Saved Devices (naging bookmarked kasi naming conflicts)
+                //ListView for Saved Devices
                 child: ListView.builder(
-                  itemCount: bookmarked.isEmpty ? 1 : bookmarked.length,
+                  itemCount: savedDevices.isEmpty ? 1 : savedDevices.length,
                   itemBuilder: (context, index) {
-                    return bookmarked.isEmpty
-                        //Sets "No Device" text if there aren't any
+                    //checks if savedDevices list is empty
+                    var devices =
+                        savedDevices.isEmpty ? 0 : savedDevices[index];
+                    return savedDevices.isEmpty
+                        //Sets "No Device" text if it is
                         ? Padding(
                             padding: const EdgeInsets.only(top: 235),
                             child: Center(
@@ -187,10 +200,8 @@ class Home_StatePage extends State<Home_Page> {
                         //Takes from Bookmarked if any
                         //This will build all devices "CURRENTLY" saved but not connected
                         : DeviceOverview(
-                            device: bookmarked[index],
-                            platformName: bookmarked[index].platformName,
-                            function: askBluetoothPermission,
-                            index: index,
+                            deviceMac: devices['mac'],
+                            platformName: devices['pfname'],
                           );
                   },
                 ))
