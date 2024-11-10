@@ -104,7 +104,8 @@ class _BluetoothScanState extends State<BluetoothScan> {
         print("==========START==========");
         print(
             'Snapshot Data: ${snapshot.hasData}, ${snapshot != null}\nWidget.mac: ${widget.mac}');
-        results = snapshot.data ?? [];
+
+        List<ScanResult> results = snapshot.data ?? [];
         //if Snapshot has no data or is waiting
         if (snapshot.connectionState == ConnectionState.waiting ||
             !snapshot.hasData) {
@@ -137,13 +138,14 @@ class _BluetoothScanState extends State<BluetoothScan> {
 
           //if we're normally scanning for devices this will execute
 
-          print("Scan Devices");
+          print("Saved Devices");
           //Devices
           List<ScanResult> results = snapshot.data ?? [];
           return ListView.builder(
             itemCount: results.length,
             itemBuilder: (context, index) {
               final device = results[index].device;
+              copyResult.add(device);
               return Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 5, bottom: 10),

@@ -1,8 +1,6 @@
 // ignore_for_file: avoid_print, prefer_const_constructors, collection_methods_unrelated_type
 
 import 'dart:async';
-import 'package:capstone/global/args.dart';
-import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -118,89 +116,89 @@ class BluetoothController {
 
 class BluetoothSavedDevicesHandler {
   // Function to display a dialog for device connection confirmation
-  Future<void> confirmConnectionDialog(
-      BuildContext context, String mac, String pfname) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(pfname),
-        content: Text("Connect to this device?"),
-        actions: [
-          //No Option
-          MaterialButton(
-            color: Colors.lightBlue,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("No"),
-          ),
-          SizedBox(width: 60),
-          //Yes Option
-          MaterialButton(
-            color: Colors.lightBlue,
-            onPressed: () async {
-              navigateToProfileIfConnected(context, mac);
-              Navigator.pop(context);
-            },
-            child: Text("Yes", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
+  // Future<void> confirmConnectionDialog(
+  //     BuildContext context, String mac, String pfname) async {
+  //   await showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: Text(pfname),
+  //       content: Text("Connect to this device?"),
+  //       actions: [
+  //         //No Option
+  //         MaterialButton(
+  //           color: Colors.lightBlue,
+  //           onPressed: () {
+  //             Navigator.pop(context);
+  //           },
+  //           child: Text("No"),
+  //         ),
+  //         SizedBox(width: 60),
+  //         //Yes Option
+  //         MaterialButton(
+  //           color: Colors.lightBlue,
+  //           onPressed: () async {
+  //             navigateToProfileIfConnected(context, mac);
+  //             Navigator.pop(context);
+  //           },
+  //           child: Text("Yes", style: TextStyle(color: Colors.white)),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  // Function to navigate to profile under certain conditions
-  void navigateToProfileIfConnected(BuildContext context, String mac) async {
-    //determine if the current device is connected
-    //through our mac address
-    bool isConnected = connectedDevices.any(
-      (device) => device.remoteId.toString() == mac,
-    );
+  // // Function to navigate to profile under certain conditions
+  // void navigateToProfileIfConnected(BuildContext context, String mac) async {
+  //   //determine if the current device is connected
+  //   //through our mac address
+  //   bool isConnected = connectedDevices.any(
+  //     (device) => device.remoteId.toString() == mac,
+  //   );
 
-    //if we're already connected, then we go to the profile
-    if (isConnected) {
-      print("Already Connected");
-      Navigator.of(context).pushNamed(
-        deviceprofile,
-        arguments: PairArguments(
-          connectedDevices[0],
-          connectedDevices[0].platformName,
-          connectedDevices[0].remoteId.toString(),
-        ),
-      );
-    }
-    //if we're not... then we're searching the results
-    else {
-      //try to find our mac address in the recent scan
-      //if it returns false, we don't have to waste time searching for it
-      bool isInTheScanResult = results.any(
-        (device) => device.device.remoteId.toString() == mac,
-      );
-      print("ScanResult: $isInTheScanResult");
-      if (isInTheScanResult) {
-        for (var result in results) {
-          print("Device: ${result.device.remoteId.toString()} // Local: $mac");
-          if (result.device.remoteId.toString() == mac) {
-            BluetoothDevice foundDevice = result.device;
-            await foundDevice.connect();
-            if (foundDevice.isConnected) {
-              Navigator.of(context).pushNamed(
-                deviceprofile,
-                arguments: PairArguments(
-                  foundDevice,
-                  foundDevice.platformName,
-                  foundDevice.remoteId.toString(),
-                ),
-              );
-            }
-          }
-        }
-      } else {
-        print("Found Nothing");
-        return;
-      }
-    }
-  }
+  //   //if we're already connected, then we go to the profile
+  //   if (isConnected) {
+  //     print("Already Connected");
+  //     Navigator.of(context).pushNamed(
+  //       deviceprofile,
+  //       arguments: PairArguments(
+  //         connectedDevices[0],
+  //         connectedDevices[0].platformName,
+  //         connectedDevices[0].remoteId.toString(),
+  //       ),
+  //     );
+  //   }
+  //   //if we're not... then we're searching the results
+  //   else {
+  //     //try to find our mac address in the recent scan
+  //     //if it returns false, we don't have to waste time searching for it
+  //     bool isInTheScanResult = results.any(
+  //       (device) => device.device.remoteId.toString() == mac,
+  //     );
+  //     print("ScanResult: $isInTheScanResult");
+  //     if (isInTheScanResult) {
+  //       for (var result in results) {
+  //         print("Device: ${result.device.remoteId.toString()} // Local: $mac");
+  //         if (result.device.remoteId.toString() == mac) {
+  //           BluetoothDevice foundDevice = result.device;
+  //           await foundDevice.connect();
+  //           if (foundDevice.isConnected) {
+  //             Navigator.of(context).pushNamed(
+  //               deviceprofile,
+  //               arguments: PairArguments(
+  //                 foundDevice,
+  //                 foundDevice.platformName,
+  //                 foundDevice.remoteId.toString(),
+  //               ),
+  //             );
+  //           }
+  //         }
+  //       }
+  //     } else {
+  //       print("Found Nothing");
+  //       return;
+  //     }
+  //   }
+  // }
 }
 
 //It's Vital, I don't know what this does, but it's important...

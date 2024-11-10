@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
-import 'package:capstone/Controllers/bluetooth_controller.dart';
+import 'package:capstone/global/args.dart';
+import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:get/get.dart';
 
 class DeviceOverview extends StatefulWidget {
   const DeviceOverview({
@@ -18,6 +21,66 @@ class DeviceOverview extends StatefulWidget {
 
 class _DeviceOverviewState extends State<DeviceOverview> {
   bool isConnected = false;
+
+  void goToProfile() async {
+    print("results is Empty: ${copyResult.isEmpty}");
+    for (var dev in copyResult) {
+      if (dev.remoteId.toString() == widget.deviceMac) {
+        print("Found");
+        BluetoothDevice device = dev;
+        if (device.isConnected) {
+          connectedDevices.clear();
+          connectedDevices.add(device);
+          Navigator.pushNamed(context, deviceprofile,
+              arguments: PairArguments(
+                  device, device.platformName, device.remoteId.toString()));
+        } else {
+          await device.connect();
+          if (device.isConnected) {
+            Navigator.pushNamed(context, deviceprofile,
+                arguments: PairArguments(
+                    device, device.platformName, device.remoteId.toString()));
+          } else {
+            //get a snackbar
+          }
+        }
+      } else {
+        print("Nothing");
+      }
+    }
+  }
+
+  Future<void> confirmConnectionDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(widget.platformName),
+        content: Text("Connect to this device?"),
+        actions: [
+          //No Option
+          MaterialButton(
+            color: Colors.lightBlue,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text("No"),
+          ),
+          SizedBox(width: 60),
+          //Yes Option
+          MaterialButton(
+            color: Colors.lightBlue,
+            onPressed: () async {
+              goToProfile();
+            },
+            child: Text("Yes", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Function to navigate to profile under certain conditions
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,12 +88,10 @@ class _DeviceOverviewState extends State<DeviceOverview> {
       width: MediaQuery.of(context).size.width * 0.50,
       height: MediaQuery.of(context).size.height * 0.12,
       child: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           //put code here...
           //initatie new Scan for new devices
-          print("tapped: ${widget.deviceMac}, ${widget.platformName}");
-          BluetoothSavedDevicesHandler().confirmConnectionDialog(
-              context, widget.deviceMac, widget.platformName);
+          confirmConnectionDialog(context);
         },
         child: Padding(
           padding: const EdgeInsets.only(top: 10, left: 20),

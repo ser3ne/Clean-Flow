@@ -3,7 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 String absoluteFilePath = "";
 List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 List<dynamic> savedDevices = [];
-List<ScanResult> results = [];
+List<BluetoothDevice> copyResult = [];
 bool globalBoolean = false;
 
 class PairArguments {
