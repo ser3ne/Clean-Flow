@@ -1,4 +1,70 @@
 /*
+
+FloatingActionButton(
+                backgroundColor: isScanning
+                    ? const Color.fromARGB(255, 179, 221, 255)
+                    : Color.fromARGB(255, 37, 157, 255),
+                onPressed: isScanning
+                    ? null
+                    : () async {
+                        init2();
+                      },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Icon(Icons.bluetooth_searching,
+                    //     size: 40,
+                    //     color: isScanning
+                    //         ? const Color.fromARGB(255, 131, 131, 131)
+                    //         : Colors.black),
+                    Text(
+                      mainButtonText,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: isScanning
+                              ? const Color.fromARGB(255, 131, 131, 131)
+                              : Colors.black),
+                    ),
+                    Icon(Icons.add_rounded,
+                        size: 45,
+                        color: isScanning
+                            ? const Color.fromARGB(255, 131, 131, 131)
+                            : Colors.black),
+                  ],
+                ),
+              )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 new
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Bluetooth features -->

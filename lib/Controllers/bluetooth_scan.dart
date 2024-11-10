@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
-import 'package:capstone/Widgets/custom_text.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +20,13 @@ No, This is not the page where we start scanning
 this is the page where we process the results of
 the scanning.
 
-the startscan() is int the controller.dart
+the startscan() is in the controller.dart
 
 */
 
 class _BluetoothScanState extends State<BluetoothScan> {
-  bool canINowGoToAnotherPagePlease = false;
-
   Future<bool> yes(BluetoothDevice device) async {
+    bool canINowGoToAnotherPagePlease = false;
     var sub = BluetoothController().bluetoothConnectState(device);
     //disconnect and remove all currently connected devices from connected devices List
     if (connectedDevices.contains(device)) {
@@ -103,44 +101,23 @@ class _BluetoothScanState extends State<BluetoothScan> {
       builder: (context, snapshot) {
         //transfer the data into a more suitable datatype
         //return an empty list if the data is empty
-        List<ScanResult> results = snapshot.data ?? [];
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        print("==========START==========");
+        print(
+            'Snapshot Data: ${snapshot.hasData}, ${snapshot != null}\nWidget.mac: ${widget.mac}');
+        results = snapshot.data ?? [];
+        //if Snapshot has no data or is waiting
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            !snapshot.hasData) {
           return Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.grey,
+            ),
           );
         }
-        //if we're coming from a saved devices view, this will execute...
-        else if (snapshot.hasData &&
-            snapshot.data != null &&
-            widget.mac != '00') {
+        //if we're coming from a Saved Devices/Home Page view, this will execute...
+        else if (results.isNotEmpty) {
           // List<BluetoothDevice> filtered = [];
-
-          if (results.isEmpty) {
-            print("Results: $results");
-            return Center(
-              child: CustomText(
-                text: "No Devices Found.\n",
-                size: 30,
-                fontWeight: FontWeight.w900,
-              ),
-            );
-          }
-
-          //Determine if the scan contained any devices which had out MAC address
-          results.any(
-            (result) {
-              //if it does we go to the profile with all the details
-              if (result.device.remoteId.toString() == widget.mac) {
-                BluetoothDevice device = result.device;
-                Navigator.of(context).pushReplacementNamed(deviceprofile,
-                    arguments: PairArguments(device, device.platformName,
-                        device.remoteId.toString()));
-                return true;
-              }
-              //if we don't, we don't do anything
-              return false;
-            },
-          );
+          //Determine if the scan contained any devices which had our MAC address
 
           // if (device.device.platformName == "Clean-Flow") {
           //   filtered.add(device.device);
@@ -157,10 +134,12 @@ class _BluetoothScanState extends State<BluetoothScan> {
           //     ),
           //   );
           // }
-        }
-        //if we're normally scanning for devices this will execute
-        else if (snapshot.hasData && snapshot.data != null) {
+
+          //if we're normally scanning for devices this will execute
+
+          print("Scan Devices");
           //Devices
+          List<ScanResult> results = snapshot.data ?? [];
           return ListView.builder(
             itemCount: results.length,
             itemBuilder: (context, index) {
@@ -179,7 +158,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
                               await BluetoothController().checkAdapterState();
                           if (isOn) {
                             alertDialogue(device);
-                          } else {}
+                          }
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -217,7 +196,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
           );
           //Devices end
         }
-        return Center(child: Text("Error Scanning Devices."));
+        return SizedBox.shrink();
       },
     );
   }

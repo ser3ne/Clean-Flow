@@ -1,6 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 import 'package:capstone/Controllers/bluetooth_controller.dart';
-import 'package:capstone/Controllers/bluetooth_scan.dart';
 import 'package:flutter/material.dart';
 
 class DeviceOverview extends StatefulWidget {
@@ -22,57 +21,51 @@ class _DeviceOverviewState extends State<DeviceOverview> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(30),
+      margin: EdgeInsets.only(top: 15, left: 15, right: 15),
       width: MediaQuery.of(context).size.width * 0.50,
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.12,
       child: FloatingActionButton(
-        onPressed: () async {
+        onPressed: () {
           //put code here...
-          await BluetoothController().scanDevices();
-          BluetoothScan(mac: widget.deviceMac);
+          //initatie new Scan for new devices
+          print("tapped: ${widget.deviceMac}, ${widget.platformName}");
+          BluetoothSavedDevicesHandler().confirmConnectionDialog(
+              context, widget.deviceMac, widget.platformName);
         },
         child: Padding(
-          padding: const EdgeInsets.only(top: 25, left: 20, right: 20),
+          padding: const EdgeInsets.only(top: 10, left: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 3,
-                child: Row(
-                  children: [
-                    Text(
-                      widget.platformName,
-                      softWrap: true,
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w600,
-                      ),
+              Row(
+                children: [
+                  Text(
+                    widget.platformName,
+                    softWrap: true,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Icon(
-                      isConnected
-                          ? Icons.bookmark_added_rounded
-                          : Icons.bookmark_remove_outlined,
-                      size: 50,
-                    )
-                  ],
-                ),
+                  ),
+                  Icon(
+                    isConnected
+                        ? Icons.bookmark_added_rounded
+                        : Icons.bookmark_remove_outlined,
+                    size: 30,
+                  )
+                ],
               ),
-              Expanded(
-                flex: 3,
-                child: Switch(
-                  inactiveTrackColor: Colors.white,
-                  activeTrackColor: Colors.blueAccent,
-                  inactiveThumbColor: Colors.black,
-                  value: isConnected,
-                  onChanged: (value) {
-                    setState(() {
-                      isConnected = value;
-                    });
-                  },
-                ),
+              Switch(
+                inactiveTrackColor: Colors.white,
+                activeTrackColor: Colors.blueAccent,
+                inactiveThumbColor: Colors.black,
+                value: isConnected,
+                onChanged: (value) {
+                  setState(() {
+                    isConnected = value;
+                  });
+                },
               ),
-              Expanded(flex: 3, child: Text(""))
             ],
           ),
         ),

@@ -35,11 +35,6 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
 
   void init2() async {
     bool isOn = await BluetoothController().checkAdapterState();
-    setState(() {
-      isOn
-          ? mainButtonText = "Scan for device"
-          : mainButtonText = "Open Bluetooth";
-    });
     //if bluetooth is ON, does a Scan
     //else it asks to turn it on
     buttonControls(isOn);
@@ -62,117 +57,55 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-      color: color_1,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            //Drape
-            Container(
-              //take 80% of device's height resolution
-              height: (MediaQuery.of(context).size.height * 0.67),
-              //take the device's max width resolution
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                colors: [
-                  color_1,
-                  color_2,
-                  color_3,
-                  color_4,
-                  color_5,
-                  color_6,
-                  color_7
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              )),
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20, left: 30, right: 30),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(55, 255, 255, 255),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        SizedBox(
-                          height: 468, //425
-                          width: 300,
-                          //Call Scan Results here
-                          child: BluetoothScan(
-                            mac: '00',
-                          ),
-                          //Stream end
-                        ),
-                        Container(
-                            // decoration: BoxDecoration(border: Border.all(width: 5)),
-                            height: 50,
-                            width: 250,
-                            child: Center(
-                                child: Text(
-                              isScanning ? "Searching..." : "Devices",
-                              style: TextStyle(
-                                  fontSize: isScanning ? 30 : 20,
-                                  fontWeight: FontWeight.w900),
-                            )))
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+        colors: [color_1, color_2, color_3, color_4, color_5, color_6, color_7],
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+      )),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          //Synchronize Icon
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              color: Colors.white,
             ),
-            //Drape end
-            SizedBox(
-              height: 10,
-            ),
-            //Main Buttton
-            SizedBox(
-              width: 300,
-              child: FloatingActionButton(
-                backgroundColor: isScanning
-                    ? const Color.fromARGB(255, 179, 221, 255)
-                    : Color.fromARGB(255, 37, 157, 255),
+            child: IconButton(
                 onPressed: isScanning
                     ? null
                     : () async {
-                        init2();
+                        bool isOn =
+                            await BluetoothController().checkAdapterState();
+                        buttonControls(isOn);
                       },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // Icon(Icons.bluetooth_searching,
-                    //     size: 40,
-                    //     color: isScanning
-                    //         ? const Color.fromARGB(255, 131, 131, 131)
-                    //         : Colors.black),
-                    Text(
-                      mainButtonText,
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          color: isScanning
-                              ? const Color.fromARGB(255, 131, 131, 131)
-                              : Colors.black),
-                    ),
-                    Icon(Icons.add_rounded,
-                        size: 45,
-                        color: isScanning
-                            ? const Color.fromARGB(255, 131, 131, 131)
-                            : Colors.black),
-                  ],
-                ),
+                icon: Icon(Icons.sync_sharp,
+                    color:
+                        isScanning ? Color.fromARGB(56, 0, 0, 0) : Colors.black,
+                    size: 50)),
+          ),
+          //Results Sheet
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: MediaQuery.of(context).size.height * .5,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(20)),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: BluetoothScan(mac: "normalscan"),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     ));
   }

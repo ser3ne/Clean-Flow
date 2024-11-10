@@ -5,7 +5,7 @@ import 'dart:ui';
 import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -15,6 +15,10 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  Future<String> loadAsset() async {
+    return await rootBundle.loadString('assets/config.json');
+  }
+
   final List<Widget> _pages = [Scanresult_Page(), Home_Page()];
   int _currentIndex = 0;
   @override
@@ -45,12 +49,12 @@ class _MainPageState extends State<MainPage> {
         selectedIndex: _currentIndex,
       ),
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            _currentIndex == 0 ? "Home" : "My Devices",
-            style: TextStyle(
-                color: Colors.white, fontSize: 30, fontWeight: FontWeight.w900),
-          ),
+        // leading: Image.asset('assets/Clean.jpg'),
+        centerTitle: true,
+        title: Text(
+          _currentIndex == 0 ? "Home" : "My Devices",
+          style: TextStyle(
+              color: Colors.white, fontSize: 30, fontWeight: FontWeight.w900),
         ),
         backgroundColor: Color.fromRGBO(0, 0, 0, 1),
       ),

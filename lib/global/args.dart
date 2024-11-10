@@ -1,11 +1,9 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-// BluetoothDevice? globalDevice;
-
 String absoluteFilePath = "";
 List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 List<dynamic> savedDevices = [];
-
+List<ScanResult> results = [];
 bool globalBoolean = false;
 
 class PairArguments {
@@ -16,7 +14,7 @@ class PairArguments {
   PairArguments(this.device, this.pfName, this.macAddress);
 }
 
-class ConnectedArguments {
-  final BluetoothDevice device;
-  ConnectedArguments(this.device);
+class ScanArguments {
+  final String mac;
+  ScanArguments(this.mac);
 }

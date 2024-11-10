@@ -25,10 +25,14 @@ class _DeviceProfileState extends State<DeviceProfile> {
     List<dynamic> savedDevices =
         jsonString != null ? jsonDecode(jsonString) : [];
 
+    //Searches savedDevices list for any hits for device['mac']
+    //returns true if it exists
     bool deviceExists = savedDevices.any(
       (device) => device['mac'] == macAdd,
     );
 
+    //If there aren't any hits,
+    //Add the mac address with the name to the saved devices
     if (!deviceExists) {
       savedDevices.add({'mac': macAdd, 'pfname': pfName});
 
@@ -37,11 +41,26 @@ class _DeviceProfileState extends State<DeviceProfile> {
       const snackBar =
           SnackBar(content: Text("Device added to saved devices."));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
+    }
+
+    //if there are hits, with the mac address
+    else {
+      // Remove the existing device by filtering it out
+      savedDevices.removeWhere(
+          (device) => device['mac'] == macAdd && device['pfname'] == pfName);
+
+      // Save the updated list back to Shared Preferences
+      await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+      // Show a SnackBar to confirm device removal
       const snackBar =
-          SnackBar(content: Text("Device is already in the saved list."));
+          SnackBar(content: Text("Device removed from saved devices."));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+    //   const snackBar =
+    //       SnackBar(content: Text("Device is already in the saved list."));
+    //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    // }
   }
 
   // Future<void> _removeDevice(BluetoothDevice globalDevice) async {
@@ -66,7 +85,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
   Color color_6 = Color.fromRGBO(18, 15, 69, 1);
   Color color_7 = Color.fromRGBO(0, 0, 0, 1);
 
-  bool? isConnected;
+  bool isConnected = false;
   String text = "", displayedData = "";
 
   @override
@@ -145,7 +164,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isConnected! ? "Saved" : "Tap to Save Device",
+                              isConnected ? "Saved" : "Tap to Save Device",
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 15),
                             ),
@@ -155,15 +174,13 @@ class _DeviceProfileState extends State<DeviceProfile> {
                               inactiveTrackColor: Colors.white,
                               activeTrackColor: Colors.blueAccent,
                               inactiveThumbColor: Colors.black,
-                              value: isConnected!,
+                              value: isConnected,
                               onChanged: (value) {
                                 setState(() {
                                   isConnected = value;
                                 });
-                                if (isConnected == true) {
-                                  _savedDevices(
-                                      context, args.macAddress, args.pfName);
-                                }
+                                _savedDevices(
+                                    context, args.macAddress, args.pfName);
                               },
                             )
                           ],
@@ -202,7 +219,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                 child: CustomSwitchButtonBig(
                   device: args.device,
                   dialogueText:
-                      isConnected! ? "Are You Sure?" : "Disconnect Device",
+                      isConnected ? "Are You Sure?" : "Disconnect Device",
                   size: 55,
                 ),
               )
