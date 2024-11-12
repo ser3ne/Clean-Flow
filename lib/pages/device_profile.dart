@@ -17,6 +17,7 @@ class DeviceProfile extends StatefulWidget {
 }
 
 class _DeviceProfileState extends State<DeviceProfile> {
+  bool autoConn = false;
   Future<void> _savedDevices(
       BuildContext context, String macAdd, String pfName) async {
     final prefs = await SharedPreferences.getInstance();
@@ -57,25 +58,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
           SnackBar(content: Text("Device removed from saved devices."));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    //   const snackBar =
-    //       SnackBar(content: Text("Device is already in the saved list."));
-    //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    // }
   }
-
-  // Future<void> _removeDevice(BluetoothDevice globalDevice) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   String? jsonString = prefs.getString('savedDevices');
-  //   if (jsonString != null) {
-  //     savedDevices
-  //         .remove({'Device': globalDevice, 'Name': globalDevice.platformName});
-
-  //     await prefs.setString('savedDevices', jsonEncode(savedDevices));
-
-  //     const snackBar = SnackBar(content: Text("Device unsaved."));
-  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  //   }
-  // }
 
   Color color_1 = Color.fromRGBO(255, 255, 255, 1);
   Color color_2 = Color.fromRGBO(194, 193, 216, 1);
@@ -145,7 +128,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                   Padding(
                     padding: const EdgeInsets.only(top: 3, bottom: 3),
                     child: Container(
-                      height: MediaQuery.of(context).size.height * .15,
+                      height: MediaQuery.of(context).size.height * .3, //15
                       width: MediaQuery.of(context).size.width * .42,
                       decoration: BoxDecoration(
                           boxShadow: [
@@ -163,6 +146,8 @@ class _DeviceProfileState extends State<DeviceProfile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            ElevatedButton(
+                                onPressed: () {}, child: Text("Auto-Connect")),
                             Text(
                               isConnected ? "Saved" : "Tap to Save Device",
                               style: TextStyle(

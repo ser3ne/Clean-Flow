@@ -76,6 +76,17 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               color: Colors.white,
             ),
+            /*
+            FIXX THIS BUTTON
+            FIXX THIS BUTTON
+            FIXX THIS BUTTON
+            FIXX THIS BUTTON
+            FIXX THIS BUTTON
+            FIXX THIS BUTTON
+
+            it starts out as null which disables the button
+            and does not allow the user to refresh
+             */
             child: IconButton(
                 onPressed: isScanning
                     ? null

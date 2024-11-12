@@ -25,6 +25,7 @@ the startscan() is in the controller.dart
 */
 
 class _BluetoothScanState extends State<BluetoothScan> {
+  bool autoConn = false;
   Future<bool> yes(BluetoothDevice device) async {
     bool canINowGoToAnotherPagePlease = false;
     var sub = BluetoothController().bluetoothConnectState(device);
@@ -43,7 +44,8 @@ class _BluetoothScanState extends State<BluetoothScan> {
           ),
         );
         setState(() {
-          connectedDevices.add(device); //take device
+          //List up the device to the connected devices list
+          connectedDevices.add(device);
           canINowGoToAnotherPagePlease = true;
         });
       } else {
@@ -101,9 +103,6 @@ class _BluetoothScanState extends State<BluetoothScan> {
       builder: (context, snapshot) {
         //transfer the data into a more suitable datatype
         //return an empty list if the data is empty
-        print("==========START==========");
-        print(
-            'Snapshot Data: ${snapshot.hasData}, ${snapshot != null}\nWidget.mac: ${widget.mac}');
 
         List<ScanResult> results = snapshot.data ?? [];
         //if Snapshot has no data or is waiting
@@ -136,9 +135,6 @@ class _BluetoothScanState extends State<BluetoothScan> {
           //   );
           // }
 
-          //if we're normally scanning for devices this will execute
-
-          print("Saved Devices");
           //Devices
           List<ScanResult> results = snapshot.data ?? [];
           return ListView.builder(
@@ -146,6 +142,9 @@ class _BluetoothScanState extends State<BluetoothScan> {
             itemBuilder: (context, index) {
               final device = results[index].device;
               copyResult.add(device);
+              if (device.isAutoConnectEnabled) {
+                yes(device);
+              }
               return Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 5, bottom: 10),

@@ -13,28 +13,28 @@ class BLEDataDisplay extends StatefulWidget {
 }
 
 class _BLEDataDisplayState extends State<BLEDataDisplay> {
-  bool isAnAlertActive = false;
-  Future<Stream<List<int>>?> getCharacteristicStream(
-      BluetoothDevice device) async {
-    List<BluetoothService> services = await device.discoverServices();
+  Future<Stream<List<int>>?> getCharacteristicStream() async {
+    // Discover services on the device
+    List<BluetoothService> services = await widget.device.discoverServices();
 
-    // Find the specific service
-    final service = services.firstWhere(
-      (s) => s.uuid.toString() == "beb5483e-36e1-4688-b7f5-ea07361b26a8",
-    );
+    try {
+      // Find the specific service
+      final service = services.firstWhere(
+        (s) => s.uuid.toString() == "beb5483e-36e1-4688-b7f5-ea07361b26a8",
+      );
 
-    if (service != null) {
       // Find the specific characteristic
       final characteristic = service.characteristics.firstWhere(
         (c) => c.uuid.toString() == "4fafc201-1fb5-459e-8fcc-c5c9c331914b",
       );
 
       // Enable notifications
-      await characteristic.setNotifyValue(true);
+      await characteristic
+          .setNotifyValue(false); //set this to true to start receiving data
 
       // Return the stream of characteristic values
       return characteristic.onValueReceived;
-    } else {
+    } catch (e) {
       print("Service or characteristic not found");
       return null;
     }
@@ -43,20 +43,21 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Stream<List<int>>?>(
-      future: getCharacteristicStream(widget.device),
+      future: getCharacteristicStream(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError || snapshot.data == null) {
           return Center(
-              child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Text(
-              "No Data Transmitted",
-              softWrap: true,
-              textAlign: TextAlign.center,
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Text(
+                "No Data Transmitted",
+                softWrap: true,
+                textAlign: TextAlign.center,
+              ),
             ),
-          ));
+          );
         }
 
         // Use StreamBuilder to listen to the characteristic's data stream
@@ -71,44 +72,30 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
               return Center(child: Text("No data received"));
             }
 
-            // Convert the list of bytes to a string and parse to an integer
+            // Convert the list of bytes to a string
             String receivedString = utf8.decode(dataSnapshot.data!);
-            int receivedValue = int.tryParse(receivedString) ?? 0;
 
-            // Check if the value exceeds 50 and display an alert if so
-            // if (receivedValue > 300 && !isAnAlertActive) {
-            //   isAnAlertActive = true;
-            //   WidgetsBinding.instance.addPostFrameCallback((_) {
-            //     showDialog(
-            //       context: context,
-            //       builder: (BuildContext context) {
-            //         return AlertDialog(
-            //           title: Text("Alert"),
-            //           content: Text(
-            //             "Received value exceeded 50: $receivedValue",
-            //             softWrap: true,
-            //             textAlign: TextAlign.center,
-            //           ),
-            //           actions: [
-            //             TextButton(
-            //               onPressed: () {
-            //                 isAnAlertActive = false;
-            //                 Navigator.of(context).pop();
-            //               },
-            //               child: Text("OK"),
-            //             ),
-            //           ],
-            //         );
-            //       },
-            //     );
-            //   });
-            // }
+            // Split the string into two parts based on the comma separator
+            List<String> values = receivedString.split(',');
 
-            // Display the received data in the widget
+            // Parse each part as an integer
+            int increment1 = int.tryParse(values[0]) ?? 0;
+            int increment2 = int.tryParse(values[1]) ?? 0;
+
+            // Display both values in the widget
             return Center(
-              child: Text(
-                "Received data: $receivedValue",
-                style: TextStyle(fontSize: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Increment 1: $increment1",
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  Text(
+                    "Increment 2: $increment2",
+                    style: TextStyle(fontSize: 10),
+                  ),
+                ],
               ),
             );
           },
