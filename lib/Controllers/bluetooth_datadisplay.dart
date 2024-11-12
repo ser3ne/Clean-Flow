@@ -30,7 +30,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
 
       // Enable notifications
       await characteristic
-          .setNotifyValue(false); //set this to true to start receiving data
+          .setNotifyValue(true); //set this to true to start receiving data
 
       // Return the stream of characteristic values
       return characteristic.onValueReceived;
@@ -85,15 +85,45 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             // Display both values in the widget
             return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    "Increment 1: $increment1",
-                    style: TextStyle(fontSize: 10),
+                  Container(
+                    width: MediaQuery.of(context).size.width * .4,
+                    height: MediaQuery.of(context).size.height * .06,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 2.5,
+                            color: const Color.fromARGB(255, 23, 53, 24)),
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        color: const Color.fromARGB(255, 132, 255, 136)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        "$increment1 V",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    ),
                   ),
-                  Text(
-                    "Increment 2: $increment2",
-                    style: TextStyle(fontSize: 10),
+                  Container(
+                    margin: EdgeInsets.only(top: 2),
+                    width: MediaQuery.of(context).size.width * .7,
+                    height: MediaQuery.of(context).size.height * .06,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 2.5, color: Color.fromARGB(255, 22, 45, 84)),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(50),
+                        ),
+                        color: Colors.blue),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        "$increment2% Reduction",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    ),
                   ),
                 ],
               ),

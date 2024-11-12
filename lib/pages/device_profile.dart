@@ -67,48 +67,19 @@ class _DeviceProfileState extends State<DeviceProfile> {
   Color color_5 = Color.fromRGBO(54, 50, 124, 1);
   Color color_6 = Color.fromRGBO(18, 15, 69, 1);
   Color color_7 = Color.fromRGBO(0, 0, 0, 1);
+  Color color_y = Color.fromARGB(222, 13, 255, 0);
+  Color color_x = Color.fromARGB(201, 2, 4, 140);
 
   bool isConnected = false;
-  String text = "", displayedData = "";
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: color_7,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, root, (Route<dynamic> route) => false,
-                  arguments: PairArguments(
-                      args.device,
-                      args.device.platformName,
-                      args.device.remoteId.toString()));
-            },
-            icon: const Icon(
-              Icons.chevron_left_rounded,
-              color: Colors.white,
-            )),
-        title: Text(
-          args.device.platformName,
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          colors: [
-            color_1,
-            color_1,
-            color_1,
-            color_2,
-            color_3,
-            color_4,
-            color_5,
-            color_6,
-            color_7
-          ],
+          colors: [color_x, color_y],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
         )),
@@ -122,81 +93,97 @@ class _DeviceProfileState extends State<DeviceProfile> {
               SizedBox(
                 height: 5,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 3, bottom: 3),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * .3, //15
-                      width: MediaQuery.of(context).size.width * .42,
-                      decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 7,
-                                color: Color.fromARGB(20, 0, 0, 0),
-                                spreadRadius: 3,
-                                offset: Offset(0, 5)),
-                          ],
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ElevatedButton(
-                                onPressed: () {}, child: Text("Auto-Connect")),
-                            Text(
-                              isConnected ? "Saved" : "Tap to Save Device",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 15),
-                            ),
-                            //Make the shared preferences here
-                            //currently it does nothing
-                            Switch(
-                              inactiveTrackColor: Colors.white,
-                              activeTrackColor: Colors.blueAccent,
-                              inactiveThumbColor: Colors.black,
-                              value: isConnected,
-                              onChanged: (value) {
-                                setState(() {
-                                  isConnected = value;
-                                });
-                                _savedDevices(
-                                    context, args.macAddress, args.pfName);
-                              },
-                            )
-                          ],
+              Padding(
+                padding: const EdgeInsets.only(top: 3, bottom: 3),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * .75, //.3
+                  width: MediaQuery.of(context).size.width * .9, //.42
+                  decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 7,
+                            color: Color.fromARGB(20, 0, 0, 0),
+                            spreadRadius: 3,
+                            offset: Offset(0, 5)),
+                      ],
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(98, 255, 255, 255)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.height * .15,
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            children: [
+                              Container(
+                                height:
+                                    MediaQuery.of(context).size.height * .07,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    args.device.platformName,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 30),
+                                  ),
+                                ),
+                              ),
+                              //Make the shared preferences here
+                              //currently it does nothing
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Switch(
+                                  inactiveTrackColor: Colors.white,
+                                  activeTrackColor: Colors.blueAccent,
+                                  inactiveThumbColor: Colors.black,
+                                  value: isConnected,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isConnected = value;
+                                    });
+                                    _savedDevices(
+                                        context, args.macAddress, args.pfName);
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            height: 150,
+                            width: MediaQuery.of(context).size.width,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * .15,
+                                width: MediaQuery.of(context).size.width * .43,
+                                child: Center(
+                                  //this is where the data goes
+                                  child: BLEDataDisplay(
+                                    device: args.device,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5, bottom: 5),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height * .15,
-                      width: MediaQuery.of(context).size.width * .43,
-                      decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 7,
-                                color: Color.fromARGB(20, 0, 0, 0),
-                                spreadRadius: 3,
-                                offset: Offset(0, 5)),
-                          ],
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white),
-                      child: Center(
-                        //this is where the data goes
-                        child: BLEDataDisplay(
-                          device: args.device,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+                ),
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * .1, //10%
