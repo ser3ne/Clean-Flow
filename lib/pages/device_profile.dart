@@ -6,9 +6,7 @@ import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
-import 'package:capstone/pages/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceProfile extends StatefulWidget {
