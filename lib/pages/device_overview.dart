@@ -106,17 +106,18 @@ class _DeviceOverviewState extends State<DeviceOverview> {
           confirmConnectionDialog(context);
         },
         child: Padding(
-          padding: const EdgeInsets.only(top: 10, left: 20),
+          padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     widget.platformName,
-                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 20,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -29,8 +28,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
       );
 
       // Enable notifications
-      await characteristic
-          .setNotifyValue(true); //set this to true to start receiving data
+      await characteristic.setNotifyValue(true);
 
       // Return the stream of characteristic values
       return characteristic.onValueReceived;
@@ -71,16 +69,12 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             } else if (!dataSnapshot.hasData || dataSnapshot.data!.isEmpty) {
               return Center(child: Text("No data received"));
             }
-
-            // Convert the list of bytes to a string
-            String receivedString = utf8.decode(dataSnapshot.data!);
-
-            // Split the string into two parts based on the comma separator
-            List<String> values = receivedString.split(',');
+            String receivedData = String.fromCharCodes(dataSnapshot.data!);
+            List<String> values = receivedData.split(',');
 
             // Parse each part as an integer
-            int increment1 = int.tryParse(values[0]) ?? 0;
-            int increment2 = int.tryParse(values[1]) ?? 0;
+            String volts = values[0];
+            String percentageReduction = values[1];
 
             // Display both values in the widget
             return Center(
@@ -91,15 +85,17 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                     width: MediaQuery.of(context).size.width * .4,
                     height: MediaQuery.of(context).size.height * .06,
                     decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 2.5,
-                            color: const Color.fromARGB(255, 23, 53, 24)),
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                        color: const Color.fromARGB(255, 132, 255, 136)),
+                      border: Border.all(
+                        width: 2.5,
+                        color: const Color.fromARGB(255, 23, 53, 24),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                      color: const Color.fromARGB(255, 132, 255, 136),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
-                        "$increment1 V",
+                        "$volts V",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 30),
                       ),
@@ -110,16 +106,19 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                     width: MediaQuery.of(context).size.width * .7,
                     height: MediaQuery.of(context).size.height * .06,
                     decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 2.5, color: Color.fromARGB(255, 22, 45, 84)),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(50),
-                        ),
-                        color: Colors.blue),
+                      border: Border.all(
+                        width: 2.5,
+                        color: Color.fromARGB(255, 22, 45, 84),
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
+                      ),
+                      color: Colors.blue,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
-                        "$increment2% Reduction",
+                        "$percentageReduction% Reduction",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 30),
                       ),

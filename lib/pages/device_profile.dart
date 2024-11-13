@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,13 +59,6 @@ class _DeviceProfileState extends State<DeviceProfile> {
     }
   }
 
-  Color color_1 = Color.fromRGBO(255, 255, 255, 1);
-  Color color_2 = Color.fromRGBO(194, 193, 216, 1);
-  Color color_3 = Color.fromRGBO(140, 138, 184, 1);
-  Color color_4 = Color.fromRGBO(83, 80, 139, 1);
-  Color color_5 = Color.fromRGBO(54, 50, 124, 1);
-  Color color_6 = Color.fromRGBO(18, 15, 69, 1);
-  Color color_7 = Color.fromRGBO(0, 0, 0, 1);
   Color color_y = Color.fromARGB(222, 13, 255, 0);
   Color color_x = Color.fromARGB(201, 2, 4, 140);
 
