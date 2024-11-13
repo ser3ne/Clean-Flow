@@ -2,10 +2,12 @@
 
 import 'dart:ui';
 
+import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/widgets.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -19,8 +21,8 @@ class _MainPageState extends State<MainPage> {
     return await rootBundle.loadString('assets/config.json');
   }
 
-  final List<Widget> _pages = [Scanresult_Page(), Home_Page()];
   int _currentIndex = 0;
+  List<Widget> pages = [Home_Page(), Scanresult_Page()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,16 +31,16 @@ class _MainPageState extends State<MainPage> {
         destinations: const [
           NavigationDestination(
               icon: Icon(
-                Icons.bluetooth_searching,
+                Icons.home_outlined,
                 color: Colors.black,
               ),
               label: "Home"),
           NavigationDestination(
             icon: Icon(
-              Icons.devices_rounded,
+              Icons.bluetooth_searching,
               color: Colors.black,
             ),
-            label: "My Devices",
+            label: "Scan",
           )
         ],
         onDestinationSelected: (int index) {
@@ -49,16 +51,16 @@ class _MainPageState extends State<MainPage> {
         selectedIndex: _currentIndex,
       ),
       appBar: AppBar(
-        // leading: Image.asset('assets/Clean.jpg'),
+        leading: Image(image: AssetImage("assets/cf.png")),
         centerTitle: true,
         title: Text(
           _currentIndex == 0 ? "Home" : "My Devices",
           style: TextStyle(
-              color: Colors.white, fontSize: 30, fontWeight: FontWeight.w900),
+              color: Colors.black, fontSize: 30, fontWeight: FontWeight.w900),
         ),
-        backgroundColor: Color.fromRGBO(0, 0, 0, 1),
+        backgroundColor: colorY,
       ),
-      body: _pages[_currentIndex],
+      body: pages[_currentIndex],
     );
   }
 }

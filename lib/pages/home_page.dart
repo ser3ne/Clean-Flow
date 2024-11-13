@@ -99,15 +99,7 @@ class Home_StatePage extends State<Home_Page> {
               ),
             ],
             gradient: LinearGradient(
-              colors: [
-                color_1,
-                color_2,
-                color_3,
-                color_4,
-                color_5,
-                color_6,
-                color_7
-              ],
+              colors: [colorX, colorY],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
             )),
@@ -124,7 +116,7 @@ class Home_StatePage extends State<Home_Page> {
                   "Connected Devices",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.w600),
                 ),
@@ -138,11 +130,22 @@ class Home_StatePage extends State<Home_Page> {
               child: connectedDevices.isEmpty
                   //true
                   ? Container(
+                      height: 100,
+                      width: 300,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
+                          ),
+                          color: const Color.fromARGB(55, 255, 255, 255)),
                       margin: EdgeInsets.only(top: 40),
-                      child: Text("No Connected Devices",
-                          softWrap: true,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20, color: Colors.white)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Text("No Connected Devices",
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.black)),
+                      ),
                     )
                   //false
                   : FloatingActionButton(
@@ -169,13 +172,16 @@ class Home_StatePage extends State<Home_Page> {
                       ),
                     ),
             ),
-
+            SizedBox(
+              height: 40,
+            ),
             Container(
+                margin: EdgeInsets.only(bottom: 20),
                 width: MediaQuery.of(context).size.width * 0.90,
                 height: MediaQuery.of(context).size.height * 0.53,
                 decoration: BoxDecoration(
                     color: Color.fromARGB(55, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(40)),
                 //ListView for Saved Devices
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -189,7 +195,7 @@ class Home_StatePage extends State<Home_Page> {
                         "Saved Devices",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: 20,
                             fontWeight: FontWeight.w600),
                       ),

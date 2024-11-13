@@ -2,6 +2,7 @@
 
 import 'package:capstone/global/routes.dart';
 import 'package:capstone/pages/device_profile.dart';
+import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/main_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         root: (context) => MainPage(),
         deviceprofile: (context) => DeviceProfile(),
         scanresult: (context) => Scanresult_Page(),
+        homepage: (context) => Home_Page()
       },
       title: 'Clean-Flow',
       theme: ThemeData(

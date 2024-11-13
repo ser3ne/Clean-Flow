@@ -5,7 +5,10 @@ import 'dart:convert';
 import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
+import 'package:capstone/global/routes.dart';
+import 'package:capstone/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceProfile extends StatefulWidget {
@@ -59,19 +62,27 @@ class _DeviceProfileState extends State<DeviceProfile> {
     }
   }
 
-  Color color_y = Color.fromARGB(222, 13, 255, 0);
-  Color color_x = Color.fromARGB(201, 2, 4, 140);
-
   bool isConnected = false;
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, root,
+                  arguments: PairArguments(
+                      args.device,
+                      args.device.platformName,
+                      args.device.remoteId.toString()));
+            },
+            icon: Icon(Icons.chevron_left_outlined)),
+      ),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-          colors: [color_x, color_y],
+          colors: [colorX, colorY],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
         )),

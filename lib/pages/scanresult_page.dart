@@ -2,6 +2,7 @@
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/Controllers/bluetooth_scan.dart';
+import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
 
 class Scanresult_Page extends StatefulWidget {
@@ -61,7 +62,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           gradient: LinearGradient(
-        colors: [color_1, color_2, color_3, color_4, color_5, color_6, color_7],
+        colors: [colorX, colorY],
         begin: Alignment.bottomCenter,
         end: Alignment.topCenter,
       )),
@@ -71,10 +72,10 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
         children: [
           //Synchronize Icon
           Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 20, 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-              color: Colors.white,
+                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
             ),
             /*
             FIXX THIS BUTTON
@@ -98,7 +99,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                 icon: Icon(Icons.sync_sharp,
                     color:
                         isScanning ? Color.fromARGB(56, 0, 0, 0) : Colors.black,
-                    size: 50)),
+                    size: 30)),
           ),
           //Results Sheet
           Align(
@@ -107,11 +108,14 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
               height: MediaQuery.of(context).size.height * .5,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(20)),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
                 color: Colors.white,
               ),
               child: Padding(
                 padding: const EdgeInsets.all(20),
+                //Stream
                 child: BluetoothScan(mac: "normalscan"),
               ),
             ),
