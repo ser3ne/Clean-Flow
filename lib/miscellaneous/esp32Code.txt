@@ -8,8 +8,8 @@ BLEServer *pServer;
 bool deviceConnected = false;
 
 // UUIDs for BLE service and characteristic
-#define SERVICE_UUID "59 6d 56 69 4e 54 51 34 4d 32 55 74 4d 7a 5a 6c 4d 53 30 30 4e 6a 67 34 4c 57 49 33 5a 6a 55 74 5a 57 45 77 4e 7a 4d 32 4d 57 49 79 4e 6d 45 34"
-#define CHARACTERISTIC_UUID "4e 47 5a 68 5a 6d 4d 79 4d 44 45 74 4d 57 5a 69 4e 53 30 30 4e 54 6c 6c 4c 54 68 6d 59 32 4d 74 59 7a 56 6a 4f 57 4d 7a 4d 7a 45 35 4d 54 52 69"
+#define SERVICE_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define CHARACTERISTIC_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 
 // Callback to handle client connection and disconnection events
 class MyServerCallbacks : public BLEServerCallbacks {
@@ -27,9 +27,9 @@ class MyServerCallbacks : public BLEServerCallbacks {
 };
 
 void setup() {
-  Serial.begin(115200);
-
-  // Initialize BLE
+  Serial.begin(9600);       // Initialize serial monitor on ESP32
+  Serial2.begin(9600, SERIAL_8N1, 16, 17);  // Initialize Serial2 on RX (GPIO 16) and TX (GPIO 17)
+    // Initialize BLE
   BLEDevice::init("Clean-Flow");
 
   // Create BLE server and set the callback
@@ -42,10 +42,8 @@ void setup() {
   // Create a BLE characteristic with READ and NOTIFY properties
   pCharacteristic = pService->createCharacteristic(
     CHARACTERISTIC_UUID,
-    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY
-  );
-
-  // Add a BLE2902 descriptor for notifications
+    BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+      // Add a BLE2902 descriptor for notifications
   pCharacteristic->addDescriptor(new BLE2902());
 
   // Start the service
@@ -57,5 +55,33 @@ void setup() {
 }
 
 void loop() {
-  // Empty loop for now
+  // Check if data is available on Serial2 (connected to Arduino Nano)
+  if (Serial2.available()) {
+    String receivedData = Serial2.readStringUntil('\n');  // Read the incoming data until newline
+
+    // Split the received data using the comma as a delimiter
+    int commaIndex = receivedData.indexOf(',');
+    if (commaIndex != -1 && deviceConnected) {
+      String voltageStr = receivedData.substring(0, commaIndex);
+      String cleanVoltagePercentageStr = receivedData.substring(commaIndex + 1);
+
+      // Convert the string values to float or display them as needed
+      // float voltage = voltageStr.toFloat();
+      // float cleanVoltagePercentage = cleanVoltagePercentageStr.toFloat();
+
+      // Print the separated values to Serial Monitor
+      Serial.print("Received Voltage: ");
+      Serial.println(voltageStr);
+      Serial.print("Clean Voltage Percentage: ");
+      Serial.println(cleanVoltagePercentageStr);
+      
+      String combinedData = String(voltageStr) + "," + String(cleanVoltagePercentageStr);
+
+      // Set the combined data as the characteristic value and notify
+      pCharacteristic->setValue(combinedData);
+      pCharacteristic->notify();
+
+    }
+  }
+  delay(200);
 }

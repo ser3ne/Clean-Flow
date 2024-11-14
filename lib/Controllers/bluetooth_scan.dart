@@ -5,7 +5,6 @@ import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:get/get.dart';
 
 class BluetoothScan extends StatefulWidget {
   const BluetoothScan({super.key, required this.mac});

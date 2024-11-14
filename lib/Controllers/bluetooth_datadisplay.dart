@@ -33,6 +33,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
       // Return the stream of characteristic values
       return characteristic.onValueReceived;
     } catch (e) {
+      //snackbar
       print("Service or characteristic not found");
       return null;
     }
@@ -71,10 +72,12 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             }
             String receivedData = String.fromCharCodes(dataSnapshot.data!);
             List<String> values = receivedData.split(',');
+            List<String> voltTemp = values[0].split('.');
+            List<String> reducTemp = values[1].split('.');
 
             // Parse each part as an integer
-            String volts = values[0];
-            String percentageReduction = values[1];
+            String volts = voltTemp[0];
+            String percentageReduction = reducTemp[0];
 
             // Display both values in the widget
             return Center(

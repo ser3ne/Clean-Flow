@@ -3,16 +3,19 @@ import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:get/get.dart';
 
 class DeviceOverview extends StatefulWidget {
   const DeviceOverview({
     super.key,
     required this.deviceMac,
     required this.platformName,
+    required this.function,
   });
 
   final String platformName;
   final String deviceMac;
+  final VoidCallback function;
 
   @override
   State<DeviceOverview> createState() => _DeviceOverviewState();
@@ -26,40 +29,49 @@ need to stop the duplication
  */
 class _DeviceOverviewState extends State<DeviceOverview> {
   bool isConnected = false;
-  bool autoConn = false;
 
   //When the Device is found we navigate to the profile
-  void goToProfile() async {
+  void goToProfile(BuildContext context) async {
     for (var dev in copyResult) {
-      //we'll check all the result if the devices in it contains our mac address
-      if (dev.remoteId.toString() == widget.deviceMac) {
-        BluetoothDevice device = dev;
-        //we'll check if the device is already connected
-        if (device.isConnected) {
-          //we'll essentially refresh the list of display
-          //then navigate to the profile
-          connectedDevices.clear();
-          connectedDevices.add(device);
-          Navigator.pushNamed(context, deviceprofile,
-              arguments: PairArguments(
-                  device, device.platformName, device.remoteId.toString()));
-        }
-        //if we're not already connected, we'll connect to it
-        //through the results which is 'device' at this point
-        else {
-          await device.connect();
+      int counter = 0;
+      if (counter != copyResult.length - 1) {
+        //we'll check all the result if the devices in it contains our mac address
+        if (dev.remoteId.toString() == widget.deviceMac) {
+          BluetoothDevice device = dev;
+          //we'll check if the device is already connected
           if (device.isConnected) {
-            //D0:62:2C:3B:18:5E || smartwatch
+            //we'll essentially just navigate to the profile
+            connectedDevices.add(device);
             Navigator.pushNamed(context, deviceprofile,
                 arguments: PairArguments(
                     device, device.platformName, device.remoteId.toString()));
-          } else {
-            //get a snackbar
+            break;
+          }
+          //if we're not already connected, we'll connect to it
+          //through the results which is 'device' at this point
+          else {
+            await device.connect();
+            if (device.isConnected) {
+              //D0:62:2C:3B:18:5E || smartwatch
+              Navigator.pushNamed(context, deviceprofile,
+                  arguments: PairArguments(
+                      device, device.platformName, device.remoteId.toString()));
+              break;
+            } else {
+              final snackBar = SnackBar(
+                  content: Text(
+                      "Connected to saved device: ${device.platformName}."));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              break;
+            }
           }
         }
       } else {
         //replace with a snackbar
-        print("Nothing");
+        final snackBar = SnackBar(
+            content: Text("Did not find device with matching descriptions."));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        break;
       }
     }
   }
@@ -69,7 +81,7 @@ class _DeviceOverviewState extends State<DeviceOverview> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(widget.platformName),
-        content: Text("Connect to this device?"),
+        content: Text("Connect to Device?"),
         actions: [
           //No Option
           MaterialButton(
@@ -84,7 +96,7 @@ class _DeviceOverviewState extends State<DeviceOverview> {
           MaterialButton(
             color: Colors.lightBlue,
             onPressed: () async {
-              goToProfile();
+              goToProfile(context);
             },
             child: Text("Yes", style: TextStyle(color: Colors.white)),
           ),
@@ -103,6 +115,7 @@ class _DeviceOverviewState extends State<DeviceOverview> {
         onPressed: () async {
           //the only problem is that we have to scan first
           //then to the connect saved devices, which is very scuffed
+          widget.function;
           confirmConnectionDialog(context);
         },
         child: Padding(

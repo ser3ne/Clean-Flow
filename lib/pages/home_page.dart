@@ -1,7 +1,6 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
 import 'dart:convert';
-
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/Widgets/custom_text.dart';
 import 'package:capstone/global/routes.dart';
@@ -21,6 +20,7 @@ class Home_Page extends StatefulWidget {
 
 class Home_StatePage extends State<Home_Page> {
   List<dynamic> savedDevices = [];
+  bool tryconnecting = false;
 
   @override
   void initState() {
@@ -38,13 +38,11 @@ class Home_StatePage extends State<Home_Page> {
     }
   }
 
-  Color color_1 = Color.fromRGBO(255, 255, 255, 1);
-  Color color_2 = Color.fromRGBO(194, 193, 216, 1);
-  Color color_3 = Color.fromRGBO(140, 138, 184, 1);
-  Color color_4 = Color.fromRGBO(83, 80, 139, 1);
-  Color color_5 = Color.fromRGBO(54, 50, 124, 1);
-  Color color_6 = Color.fromRGBO(18, 15, 69, 1);
-  Color color_7 = Color.fromRGBO(0, 0, 0, 1);
+  void changeState() {
+    setState(() {
+      tryconnecting = !tryconnecting;
+    });
+  }
 
   List<BluetoothDevice> devices = [];
 
@@ -176,63 +174,70 @@ class Home_StatePage extends State<Home_Page> {
               height: 40,
             ),
             Container(
-                margin: EdgeInsets.only(bottom: 20),
-                width: MediaQuery.of(context).size.width * 0.90,
-                height: MediaQuery.of(context).size.height * 0.53,
-                decoration: BoxDecoration(
-                    color: Color.fromARGB(55, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(40)),
-                //ListView for Saved Devices
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 15,
+              margin: EdgeInsets.only(bottom: 20),
+              width: MediaQuery.of(context).size.width * 0.90,
+              height: MediaQuery.of(context).size.height * 0.53,
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(55, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(40)),
+              //ListView for Saved Devices
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      "Saved Devices",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Text(
-                        "Saved Devices",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600),
+                  ),
+                  Expanded(
+                    flex: 16,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: ListView.builder(
+                        itemCount:
+                            savedDevices.isEmpty ? 1 : savedDevices.length,
+                        itemBuilder: (context, index) {
+                          //checks if savedDevices list is empty
+                          var devices =
+                              savedDevices.isEmpty ? 0 : savedDevices[index];
+                          return savedDevices.isEmpty
+                              //Sets "No Device" text if it is
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 235),
+                                  child: Center(
+                                      child: CustomText(
+                                          text: "No Devices",
+                                          size: 30,
+                                          fontWeight: FontWeight.w900)),
+                                )
+                              //Takes from Bookmarked if any
+                              //This will build all devices "CURRENTLY" saved but not connected
+                              : DeviceOverview(
+                                  deviceMac: devices['mac'],
+                                  platformName: devices['pfname'],
+                                  function: changeState,
+                                );
+                        },
                       ),
                     ),
-                    Expanded(
-                      flex: 16,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: ListView.builder(
-                          itemCount:
-                              savedDevices.isEmpty ? 1 : savedDevices.length,
-                          itemBuilder: (context, index) {
-                            //checks if savedDevices list is empty
-                            var devices =
-                                savedDevices.isEmpty ? 0 : savedDevices[index];
-                            return savedDevices.isEmpty
-                                //Sets "No Device" text if it is
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 235),
-                                    child: Center(
-                                        child: CustomText(
-                                            text: "No Devices",
-                                            size: 30,
-                                            fontWeight: FontWeight.w900)),
-                                  )
-                                //Takes from Bookmarked if any
-                                //This will build all devices "CURRENTLY" saved but not connected
-                                : DeviceOverview(
-                                    deviceMac: devices['mac'],
-                                    platformName: devices['pfname'],
-                                  );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ))
+                  ),
+                  tryconnecting
+                      ? CircularProgressIndicator(
+                          backgroundColor: Colors.amber,
+                        )
+                      : SizedBox.shrink(),
+                ],
+              ),
+            )
           ],
         ),
       ),

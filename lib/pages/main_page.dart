@@ -1,13 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:ui';
-
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/widgets.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -17,10 +13,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  Future<String> loadAsset() async {
-    return await rootBundle.loadString('assets/config.json');
-  }
-
   int _currentIndex = 0;
   List<Widget> pages = [Home_Page(), Scanresult_Page()];
   @override

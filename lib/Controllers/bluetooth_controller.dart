@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, prefer_const_constructors, collection_methods_unrelated_type
+// ignore_for_file: prefer_const_constructors, collection_methods_unrelated_type
 
 import 'dart:async';
 import 'package:flutter/material.dart';
