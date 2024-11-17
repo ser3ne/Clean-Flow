@@ -30,12 +30,12 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
       //The Idea is that we will only store one device at a time
       //we then will remove that device if we disconnect.
       //but will leave a list of saved devices so we can access them later
-      //so go to the switch to save the device, and make the idea there.
       connectedDevices.clear();
       Navigator.pushNamedAndRemoveUntil(
           context, root, (Route<dynamic> route) => false);
     } else {
       setState(() {
+        globalDevice = null;
         isConnected = false;
       });
     }

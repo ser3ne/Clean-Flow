@@ -1,21 +1,21 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
+import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/global/routes.dart';
+import 'package:capstone/pages/device_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:get/get.dart';
 
 class DeviceOverview extends StatefulWidget {
   const DeviceOverview({
     super.key,
     required this.deviceMac,
     required this.platformName,
-    required this.function,
+    required this.removeDevice,
   });
 
   final String platformName;
   final String deviceMac;
-  final VoidCallback function;
+  final Future<void> Function(BuildContext, String, String) removeDevice;
 
   @override
   State<DeviceOverview> createState() => _DeviceOverviewState();
@@ -28,81 +28,134 @@ need to stop the duplication
 
  */
 class _DeviceOverviewState extends State<DeviceOverview> {
-  bool isConnected = false;
+  bool isConnected = true;
+  // bool isTapped = false;
 
   //When the Device is found we navigate to the profile
-  void goToProfile(BuildContext context) async {
+  Future<void> goToProfile(BuildContext context) async {
     for (var dev in copyResult) {
-      int counter = 0;
-      if (counter != copyResult.length - 1) {
-        //we'll check all the result if the devices in it contains our mac address
-        if (dev.remoteId.toString() == widget.deviceMac) {
+      // Check if the device MAC address matches
+      if (dev.remoteId.toString() == widget.deviceMac) {
+        bool x = await confirmConnectionDialog(context, true);
+        if (x) {
           BluetoothDevice device = dev;
-          //we'll check if the device is already connected
+          var connectionStateStream =
+              BluetoothController().bluetoothConnectState(device);
+
+          // Check if the device is already connected
           if (device.isConnected) {
-            //we'll essentially just navigate to the profile
-            connectedDevices.add(device);
-            Navigator.pushNamed(context, deviceprofile,
-                arguments: PairArguments(
-                    device, device.platformName, device.remoteId.toString()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DeviceProfile(
+                  args: PairArguments(
+                      device, device.platformName, device.remoteId.toString()),
+                ),
+              ),
+            );
+            // Navigator.pushNamed(
+            //   context,
+            //   deviceprofile,
+            //   arguments: PairArguments(
+            //     device,
+            //     device.platformName,
+            //     device.remoteId.toString(),
+            //   ),
+            // );
             break;
-          }
-          //if we're not already connected, we'll connect to it
-          //through the results which is 'device' at this point
-          else {
+          } else {
+            try {
+              // Disconnect global device if any, and cancel the previous subscription
+              if (connectedDevices.isNotEmpty) {
+                await connectedDevices[0].disconnect();
+                // Clear previous connections and connect to the new device
+                setState(() {
+                  connectedDevices.clear();
+                });
+              }
+              await connectionStateStream.cancel();
+            } catch (e) {
+              print("Device Overview: $e");
+            }
+
             await device.connect();
+
             if (device.isConnected) {
-              //D0:62:2C:3B:18:5E || smartwatch
-              Navigator.pushNamed(context, deviceprofile,
-                  arguments: PairArguments(
-                      device, device.platformName, device.remoteId.toString()));
-              break;
-            } else {
-              final snackBar = SnackBar(
-                  content: Text(
-                      "Connected to saved device: ${device.platformName}."));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              setState(() {
+                globalDevice = device;
+                connectedDevices.add(
+                    device); // Ensure the device is added only if not connected already
+              });
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DeviceProfile(
+                    args: PairArguments(device, device.platformName,
+                        device.remoteId.toString()),
+                  ),
+                ),
+                (Route<dynamic> route) => false, // Removes all previous routes
+              );
+              // Navigator.pushNamedAndRemoveUntil(
+              //     context, deviceprofile, (Route<dynamic> route) => false);
               break;
             }
           }
         }
-      } else {
-        //replace with a snackbar
-        final snackBar = SnackBar(
-            content: Text("Did not find device with matching descriptions."));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         break;
       }
     }
   }
 
-  Future<void> confirmConnectionDialog(BuildContext context) async {
+  Future<bool> confirmConnectionDialog(
+      BuildContext context, bool confirm) async {
+    bool x = false;
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(widget.platformName),
-        content: Text("Connect to Device?"),
+        content: confirm ? Text("Connect to Device?") : Text("Forget Device?"),
         actions: [
-          //No Option
+          // No Option
           MaterialButton(
             color: Colors.lightBlue,
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // Close dialog
             },
             child: Text("No"),
           ),
           SizedBox(width: 60),
-          //Yes Option
+          // Yes Option
           MaterialButton(
             color: Colors.lightBlue,
             onPressed: () async {
-              goToProfile(context);
+              // true for reconnection
+
+              if (confirm) {
+                //checks if bluetooth is on or off
+                //we return true
+                setState(() {
+                  x = true;
+                });
+                Navigator.pop(context); // Close dialog before navigating
+                // Only navigate after closing the dialog
+              }
+              // false for removing saved device
+              else {
+                widget.removeDevice(
+                  context,
+                  widget.deviceMac,
+                  widget.platformName,
+                );
+                Navigator.pop(context); // Close dialog
+              }
             },
             child: Text("Yes", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
+    return x;
   }
 
   @override
@@ -113,10 +166,25 @@ class _DeviceOverviewState extends State<DeviceOverview> {
       height: MediaQuery.of(context).size.height * 0.12,
       child: FloatingActionButton(
         onPressed: () async {
-          //the only problem is that we have to scan first
-          //then to the connect saved devices, which is very scuffed
-          widget.function;
-          confirmConnectionDialog(context);
+          bool y = await BluetoothController().checkAdapterState();
+          //if false
+          if (!y) {
+            //ask the user to turn on the bluetooth
+            await FlutterBluePlus.turnOn();
+            y = await BluetoothController().checkAdapterState();
+            //if it's on we start connection process
+            if (y) {
+              //To connect... the only problem is that we have to scan first
+              //then connect to the saved devices, which is very scuffed
+              try {
+                await goToProfile(context);
+              } finally {}
+            }
+          } else {
+            try {
+              await goToProfile(context);
+            } finally {}
+          }
         },
         child: Padding(
           padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
@@ -142,16 +210,28 @@ class _DeviceOverviewState extends State<DeviceOverview> {
                   )
                 ],
               ),
-              Switch(
-                inactiveTrackColor: Colors.white,
-                activeTrackColor: Colors.blueAccent,
-                inactiveThumbColor: Colors.black,
-                value: isConnected,
-                onChanged: (value) {
-                  setState(() {
-                    isConnected = value;
-                  });
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    flex: 1,
+
+                    //put the remove function here
+                    child: Switch(
+                      inactiveTrackColor: Colors.white,
+                      activeTrackColor: Colors.blueAccent,
+                      inactiveThumbColor: Colors.black,
+                      value: isConnected,
+                      onChanged: (value) async {
+                        setState(() {
+                          isConnected = value;
+                        });
+                        await confirmConnectionDialog(context, false);
+                      },
+                    ),
+                  ),
+                  Expanded(flex: 5, child: SizedBox.shrink()),
+                ],
               ),
             ],
           ),

@@ -26,18 +26,20 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
   String mainButtonText = "";
 
   bool canINowGoToAnotherPagePlease = false;
-
+  //false
   void buttonControls(bool isOn) async {
     isSearching(); //disable button
+    print("Disabled in scanresult");
     await BluetoothController()
         .askBluetoothPermission(isOn); //Start Scanning for devices
+    print("Permission in scanresult");
     isSearching(); //re-enable button
+    print("Enabled in scanresult");
   }
 
   void init2() async {
+    //Checks for bluetooth status (on or off)
     bool isOn = await BluetoothController().checkAdapterState();
-    //if bluetooth is ON, does a Scan
-    //else it asks to turn it on
     buttonControls(isOn);
   }
 
@@ -70,36 +72,65 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          //Synchronize Icon
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 20, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            ),
-            /*
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //disconnect button
+              Container(
+                margin: EdgeInsets.fromLTRB(20, 0, 0, 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30)),
+                ),
+                child: IconButton(
+                  onPressed: globalDevice != null
+                      ? () async {
+                          var sub = BluetoothController()
+                              .bluetoothConnectState(globalDevice!);
+                          await globalDevice!.disconnect();
+                          await sub.cancel();
+                          setState(() {
+                            connectedDevices.clear();
+                            globalDevice = null;
+                          });
+                        }
+                      : null,
+                  icon: Icon(Icons.bluetooth_disabled_rounded,
+                      color: globalDevice != null
+                          ? Colors.black
+                          : Color.fromARGB(56, 0, 0, 0),
+                      size: 30),
+                ),
+              ),
+              //Scan Button
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 20, 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30)),
+                ),
+                /*
             FIXX THIS BUTTON
-            FIXX THIS BUTTON
-            FIXX THIS BUTTON
-            FIXX THIS BUTTON
-            FIXX THIS BUTTON
-            FIXX THIS BUTTON
-
             it starts out as null which disables the button
             and does not allow the user to refresh
              */
-            child: IconButton(
-                onPressed: isScanning
-                    ? null
-                    : () async {
-                        bool isOn =
-                            await BluetoothController().checkAdapterState();
-                        buttonControls(isOn);
-                      },
-                icon: Icon(Icons.sync_sharp,
-                    color:
-                        isScanning ? Color.fromARGB(56, 0, 0, 0) : Colors.black,
-                    size: 30)),
+                child: IconButton(
+                    onPressed: isScanning
+                        ? null
+                        : () async {
+                            bool isOn =
+                                await BluetoothController().checkAdapterState();
+                            buttonControls(isOn);
+                          },
+                    icon: Icon(Icons.sync_sharp,
+                        color: isScanning
+                            ? Color.fromARGB(56, 0, 0, 0)
+                            : Colors.black,
+                        size: 30)),
+              ),
+            ],
           ),
           //Results Sheet
           Align(
@@ -108,13 +139,14 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
               height: MediaQuery.of(context).size.height * .5,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
+                // border: Border.all(width: 3),
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
                 color: Colors.white,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(top: 15),
                 //Stream
                 child: BluetoothScan(mac: "normalscan"),
               ),

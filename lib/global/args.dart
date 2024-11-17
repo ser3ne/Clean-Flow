@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+BluetoothDevice? globalDevice;
 bool globalBoolean = false;
 String absoluteFilePath = "";
 List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
@@ -19,6 +20,6 @@ class PairArguments {
 }
 
 class ScanArguments {
-  final String mac;
-  ScanArguments(this.mac);
+  final Future<void> Function(BuildContext, String, String) removeDevice;
+  ScanArguments(this.removeDevice);
 }

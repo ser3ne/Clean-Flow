@@ -48,6 +48,7 @@ class BluetoothController {
     if (!isOn) {
       //prompt user to turn on bluetooth
       await FlutterBluePlus.turnOn();
+      isOn = await checkAdapterState();
 
       //if bluetooth is on
       if (isOn) {
@@ -61,6 +62,7 @@ class BluetoothController {
     return isOn;
   }
 
+  //initiate Scanning for bluetooth devices
   Future<void> scanDevices() async {
     var subscription = FlutterBluePlus.scanResults.listen(
       (results) {
@@ -96,6 +98,7 @@ class BluetoothController {
     }
   }
 
+  //call this if you are about to disconnect a device
   StreamSubscription<BluetoothConnectionState> bluetoothConnectState(
       BluetoothDevice device) {
     var subscription =

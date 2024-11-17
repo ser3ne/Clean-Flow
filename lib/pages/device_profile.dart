@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceProfile extends StatefulWidget {
-  const DeviceProfile({super.key});
+  const DeviceProfile({super.key, required this.args});
+  final PairArguments args;
 
   @override
   State<DeviceProfile> createState() => _DeviceProfileState();
 }
 
 class _DeviceProfileState extends State<DeviceProfile> {
-  bool autoConn = false;
   Future<void> _savedDevices(
       BuildContext context, String macAdd, String pfName) async {
     final prefs = await SharedPreferences.getInstance();
@@ -25,7 +25,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
         jsonString != null ? jsonDecode(jsonString) : [];
 
     //Searches savedDevices list for any hits for device['mac']
-    //returns true if it exists
+    //returns true if it exists, false if it doesn't
     bool deviceExists = savedDevices.any(
       (device) => device['mac'] == macAdd,
     );
@@ -33,7 +33,9 @@ class _DeviceProfileState extends State<DeviceProfile> {
     //If there aren't any hits,
     //Add the mac address with the name to the saved devices
     if (!deviceExists) {
-      savedDevices.add({'mac': macAdd, 'pfname': pfName});
+      setState(() {
+        savedDevices.add({'mac': macAdd, 'pfname': pfName});
+      });
 
       await prefs.setString('savedDevices', jsonEncode(savedDevices));
 
@@ -60,21 +62,27 @@ class _DeviceProfileState extends State<DeviceProfile> {
 
   bool isConnected = false;
 
+  void isThisDeviceSaved() {
+    bool deviceExists = savedDevices.any(
+      (device) => device['mac'] == widget.args.macAddress,
+    );
+    if (deviceExists) {
+      setState(() {
+        isConnected = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isThisDeviceSaved();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as PairArguments;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, root,
-                  arguments: PairArguments(
-                      args.device,
-                      args.device.platformName,
-                      args.device.remoteId.toString()));
-            },
-            icon: Icon(Icons.chevron_left_outlined)),
-      ),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -89,8 +97,19 @@ class _DeviceProfileState extends State<DeviceProfile> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              Row(children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      image:
+                          DecorationImage(image: AssetImage("assets/cf.png"))),
+                  child: GestureDetector(
+                      onTap: () => Navigator.popAndPushNamed(context, root)),
+                )
+              ]),
               SizedBox(
-                height: 5,
+                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 3, bottom: 3),
@@ -129,7 +148,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Text(
-                                    args.device.platformName,
+                                    widget.args.device.platformName,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
@@ -150,8 +169,12 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                     setState(() {
                                       isConnected = value;
                                     });
-                                    _savedDevices(
-                                        context, args.macAddress, args.pfName);
+                                    if (isConnected) {
+                                      _savedDevices(
+                                          context,
+                                          widget.args.macAddress,
+                                          widget.args.pfName);
+                                    }
                                   },
                                 ),
                               )
@@ -172,7 +195,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                 child: Center(
                                   //this is where the data goes
                                   child: BLEDataDisplay(
-                                    device: args.device,
+                                    device: widget.args.device,
                                   ),
                                 ),
                               ),
@@ -188,7 +211,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                 height: MediaQuery.of(context).size.height * .1, //10%
                 width: MediaQuery.of(context).size.width,
                 child: CustomSwitchButtonBig(
-                  device: args.device,
+                  device: widget.args.device,
                   dialogueText:
                       isConnected ? "Are You Sure?" : "Disconnect Device",
                   size: 55,

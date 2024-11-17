@@ -2,7 +2,7 @@
 
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/global/routes.dart';
+import 'package:capstone/pages/device_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -15,7 +15,6 @@ class BluetoothScan extends StatefulWidget {
 }
 
 /*
-
 No, This is not the page where we start scanning
 this is the page where we process the results of
 the scanning.
@@ -32,7 +31,9 @@ class _BluetoothScanState extends State<BluetoothScan> {
     //disconnect and remove all currently connected devices from connected devices List
     if (connectedDevices.contains(device)) {
       await device.disconnect();
-      connectedDevices.clear();
+      setState(() {
+        connectedDevices.clear();
+      });
       await sub.cancel();
     } else {
       await device.connect();
@@ -45,9 +46,11 @@ class _BluetoothScanState extends State<BluetoothScan> {
         );
         setState(() {
           //List up the device to the connected devices list
+          globalDevice = device;
           connectedDevices.add(device);
           canINowGoToAnotherPagePlease = true;
         });
+        Navigator.pop(context);
       } else {
         yes(device);
       }
@@ -79,10 +82,23 @@ class _BluetoothScanState extends State<BluetoothScan> {
                 bool redirect = await yes(device);
                 //if true, pops all pre-ceding pages, then reoutes to new page, essentially refreshing the pages
                 if (redirect) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, deviceprofile, (Route<dynamic> route) => false,
-                      arguments: PairArguments(device, device.platformName,
-                          device.remoteId.toString()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DeviceProfile(
+                        args: PairArguments(device, device.platformName,
+                            device.remoteId.toString()),
+                      ),
+                    ),
+                  );
+                  // Navigator.pushNamed(context, deviceprofile,
+                  //     arguments: PairArguments(device, device.platformName,
+                  //         device.remoteId.toString()));
+
+                  // Navigator.pushNamedAndRemoveUntil(
+                  //     context, deviceprofile, (Route<dynamic> route) => false,
+                  //     arguments: PairArguments(device, device.platformName,
+                  //         device.remoteId.toString()));
                 }
               },
               child: Text(
@@ -141,10 +157,8 @@ class _BluetoothScanState extends State<BluetoothScan> {
             itemCount: results.length,
             itemBuilder: (context, index) {
               final device = results[index].device;
+
               copyResult.add(device);
-              if (device.isAutoConnectEnabled) {
-                yes(device);
-              }
               return Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: 5, bottom: 10),

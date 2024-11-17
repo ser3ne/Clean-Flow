@@ -3,9 +3,9 @@
 import 'dart:convert';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/Widgets/custom_text.dart';
-import 'package:capstone/global/routes.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/device_overview.dart';
+import 'package:capstone/pages/device_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -20,7 +20,50 @@ class Home_Page extends StatefulWidget {
 
 class Home_StatePage extends State<Home_Page> {
   List<dynamic> savedDevices = [];
-  bool tryconnecting = false;
+
+  Future<void> _savedDevices(
+      BuildContext context, String macAdd, String pfName) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? jsonString = prefs.getString('savedDevices');
+    savedDevices = jsonString != null ? jsonDecode(jsonString) : [];
+
+    //Searches savedDevices list for any hits for device['mac']
+    //returns true if it exists, false if it doesn't
+    bool deviceExists = savedDevices.any(
+      (device) => device['mac'] == macAdd,
+    );
+
+    //if it doesn't exists, we add
+    if (!deviceExists) {
+      setState(() {
+        savedDevices.add({'mac': macAdd, 'pfname': pfName});
+      });
+
+      await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+      const snackBar =
+          SnackBar(content: Text("Device added to saved devices."));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
+    //if there are hits, with the mac address
+    else {
+      // Remove the existing device by filtering it out
+      setState(() {
+        savedDevices.removeWhere(
+            (device) => device['mac'] == macAdd && device['pfname'] == pfName);
+      });
+
+      // Save the updated list back to Shared Preferences
+      await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+      // Show a SnackBar to confirm device removal
+      const snackBar =
+          SnackBar(content: Text("Device removed from saved devices."));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
 
   @override
   void initState() {
@@ -36,12 +79,6 @@ class Home_StatePage extends State<Home_Page> {
         savedDevices = jsonDecode(jsonString);
       });
     }
-  }
-
-  void changeState() {
-    setState(() {
-      tryconnecting = !tryconnecting;
-    });
   }
 
   List<BluetoothDevice> devices = [];
@@ -70,10 +107,21 @@ class Home_StatePage extends State<Home_Page> {
       await device.connect();
       if (device.isConnected) {
         connectedDevices.add(device);
-        Navigator.pushNamedAndRemoveUntil(
-            context, deviceprofile, (Route<dynamic> route) => false,
-            arguments: PairArguments(
-                device, device.platformName, device.remoteId.toString()));
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DeviceProfile(
+              args: PairArguments(
+                  device, device.platformName, device.remoteId.toString()),
+            ),
+          ),
+          (Route<dynamic> route) => false, // Removes all previous routes
+        );
+        // Navigator.pushNamedAndRemoveUntil(
+        //     context, deviceprofile, (Route<dynamic> route) => false,
+        //     arguments: PairArguments(
+        //         device, device.platformName, device.remoteId.toString()));
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               "Successfully Connected to: ${device.platformName.isEmpty ? "Unknown Device" : device.platformName}"),
@@ -122,54 +170,79 @@ class Home_StatePage extends State<Home_Page> {
             ),
             //Dapat Dito sa sizedbox lalabas ung connected Device hindi sa Container
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.75,
-              height: MediaQuery.of(context).size.height * .120,
-              //checks if there are not connected devices
-              child: connectedDevices.isEmpty
-                  //true
-                  ? Container(
-                      height: 100,
-                      width: 300,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(30),
-                          ),
-                          color: const Color.fromARGB(55, 255, 255, 255)),
-                      margin: EdgeInsets.only(top: 40),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Text("No Connected Devices",
-                            softWrap: true,
-                            textAlign: TextAlign.center,
-                            style:
-                                TextStyle(fontSize: 20, color: Colors.black)),
-                      ),
-                    )
-                  //false
-                  : FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, deviceprofile,
-                            arguments: PairArguments(
-                                connectedDevices[0],
-                                connectedDevices[0].platformName,
-                                connectedDevices[0].remoteId.toString()));
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            child: Text(
-                              connectedDevices[0].platformName,
-                              softWrap: true,
-                              style: TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.w600),
+                width: MediaQuery.of(context).size.width * 0.75,
+                height: MediaQuery.of(context).size.height * .120,
+                //checks if there are not connected devices
+                child: connectedDevices.isEmpty
+                    //true
+                    ? Container(
+                        height: 100,
+                        width: 300,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(30),
                             ),
-                          ),
-                          ChevRight(color: Colors.black, size: 45, right: 0)
-                        ],
-                      ),
-                    ),
-            ),
+                            color: const Color.fromARGB(55, 255, 255, 255)),
+                        margin: EdgeInsets.only(top: 40),
+                        child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Text("No Connected Devices",
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.black)),
+                        ),
+                      )
+                    //false
+                    : ListView.builder(
+                        itemCount: 1,
+                        itemBuilder: (context, index) {
+                          //checks if savedDevices list is empty
+                          return SizedBox(
+                            height: 100,
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DeviceProfile(
+                                      args: PairArguments(
+                                          connectedDevices[0],
+                                          connectedDevices[0].platformName,
+                                          connectedDevices[0]
+                                              .remoteId
+                                              .toString()),
+                                    ),
+                                  ),
+                                );
+                                // Navigator.pushNamed(context, deviceprofile,
+                                //     arguments: PairArguments(
+                                //         connectedDevices[0],
+                                //         connectedDevices[0].platformName,
+                                //         connectedDevices[0]
+                                //             .remoteId
+                                //             .toString()));
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    child: Text(
+                                      connectedDevices[0].platformName,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                  ChevRight(
+                                      color: Colors.black, size: 45, right: 0)
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      )),
             SizedBox(
               height: 40,
             ),
@@ -224,17 +297,15 @@ class Home_StatePage extends State<Home_Page> {
                               : DeviceOverview(
                                   deviceMac: devices['mac'],
                                   platformName: devices['pfname'],
-                                  function: changeState,
+                                  removeDevice: (p0, p1, p2) => _savedDevices(
+                                      context,
+                                      devices['mac'],
+                                      devices['pfname']),
                                 );
                         },
                       ),
                     ),
                   ),
-                  tryconnecting
-                      ? CircularProgressIndicator(
-                          backgroundColor: Colors.amber,
-                        )
-                      : SizedBox.shrink(),
                 ],
               ),
             )
