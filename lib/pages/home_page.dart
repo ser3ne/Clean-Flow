@@ -257,8 +257,11 @@ class Home_StatePage extends State<Home_Page> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: 15,
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 15,
+                    ),
                   ),
                   Expanded(
                     flex: 1,

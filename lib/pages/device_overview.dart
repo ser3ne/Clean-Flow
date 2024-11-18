@@ -68,8 +68,8 @@ class _DeviceOverviewState extends State<DeviceOverview> {
               // Disconnect global device if any, and cancel the previous subscription
               if (connectedDevices.isNotEmpty) {
                 await connectedDevices[0].disconnect();
-                // Clear previous connections and connect to the new device
                 setState(() {
+                  // Clear previous connections and connect to the new device
                   connectedDevices.clear();
                 });
               }
@@ -77,9 +77,7 @@ class _DeviceOverviewState extends State<DeviceOverview> {
             } catch (e) {
               print("Device Overview: $e");
             }
-
             await device.connect();
-
             if (device.isConnected) {
               setState(() {
                 globalDevice = device;
