@@ -220,7 +220,8 @@ class Home_StatePage extends State<Home_Page> {
                                   fontSize: 17, fontWeight: FontWeight.w600),
                             ),
                           ),
-                          ChevRight(color: Colors.black, size: 45, right: 0)
+                          Icon(Icons.chevron_right_rounded,
+                              color: Colors.black, size: 45)
                         ],
                       ),
                     ),
