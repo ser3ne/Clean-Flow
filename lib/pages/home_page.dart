@@ -170,75 +170,61 @@ class Home_StatePage extends State<Home_Page> {
             ),
             //Dapat Dito sa sizedbox lalabas ung connected Device hindi sa Container
             SizedBox(
-                width: MediaQuery.of(context).size.width * 0.75,
-                height: MediaQuery.of(context).size.height * .120,
-                //checks if there are not connected devices
-                child: connectedDevices.isEmpty
-                    //true
-                    ? Container(
-                        height: 100,
-                        width: 300,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30),
+              width: MediaQuery.of(context).size.width * 0.75,
+              height: MediaQuery.of(context).size.height * .120,
+              //checks if there are not connected devices
+              child: connectedDevices.isEmpty
+                  //true
+                  ? Container(
+                      height: 100,
+                      width: 300,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
+                          ),
+                          color: const Color.fromARGB(55, 255, 255, 255)),
+                      margin: EdgeInsets.only(top: 40),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Text("No Connected Devices",
+                            softWrap: true,
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.black)),
+                      ),
+                    )
+                  //false
+                  : FloatingActionButton(
+                      backgroundColor: Colors.white,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DeviceProfile(
+                              args: PairArguments(
+                                  connectedDevices[0],
+                                  connectedDevices[0].platformName,
+                                  connectedDevices[0].remoteId.toString()),
                             ),
-                            color: connectedDevices.isEmpty
-                                ? const Color.fromARGB(55, 255, 255, 255)
-                                : const Color.fromARGB(0, 255, 255, 255)),
-                        margin: EdgeInsets.only(top: 40),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Text("No Connected Devices",
+                          ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            child: Text(
+                              connectedDevices[0].platformName,
                               softWrap: true,
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.black)),
-                        ),
-                      )
-                    //false
-                    : ListView.builder(
-                        itemCount: 1,
-                        itemBuilder: (context, index) {
-                          //checks if savedDevices list is empty
-                          return SizedBox(
-                            height: 100,
-                            child: FloatingActionButton(
-                              backgroundColor: Colors.white,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DeviceProfile(
-                                      args: PairArguments(
-                                          connectedDevices[0],
-                                          connectedDevices[0].platformName,
-                                          connectedDevices[0]
-                                              .remoteId
-                                              .toString()),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    child: Text(
-                                      connectedDevices[0].platformName,
-                                      softWrap: true,
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  ChevRight(
-                                      color: Colors.black, size: 45, right: 0)
-                                ],
-                              ),
+                              style: TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.w600),
                             ),
-                          );
-                        },
-                      )),
+                          ),
+                          ChevRight(color: Colors.black, size: 45, right: 0)
+                        ],
+                      ),
+                    ),
+            ),
             SizedBox(
               height: 40,
             ),
