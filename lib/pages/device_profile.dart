@@ -161,8 +161,6 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                     ),
                                   ),
                                 ),
-                                //Make the shared preferences here
-                                //currently it does nothing
                                 Align(
                                   alignment: Alignment.topLeft,
                                   child: Switch(

@@ -111,48 +111,148 @@ class _DeviceOverviewState extends State<DeviceOverview> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(widget.platformName),
-        content: confirm ? Text("Connect to Device?") : Text("Forget Device?"),
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          width: double.infinity,
+          height: 65,
+          // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.blueAccent),
+          child: Center(
+            child: Icon(
+              Icons.bluetooth_rounded,
+              size: 40,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          height: 147,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 6,
+                child: Center(
+                  child: Text(
+                    widget.platformName,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    // overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                  ),
+                ),
+              ),
+              Expanded(
+                  flex: 3,
+                  child: Text(confirm ? "Connect to Device?" : "Forget Device?",
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 25))),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    confirm
+                        ? "Would you like to connect to this device?"
+                        : "Would you like to Forget to this device?",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
-          // No Option
+          //No
           MaterialButton(
-            color: Colors.lightBlue,
-            onPressed: () {
-              Navigator.pop(context); // Close dialog
-            },
-            child: Text("No"),
-          ),
-          SizedBox(width: 60),
-          // Yes Option
-          MaterialButton(
-            color: Colors.lightBlue,
-            onPressed: () async {
-              // true for reconnection
-
-              if (confirm) {
-                //checks if bluetooth is on or off
-                //we return true
-                setState(() {
-                  x = true;
-                });
-                Navigator.pop(context); // Close dialog before navigating
-                // Only navigate after closing the dialog
-              }
-              // false for removing saved device
-              else {
-                widget.removeDevice(
-                  context,
-                  widget.deviceMac,
-                  widget.platformName,
-                );
+              color: Colors.lightBlue,
+              onPressed: () {
                 Navigator.pop(context); // Close dialog
-              }
-            },
-            child: Text("Yes", style: TextStyle(color: Colors.white)),
+              },
+              child: Text("No")),
+          SizedBox(
+            width: 60,
           ),
+          //Yes
+          MaterialButton(
+              color: Colors.lightBlue,
+              onPressed: () async {
+                //true for reconnection
+                if (confirm) {
+                  //checks if bluetooth is on or off
+                  //we return true
+                  setState(() {
+                    x = true;
+                  });
+                  Navigator.pop(context); // Close dialog before navigating
+                  // Only navigate after closing the dialog
+                }
+                // false for removing saved device
+                else {
+                  widget.removeDevice(
+                    context,
+                    widget.deviceMac,
+                    widget.platformName,
+                  );
+                  Navigator.pop(context); // Close dialog
+                }
+              },
+              child: Text(
+                "Yes",
+                style: TextStyle(color: Colors.white),
+              ))
         ],
       ),
     );
+    //////
+    // await showDialog(
+    //   context: context,
+    //   builder: (context) => AlertDialog(
+    //     title: Text(widget.platformName),
+    //     content: confirm ? Text("Connect to Device?") : Text("Forget Device?"),
+    //     actions: [
+    //       // No Option
+    //       MaterialButton(
+    //         color: Colors.lightBlue,
+    //         onPressed: () {
+    //           Navigator.pop(context); // Close dialog
+    //         },
+    //         child: Text("No"),
+    //       ),
+    //       SizedBox(width: 60),
+    //       // Yes Option
+    //       MaterialButton(
+    //         color: Colors.lightBlue,
+    //         onPressed: () async {
+    //           // true for reconnection
+    //           if (confirm) {
+    //             //checks if bluetooth is on or off
+    //             //we return true
+    //             setState(() {
+    //               x = true;
+    //             });
+    //             Navigator.pop(context); // Close dialog before navigating
+    //             // Only navigate after closing the dialog
+    //           }
+    //           // false for removing saved device
+    //           else {
+    //             widget.removeDevice(
+    //               context,
+    //               widget.deviceMac,
+    //               widget.platformName,
+    //             );
+    //             Navigator.pop(context); // Close dialog
+    //           }
+    //         },
+    //         child: Text("Yes", style: TextStyle(color: Colors.white)),
+    //       ),
+    //     ],
+    //   ),
+    // );
     return x;
   }
 

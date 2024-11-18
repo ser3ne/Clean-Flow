@@ -75,8 +75,78 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             List<String> voltTemp = values[0].split('.');
             List<String> reducTemp = values[1].split('.');
 
-            // Parse each part as an integer
             String volts = voltTemp[0];
+            // Parse as an integer
+            int voltage = int.parse(volts);
+
+            if (voltage >= 240) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  titlePadding: EdgeInsets.zero,
+                  title: Container(
+                    width: double.infinity,
+                    height: 65,
+                    // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25),
+                            topRight: Radius.circular(25)),
+                        color: Colors.red),
+                    child: Center(
+                      child: Icon(
+                        Icons.warning_amber_rounded,
+                        size: 50,
+                      ),
+                    ),
+                  ),
+                  content: SizedBox(
+                    height: 150,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Center(
+                            child: Text(
+                              widget.device.platformName,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              // overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 25),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Center(
+                            child: Text(
+                              " has detected high amounts of fluctuations.\nreadings at the time was: $voltage volts",
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 15),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    Center(
+                      child: MaterialButton(
+                          color: Colors.lightBlue,
+                          onPressed: () {
+                            Navigator.pop(context); //closes the pop-up
+                          },
+                          child: Text("Got it")),
+                    )
+                    //No
+                  ],
+                ),
+              );
+            }
+
             String percentageReduction = reducTemp[0];
 
             // Display both values in the widget

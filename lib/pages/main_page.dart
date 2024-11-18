@@ -24,31 +24,78 @@ class _MainPageState extends State<MainPage> {
         bool willPop = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text("Confirm Navigation"),
-            content: Text("Are you sure you want to exit?"),
+            titlePadding: EdgeInsets.zero,
+            title: Container(
+              width: double.infinity,
+              height: 60,
+              // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25)),
+                  color: Colors.red),
+              child: Center(
+                child: Icon(
+                  Icons.warning_amber_rounded,
+                  size: 50,
+                ),
+              ),
+            ),
+            content: SizedBox(
+              height: 100,
+              child: Column(
+                children: [
+                  Center(
+                    child: Text(
+                      "Exit App",
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      // overflow: TextOverflow.ellipsis,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      "Would you like to exit the app?",
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             actions: [
-              // No Option
               MaterialButton(
-                color: Colors.lightBlue,
-                onPressed: () {
-                  // Prevent Closure
-                  Navigator.of(context).pop(false);
-                },
-                child: Text("No"),
+                  color: Colors.red,
+                  onPressed: () {
+                    Navigator.of(context).pop(false); //prevent app closure
+                  },
+                  child: Text(
+                    "No",
+                    style: TextStyle(color: Colors.black),
+                  )),
+              SizedBox(
+                width: 60,
               ),
-              SizedBox(width: 60),
-              // Yes Option
+              //Yes
               MaterialButton(
-                color: Colors.lightBlue,
-                onPressed: () async {
-                  Navigator.of(context).pop(true); // Enable Closure
-                },
-                child: Text("Yes", style: TextStyle(color: Colors.white)),
-              ),
+                  color: Colors.redAccent,
+                  onPressed: () async {
+                    Navigator.of(context).pop(true); //enable app closure
+                  },
+                  child: Text(
+                    "Yes",
+                    style: TextStyle(color: Colors.black),
+                  ))
+              //No
             ],
           ),
         );
         if (willPop) {
+          //close the app
           exit(0);
         }
       }

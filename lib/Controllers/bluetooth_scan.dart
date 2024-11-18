@@ -62,8 +62,60 @@ class _BluetoothScanState extends State<BluetoothScan> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(device.platformName.toString()),
-        content: Text("Connect to this device?"),
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          width: double.infinity,
+          height: 65,
+          // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.blueAccent),
+          child: Center(
+            child: Icon(
+              Icons.bluetooth_rounded,
+              size: 40,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          height: 147,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 6,
+                child: Center(
+                  child: Text(
+                    device.platformName,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    // overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                  ),
+                ),
+              ),
+              Expanded(
+                  flex: 3,
+                  child: Text(
+                    "Connect Device?",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 25),
+                  )),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    "Would you like to connect to this device?",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
           //No
           MaterialButton(
@@ -91,14 +143,6 @@ class _BluetoothScanState extends State<BluetoothScan> {
                       ),
                     ),
                   );
-                  // Navigator.pushNamed(context, deviceprofile,
-                  //     arguments: PairArguments(device, device.platformName,
-                  //         device.remoteId.toString()));
-
-                  // Navigator.pushNamedAndRemoveUntil(
-                  //     context, deviceprofile, (Route<dynamic> route) => false,
-                  //     arguments: PairArguments(device, device.platformName,
-                  //         device.remoteId.toString()));
                 }
               },
               child: Text(
