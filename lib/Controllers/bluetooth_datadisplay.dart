@@ -121,7 +121,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                           flex: 3,
                           child: Center(
                             child: Text(
-                              " has detected high amounts of fluctuations.\nreadings at the time was: $voltage volts",
+                              " has detected high amounts of fluctuations.\nreadings at the time was: ${voltage}V",
                               softWrap: true,
                               textAlign: TextAlign.center,
                               style: TextStyle(

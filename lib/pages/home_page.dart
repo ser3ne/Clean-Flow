@@ -182,7 +182,9 @@ class Home_StatePage extends State<Home_Page> {
                             borderRadius: BorderRadius.all(
                               Radius.circular(30),
                             ),
-                            color: const Color.fromARGB(55, 255, 255, 255)),
+                            color: connectedDevices.isEmpty
+                                ? const Color.fromARGB(55, 255, 255, 255)
+                                : const Color.fromARGB(0, 255, 255, 255)),
                         margin: EdgeInsets.only(top: 40),
                         child: Padding(
                           padding: const EdgeInsets.all(15),
@@ -201,6 +203,7 @@ class Home_StatePage extends State<Home_Page> {
                           return SizedBox(
                             height: 100,
                             child: FloatingActionButton(
+                              backgroundColor: Colors.white,
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -215,13 +218,6 @@ class Home_StatePage extends State<Home_Page> {
                                     ),
                                   ),
                                 );
-                                // Navigator.pushNamed(context, deviceprofile,
-                                //     arguments: PairArguments(
-                                //         connectedDevices[0],
-                                //         connectedDevices[0].platformName,
-                                //         connectedDevices[0]
-                                //             .remoteId
-                                //             .toString()));
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
