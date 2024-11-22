@@ -8,8 +8,8 @@ List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 List<dynamic> savedDevices = [];
 List<BluetoothDevice> copyResult = [];
 
-const Color colorY = Color.fromARGB(222, 13, 255, 0);
-const Color colorX = Color.fromARGB(201, 2, 4, 140);
+const Color colorY = Color.fromRGBO(13, 255, 0, 0.871);
+const Color colorX = Color.fromRGBO(2, 4, 140, 0.788);
 
 class PairArguments {
   final BluetoothDevice device;
