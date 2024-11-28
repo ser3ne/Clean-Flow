@@ -1,10 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:math';
-
-import 'package:capstone/Widgets/chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -187,8 +184,6 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             }
             FlSpot maxXVal = _voltSpots.reduce(
                 (value, element) => value.y > element.y ? value : element);
-            FlSpot minXVal = _voltSpots.reduce(
-                (value, element) => value.y < element.y ? element : value);
 
             // Increment the current x-value for the next point
             //change the wavelength
