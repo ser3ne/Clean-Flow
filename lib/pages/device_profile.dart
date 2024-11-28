@@ -99,29 +99,28 @@ class _DeviceProfileState extends State<DeviceProfile> {
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                //logo top-left
                 Row(children: [
                   Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage("assets/cf.png"))),
-                      child: GestureDetector(
-                        onTap: () =>
-                            Navigator.pushReplacementNamed(context, root),
-                      ))
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/cf.png"))),
+                  )
                 ]),
                 SizedBox(
                   height: 10,
                 ),
+                //face of the profile
                 Padding(
                   padding: const EdgeInsets.only(top: 3, bottom: 3),
                   child: Container(
                     height: MediaQuery.of(context).size.height * .75, //.3
                     width: MediaQuery.of(context).size.width * .9, //.42
                     decoration: BoxDecoration(
+                        border: Border.all(width: 3),
                         boxShadow: [
                           BoxShadow(
                               blurRadius: 7,
@@ -134,19 +133,22 @@ class _DeviceProfileState extends State<DeviceProfile> {
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             height: MediaQuery.of(context).size.height * .15,
                             width: MediaQuery.of(context).size.width,
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                //Device Name location
                                 Container(
                                   height:
                                       MediaQuery.of(context).size.height * .07,
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
+                                      border: Border.all(width: 3),
                                       color: Colors.white,
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10))),
@@ -161,47 +163,42 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                     ),
                                   ),
                                 ),
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Switch(
-                                    inactiveTrackColor: Colors.white,
-                                    activeTrackColor: Colors.blueAccent,
-                                    inactiveThumbColor: Colors.black,
-                                    value: isConnected,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isConnected = value;
-                                      });
-                                      if (isConnected) {
-                                        _savedDevices(
-                                            context,
-                                            widget.args.macAddress,
-                                            widget.args.pfName);
-                                      }
-                                    },
-                                  ),
+                                Switch(
+                                  inactiveTrackColor: Colors.white,
+                                  activeTrackColor: Colors.blueAccent,
+                                  inactiveThumbColor: Colors.black,
+                                  value: isConnected,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isConnected = value;
+                                    });
+                                    if (isConnected) {
+                                      _savedDevices(
+                                          context,
+                                          widget.args.macAddress,
+                                          widget.args.pfName);
+                                    }
+                                  },
                                 )
                               ],
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              height: 150,
-                              width: MediaQuery.of(context).size.width,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 5, bottom: 5),
-                                child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * .15,
-                                  width:
-                                      MediaQuery.of(context).size.width * .43,
-                                  child: Center(
-                                    //this is where the data goes
-                                    child: BLEDataDisplay(
-                                      device: widget.args.device,
-                                    ),
+                          //display: Chart data and numerical Values
+                          Container(
+                            // decoration:
+                            //     BoxDecoration(border: Border.all(width: 3)),
+                            height: 475,
+                            width: MediaQuery.of(context).size.width,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * .15,
+                                width: MediaQuery.of(context).size.width * .43,
+                                child: Center(
+                                  //this is where the data goes
+                                  child: BLEDataDisplay(
+                                    device: widget.args.device,
                                   ),
                                 ),
                               ),
