@@ -21,8 +21,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   List<FlSpot> _voltSpots = []; //this is the lists we fill values for the chart
   double _currentX = 0.1; // Relative x-value for the sine wave
   double amplitude = 200; // Height of the sine wave
-  final double _frequency = .05; // Frequency of the sine wave
-  final int _maxPoints = 30; // Number of points to show on the chart
+  final double _frequency = .1; // Frequency of the sine wave
+  final int _maxPoints = 25; // Number of points to show on the chart
   double maxYVal = 0.0;
   double minYVal = 0.0;
   bool haveAlerted = false;
@@ -191,11 +191,9 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             // Calculate the new y-value for the sine wave
             // i think it's the _amplitude we change for values we want to see
             double voltY = voltage * sin(_frequency * _currentX);
-            double noiseY = noise * sin(_frequency * _currentX);
-            double cleanY = clean * sin(_frequency * _currentX);
-            // double voltY = voltage;
-            // double noiseY = noise;
-            // double cleanY = clean;
+            double noiseY = noise * sin(_frequency * _currentX) - 4;
+            double cleanY = clean * sin(_frequency * _currentX) + 6;
+
             // Add the new point to the sine wave
             _voltSpots.add(FlSpot(_currentX, voltY));
             _noisySpots.add(FlSpot(_currentX, noiseY));
@@ -228,7 +226,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             // Increment the current x-value for the next point
             //change the wavelength
             // _currentX += 1.029;
-            _currentX += 1000;
+            _currentX += 700;
 
             // Display both values in the widget
             return Column(
@@ -302,6 +300,37 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 ),
                 SizedBox(
                   height: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RichText(
+                          text: TextSpan(
+                              text: "Highest:",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 20),
+                              children: [
+                            TextSpan(
+                                text: " ${maxYVal.toInt()}",
+                                style: TextStyle(
+                                    color: maxYVal.toInt() > 240
+                                        ? Colors.red
+                                        : Colors.black))
+                          ])),
+                      RichText(
+                          text: TextSpan(
+                              text: "Lowest:",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 20),
+                              children: [
+                            TextSpan(
+                                text: " ${(0 - minYVal.toInt())}",
+                                style: TextStyle(
+                                    color: (0 - minYVal.toInt()) <= 180
+                                        ? Colors.red
+                                        : Colors.black))
+                          ])),
+                    ],
+                  ),
                 ),
                 Row(
                   children: [

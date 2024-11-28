@@ -217,6 +217,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                     ),
                   ),
                 ),
+                //Custom Disconnect Switch
                 SizedBox(
                   height: MediaQuery.of(context).size.height * .1, //10%
                   width: MediaQuery.of(context).size.width,
