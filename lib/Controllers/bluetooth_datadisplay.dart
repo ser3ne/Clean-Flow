@@ -21,8 +21,9 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   double _currentX = 0.1; // Relative x-value for the sine wave
   double amplitude = 200; // Height of the sine wave
   final double _frequency = .05; // Frequency of the sine wave
-  final int _maxPoints = 100; // Number of points to show on the chart
-
+  final int _maxPoints = 20; // Number of points to show on the chart
+  double maxYVal = 0.0;
+  double minYVal = 0.0;
   Future<Stream<List<int>>?> getCharacteristicStream() async {
     // Discover services on the device
     List<BluetoothService> services = await widget.device.discoverServices();
@@ -98,73 +99,73 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             double voltage = double.parse(volts);
             double doubleReduc = double.parse(percentageReduction);
 
-            if (voltage >= 240) {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  titlePadding: EdgeInsets.zero,
-                  title: Container(
-                    width: double.infinity,
-                    height: 65,
-                    // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25),
-                            topRight: Radius.circular(25)),
-                        color: Colors.red),
-                    child: Center(
-                      child: Icon(
-                        Icons.warning_amber_rounded,
-                        size: 50,
-                      ),
-                    ),
-                  ),
-                  content: SizedBox(
-                    height: 150,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Center(
-                            child: Text(
-                              widget.device.platformName,
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                              // overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 25),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 3,
-                          child: Center(
-                            child: Text(
-                              " has detected high amounts of fluctuations.\nreadings at the time was: ${voltage}V",
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    Center(
-                      child: MaterialButton(
-                          color: Colors.lightBlue,
-                          onPressed: () {
-                            Navigator.pop(context); //closes the pop-up
-                          },
-                          child: Text("Got it")),
-                    )
-                    //No
-                  ],
-                ),
-              );
-            }
+            // if (voltage >= 240) {
+            //   showDialog(
+            //     context: context,
+            //     builder: (context) => AlertDialog(
+            //       titlePadding: EdgeInsets.zero,
+            //       title: Container(
+            //         width: double.infinity,
+            //         height: 65,
+            //         // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            //         decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.only(
+            //                 topLeft: Radius.circular(25),
+            //                 topRight: Radius.circular(25)),
+            //             color: Colors.red),
+            //         child: Center(
+            //           child: Icon(
+            //             Icons.warning_amber_rounded,
+            //             size: 50,
+            //           ),
+            //         ),
+            //       ),
+            //       content: SizedBox(
+            //         height: 150,
+            //         child: Column(
+            //           children: [
+            //             Expanded(
+            //               flex: 3,
+            //               child: Center(
+            //                 child: Text(
+            //                   widget.device.platformName,
+            //                   softWrap: true,
+            //                   textAlign: TextAlign.center,
+            //                   // overflow: TextOverflow.ellipsis,
+            //                   style: TextStyle(
+            //                       fontWeight: FontWeight.w600, fontSize: 25),
+            //                 ),
+            //               ),
+            //             ),
+            //             Expanded(
+            //               flex: 3,
+            //               child: Center(
+            //                 child: Text(
+            //                   " has detected high amounts of fluctuations.\nreadings at the time was: ${voltage}V",
+            //                   softWrap: true,
+            //                   textAlign: TextAlign.center,
+            //                   style: TextStyle(
+            //                       fontWeight: FontWeight.w400, fontSize: 15),
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //       actions: [
+            //         Center(
+            //           child: MaterialButton(
+            //               color: Colors.lightBlue,
+            //               onPressed: () {
+            //                 Navigator.pop(context); //closes the pop-up
+            //               },
+            //               child: Text("Got it")),
+            //         )
+            //         //No
+            //       ],
+            //     ),
+            //   );
+            // }
 
             // Calculate the new y-value for the sine wave
             // i think it's the _amplitude we change for values we want to see
@@ -182,12 +183,22 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             if (_percentReducSpots.length > _maxPoints) {
               _percentReducSpots.removeAt(0);
             }
-            FlSpot maxXVal = _voltSpots.reduce(
+            FlSpot maxYValRaw = _voltSpots.reduce(
                 (value, element) => value.y > element.y ? value : element);
+            FlSpot minYValRaw = _voltSpots.reduce(
+                (value, element) => value.y < element.y ? value : element);
+
+            if (maxYVal < maxYValRaw.y) {
+              maxYVal = maxYValRaw.y;
+            }
+            if (minYVal > minYValRaw.y) {
+              minYVal = minYValRaw.y;
+            }
 
             // Increment the current x-value for the next point
             //change the wavelength
-            _currentX += 1.029;
+            // _currentX += 1.029;
+            _currentX += 100;
 
             // Display both values in the widget
             return Column(
@@ -225,9 +236,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                         )
                       ],
                       // minX: _currentX - _maxPoints.toDouble(),
-                      maxX: _currentX,
-                      maxY: maxXVal.y,
-                      minY: (0 - maxXVal.y),
+                      maxY: maxYVal,
+                      minY: minYVal,
 
                       //horizontal and vertical labels of values
                       titlesData: const FlTitlesData(
