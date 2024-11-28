@@ -36,42 +36,115 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
     } else {
       setState(() {
         globalDevice = null;
+
         isConnected = false;
       });
     }
   }
 
   Future<bool> confirmDisconnectionDialogue(BluetoothDevice device) async {
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(widget.device.platformName),
-        contentPadding: EdgeInsets.all(10),
-        content: Text(widget.dialogueText),
-        actions: [
-          MaterialButton(
-            color: Colors.lightBlue,
-            onPressed: () {
-              setState(() {
-                isConnected = false;
-                Navigator.pop(context);
-              });
-            },
-            child: Text("No"),
-          ),
-          MaterialButton(
-            color: Colors.lightBlue,
-            onPressed: () {
-              dialogueActionDisconnect(device);
-            },
-            child: Text(
-              "Yes",
-              style: TextStyle(color: Colors.white),
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          width: double.infinity,
+          height: 60,
+          // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.red),
+          child: Center(
+            child: Icon(
+              Icons.warning_amber_rounded,
+              size: 50,
             ),
           ),
+        ),
+        content: SizedBox(
+          height: 100,
+          child: Column(
+            children: [
+              Center(
+                child: Text(
+                  "Disconnect?",
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  // overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                ),
+              ),
+              Center(
+                child: Text(
+                  "Would you disconnect from the device?",
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          MaterialButton(
+              color: Colors.red,
+              onPressed: () {
+                setState(() {
+                  isConnected = false;
+                });
+                Navigator.pop(context);
+              },
+              child: Text(
+                "No",
+                style: TextStyle(color: Colors.black),
+              )),
+          SizedBox(
+            width: 60,
+          ),
+          //Yes
+          MaterialButton(
+              color: Colors.redAccent,
+              onPressed: () {
+                dialogueActionDisconnect(device);
+              },
+              child: Text(
+                "Yes",
+                style: TextStyle(color: Colors.black),
+              ))
+          //No
         ],
       ),
     );
+
+    // showDialog(
+    //   context: context,
+    //   builder: (context) => AlertDialog(
+    //     title: Text(widget.device.platformName),
+    //     contentPadding: EdgeInsets.all(10),
+    //     content: Text(widget.dialogueText),
+    //     actions: [
+    //       MaterialButton(
+    //         color: Colors.lightBlue,
+    //         onPressed: () {
+    //           isConnected = false;
+    //           Navigator.pop(context);
+    //         },
+    //         child: Text("No"),
+    //       ),
+    //       MaterialButton(
+    //         color: Colors.lightBlue,
+    //         onPressed: () {
+    //           dialogueActionDisconnect(device);
+    //         },
+    //         child: Text(
+    //           "Yes",
+    //           style: TextStyle(color: Colors.white),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
     return isConnected;
   }
 
@@ -84,8 +157,8 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           //starts as active, then press to de-activate
           //starts as false, then become true
           isConnected = !isConnected;
+          confirmDisconnectionDialogue(widget.device);
         });
-        confirmDisconnectionDialogue(widget.device);
       },
       child: Center(
         child: Container(

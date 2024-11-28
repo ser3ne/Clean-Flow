@@ -5,6 +5,7 @@ import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
+import 'package:capstone/Widgets/button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -163,22 +164,29 @@ class _DeviceProfileState extends State<DeviceProfile> {
                                     ),
                                   ),
                                 ),
-                                Switch(
-                                  inactiveTrackColor: Colors.white,
-                                  activeTrackColor: Colors.blueAccent,
-                                  inactiveThumbColor: Colors.black,
-                                  value: isConnected,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      isConnected = value;
-                                    });
-                                    if (isConnected) {
-                                      _savedDevices(
-                                          context,
-                                          widget.args.macAddress,
-                                          widget.args.pfName);
-                                    }
-                                  },
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Switch(
+                                      inactiveTrackColor: Colors.white,
+                                      activeTrackColor: Colors.blueAccent,
+                                      inactiveThumbColor: Colors.black,
+                                      value: isConnected,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isConnected = value;
+                                        });
+                                        if (isConnected) {
+                                          _savedDevices(
+                                              context,
+                                              widget.args.macAddress,
+                                              widget.args.pfName);
+                                        }
+                                      },
+                                    ),
+                                    MyButton()
+                                  ],
                                 )
                               ],
                             ),

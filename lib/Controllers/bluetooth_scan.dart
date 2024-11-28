@@ -176,32 +176,41 @@ class _BluetoothScanState extends State<BluetoothScan> {
         }
         //if we're coming from a Saved Devices/Home Page view, this will execute...
         else if (results.isNotEmpty) {
-          // List<BluetoothDevice> filtered = [];
+          List<BluetoothDevice> filtered = [];
+
+          bool isFound = results
+              .any((element) => element.device.platformName == "Clean-Flow");
+
+          if (isFound) {
+            for (var dev in results) {
+              if (dev.device.platformName == "Clean-Flow") {
+                filtered.add(dev.device);
+              }
+            }
+          }
           //Determine if the scan contained any devices which had our MAC address
 
           // if (device.device.platformName == "Clean-Flow") {
           //   filtered.add(device.device);
           // }
 
-          // if (filtered.isEmpty) {
-          //   return Center(
-          //     child: Text(
-          //       "No Devices Found.\n",
-          //       style: TextStyle(
-          //         fontSize: 30,
-          //         fontWeight: FontWeight.w900,
-          //       ),
-          //     ),
-          //   );
-          // }
+          if (filtered.isEmpty) {
+            return Center(
+              child: Text(
+                "No Devices Found.\n",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            );
+          }
 
           //Devices
-          List<ScanResult> results = snapshot.data ?? [];
           return ListView.builder(
-            itemCount: results.length,
+            itemCount: filtered.length,
             itemBuilder: (context, index) {
-              final device = results[index].device;
-
+              final device = filtered[index];
               copyResult.add(device);
               return Center(
                 child: Padding(

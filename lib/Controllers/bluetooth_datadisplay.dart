@@ -15,15 +15,17 @@ class BLEDataDisplay extends StatefulWidget {
 }
 
 class _BLEDataDisplayState extends State<BLEDataDisplay> {
-  List<FlSpot> _percentReducSpots =
+  List<FlSpot> _cleanSpots = [];
+  List<FlSpot> _noisySpots =
       []; //this is the lists we fill values for the chart
   List<FlSpot> _voltSpots = []; //this is the lists we fill values for the chart
   double _currentX = 0.1; // Relative x-value for the sine wave
   double amplitude = 200; // Height of the sine wave
   final double _frequency = .05; // Frequency of the sine wave
-  final int _maxPoints = 20; // Number of points to show on the chart
+  final int _maxPoints = 30; // Number of points to show on the chart
   double maxYVal = 0.0;
   double minYVal = 0.0;
+  bool haveAlerted = false;
   Future<Stream<List<int>>?> getCharacteristicStream() async {
     // Discover services on the device
     List<BluetoothService> services = await widget.device.discoverServices();
@@ -51,10 +53,70 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
     }
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  Future<bool> acknowledge(double voltage) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          width: double.infinity,
+          height: 65,
+          // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.red),
+          child: Center(
+            child: Icon(
+              Icons.warning_amber_rounded,
+              size: 50,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          height: 150,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    widget.device.platformName,
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    // overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    " has detected high amounts of fluctuations.\nreadings at the time was: ${voltage}V",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Center(
+            child: MaterialButton(
+                color: Colors.red,
+                onPressed: () {
+                  Navigator.pop(context); //closes the pop-up
+                },
+                child: Text("Got it")),
+          )
+          //No
+        ],
+      ),
+    );
+    return true;
   }
 
   @override
@@ -92,97 +154,65 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             List<String> values = receivedData.split(',');
             List<String> voltTemp = values[0].split('.');
             List<String> reducTemp = values[1].split('.');
+            List<String> cleanTemp = values[2].split('.');
+            List<String> noiseTemp = values[3].split('.');
 
-            String volts = voltTemp[0];
-            String percentageReduction = reducTemp[0];
+            String voltsStr = voltTemp[0].trim();
+            String percentageReductionStr = reducTemp[0].trim();
+            String cleanStr = cleanTemp[0].trim();
+            String noiseStr = noiseTemp[0].trim();
             // Parse as an integer
-            double voltage = double.parse(volts);
-            double doubleReduc = double.parse(percentageReduction);
+            if (voltsStr.isNotEmpty && voltsStr.startsWith('-')) {
+              voltsStr = voltsStr.substring(1);
+            }
+            if (noiseStr.isNotEmpty && noiseStr.startsWith('-')) {
+              noiseStr = noiseStr.substring(1);
+            }
+            if (cleanStr.isNotEmpty && cleanStr.startsWith('-')) {
+              cleanStr = cleanStr.substring(1);
+            }
+            double voltage = double.parse(voltsStr);
+            double noise = double.parse(noiseStr);
+            double clean = double.parse(cleanStr);
+            debugPrint(
+                "Noise: $noise\t|| Volt: $voltage\t|| Reduction: $percentageReductionStr\t || Clean: $clean");
 
-            // if (voltage >= 240) {
-            //   showDialog(
-            //     context: context,
-            //     builder: (context) => AlertDialog(
-            //       titlePadding: EdgeInsets.zero,
-            //       title: Container(
-            //         width: double.infinity,
-            //         height: 65,
-            //         // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            //         decoration: BoxDecoration(
-            //             borderRadius: BorderRadius.only(
-            //                 topLeft: Radius.circular(25),
-            //                 topRight: Radius.circular(25)),
-            //             color: Colors.red),
-            //         child: Center(
-            //           child: Icon(
-            //             Icons.warning_amber_rounded,
-            //             size: 50,
-            //           ),
-            //         ),
-            //       ),
-            //       content: SizedBox(
-            //         height: 150,
-            //         child: Column(
-            //           children: [
-            //             Expanded(
-            //               flex: 3,
-            //               child: Center(
-            //                 child: Text(
-            //                   widget.device.platformName,
-            //                   softWrap: true,
-            //                   textAlign: TextAlign.center,
-            //                   // overflow: TextOverflow.ellipsis,
-            //                   style: TextStyle(
-            //                       fontWeight: FontWeight.w600, fontSize: 25),
-            //                 ),
-            //               ),
-            //             ),
-            //             Expanded(
-            //               flex: 3,
-            //               child: Center(
-            //                 child: Text(
-            //                   " has detected high amounts of fluctuations.\nreadings at the time was: ${voltage}V",
-            //                   softWrap: true,
-            //                   textAlign: TextAlign.center,
-            //                   style: TextStyle(
-            //                       fontWeight: FontWeight.w400, fontSize: 15),
-            //                 ),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //       actions: [
-            //         Center(
-            //           child: MaterialButton(
-            //               color: Colors.lightBlue,
-            //               onPressed: () {
-            //                 Navigator.pop(context); //closes the pop-up
-            //               },
-            //               child: Text("Got it")),
-            //         )
-            //         //No
-            //       ],
-            //     ),
-            //   );
-            // }
+            if (voltage >= 240) {
+              if (!haveAlerted) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (timeStamp) {
+                    haveAlerted = true;
+                    acknowledge(voltage);
+                  },
+                );
+              }
+            }
 
             // Calculate the new y-value for the sine wave
             // i think it's the _amplitude we change for values we want to see
             double voltY = voltage * sin(_frequency * _currentX);
-            double percentReducY = doubleReduc * sin(_frequency * _currentX);
-
+            double noiseY = noise * sin(_frequency * _currentX);
+            double cleanY = clean * sin(_frequency * _currentX);
+            // double voltY = voltage;
+            // double noiseY = noise;
+            // double cleanY = clean;
             // Add the new point to the sine wave
             _voltSpots.add(FlSpot(_currentX, voltY));
-            _percentReducSpots.add(FlSpot(_currentX, percentReducY));
+            _noisySpots.add(FlSpot(_currentX, noiseY));
+            _cleanSpots.add(FlSpot(_currentX, cleanY));
 
             // Remove the oldest point if we exceed the maximum points allowed
             if (_voltSpots.length > _maxPoints) {
               _voltSpots.removeAt(0);
             }
-            if (_percentReducSpots.length > _maxPoints) {
-              _percentReducSpots.removeAt(0);
+            if (_noisySpots.length > _maxPoints) {
+              _noisySpots.removeAt(0);
             }
+            if (_cleanSpots.length > _maxPoints) {
+              _cleanSpots.removeAt(0);
+            }
+
+            //get the max and min value to dynamically change the chart
             FlSpot maxYValRaw = _voltSpots.reduce(
                 (value, element) => value.y > element.y ? value : element);
             FlSpot minYValRaw = _voltSpots.reduce(
@@ -198,7 +228,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             // Increment the current x-value for the next point
             //change the wavelength
             // _currentX += 1.029;
-            _currentX += 100;
+            _currentX += 1000;
 
             // Display both values in the widget
             return Column(
@@ -215,6 +245,27 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                         // Spots is what we refer to as points, where users can hover and see
                         // the data in that position
                         LineChartBarData(
+                          spots: _cleanSpots,
+                          isCurved: false,
+                          barWidth: 2,
+                          belowBarData: BarAreaData(
+                              show: false,
+                              color: const Color.fromARGB(96, 68, 137, 255)),
+                          dotData: FlDotData(show: false),
+                          color: Color.fromARGB(255, 217, 255, 0),
+                        ),
+
+                        LineChartBarData(
+                          spots: _noisySpots,
+                          isCurved: false,
+                          barWidth: 4,
+                          belowBarData: BarAreaData(
+                              show: false,
+                              color: const Color.fromARGB(96, 255, 82, 82)),
+                          dotData: FlDotData(show: false),
+                          color: Colors.red,
+                        ),
+                        LineChartBarData(
                           spots: _voltSpots,
                           isCurved: false,
                           barWidth: 2,
@@ -222,17 +273,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                               show: false,
                               color: const Color.fromARGB(96, 68, 137, 255)),
                           dotData: FlDotData(show: false),
-                          color: Colors.green,
-                        ),
-                        LineChartBarData(
-                          spots: _percentReducSpots,
-                          isCurved: false,
-                          barWidth: 2,
-                          belowBarData: BarAreaData(
-                              show: false,
-                              color: const Color.fromARGB(96, 255, 82, 82)),
-                          dotData: FlDotData(show: false),
-                          color: Colors.blue,
+                          color: const Color.fromARGB(255, 0, 255, 8),
                         )
                       ],
                       // minX: _currentX - _maxPoints.toDouble(),
@@ -262,28 +303,52 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 SizedBox(
                   height: 100,
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * .4,
-                  height: MediaQuery.of(context).size.height * .06,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2.5,
-                      color: const Color.fromARGB(255, 23, 53, 24),
+                Row(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * .4,
+                      height: MediaQuery.of(context).size.height * .06,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 2.5,
+                          color: const Color.fromARGB(255, 23, 53, 24),
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        color: const Color.fromARGB(255, 132, 255, 136),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          "${voltsStr}V",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                    color: const Color.fromARGB(255, 132, 255, 136),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      "$volts V",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 30),
-                    ),
-                  ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * .4,
+                      height: MediaQuery.of(context).size.height * .06,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 2.5,
+                          color: Color.fromARGB(255, 53, 23, 23),
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                        color: Color.fromARGB(255, 211, 50, 50),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          "$noiseStr Noise",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 2),
+                  margin: EdgeInsets.only(top: 4),
                   width: MediaQuery.of(context).size.width * .7,
                   height: MediaQuery.of(context).size.height * .06,
                   decoration: BoxDecoration(
@@ -299,7 +364,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
-                      "$percentageReduction% Reduction",
+                      "$percentageReductionStr%Reduction",
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 30),
                     ),
