@@ -137,8 +137,7 @@ class Menu extends StatelessWidget {
                       height: 20,
                       width: 20,
                       decoration: BoxDecoration(
-                          border: Border.all(width: 2),
-                          color: Colors.blueAccent),
+                          border: Border.all(width: 2), color: Colors.yellow),
                     ),
                     RichText(
                         text: TextSpan(
@@ -156,8 +155,7 @@ class Menu extends StatelessWidget {
                       height: 20,
                       width: 20,
                       decoration: BoxDecoration(
-                          border: Border.all(width: 2),
-                          color: Color.fromARGB(255, 255, 213, 0)),
+                          border: Border.all(width: 2), color: Colors.indigo),
                     ),
                     RichText(
                         text: TextSpan(
