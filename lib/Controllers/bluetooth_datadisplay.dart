@@ -180,7 +180,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             double clean = double.parse(cleanStr);
 
             _high.add(voltage.toInt());
-            if (_high.length > 20) {
+            if (_high.length > 100) {
               _high.remove(0);
             }
             int highRaw = _high
