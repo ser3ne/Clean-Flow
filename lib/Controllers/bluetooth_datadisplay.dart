@@ -26,6 +26,10 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   double maxYVal = 0.0;
   double minYVal = 0.0;
   bool haveAlerted = false;
+  List<int> _high = [];
+  // List<int> _low = [];
+  int high = 0;
+  int low = 0;
   Future<Stream<List<int>>?> getCharacteristicStream() async {
     // Discover services on the device
     List<BluetoothService> services = await widget.device.discoverServices();
@@ -174,6 +178,21 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             double voltage = double.parse(voltsStr);
             double noise = double.parse(noiseStr);
             double clean = double.parse(cleanStr);
+
+            _high.add(voltage.toInt());
+            if (_high.length > 100) {
+              _high.remove(0);
+            }
+            int highRaw = _high
+                .reduce((value, element) => value > element ? value : element);
+            int lowRaw = _high
+                .reduce((value, element) => value < element ? value : element);
+            if (high < highRaw) {
+              high = highRaw;
+            }
+            if (low > (0 - lowRaw)) {
+              low = lowRaw;
+            }
             debugPrint(
                 "Noise: $noise\t|| Volt: $voltage\t|| Reduction: $percentageReductionStr\t || Clean: $clean");
 
@@ -242,6 +261,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                       lineBarsData: [
                         // Spots is what we refer to as points, where users can hover and see
                         // the data in that position
+                        //constant
                         LineChartBarData(
                           spots: _cleanSpots,
                           isCurved: false,
@@ -250,7 +270,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                               show: false,
                               color: const Color.fromARGB(96, 68, 137, 255)),
                           dotData: FlDotData(show: false),
-                          color: Color.fromARGB(255, 217, 255, 0),
+                          color: Colors.indigo,
                         ),
 
                         LineChartBarData(
@@ -271,7 +291,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                               show: false,
                               color: const Color.fromARGB(96, 68, 137, 255)),
                           dotData: FlDotData(show: false),
-                          color: const Color.fromARGB(255, 0, 255, 8),
+                          color: Color.fromARGB(255, 195, 255, 0),
                         )
                       ],
                       // minX: _currentX - _maxPoints.toDouble(),
@@ -310,11 +330,10 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                                   TextStyle(color: Colors.black, fontSize: 20),
                               children: [
                             TextSpan(
-                                text: " ${maxYVal.toInt()}",
+                                text: " ${high}",
                                 style: TextStyle(
-                                    color: maxYVal.toInt() > 240
-                                        ? Colors.red
-                                        : Colors.black))
+                                    color:
+                                        high > 240 ? Colors.red : Colors.black))
                           ])),
                       RichText(
                           text: TextSpan(
@@ -323,9 +342,9 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                                   TextStyle(color: Colors.black, fontSize: 20),
                               children: [
                             TextSpan(
-                                text: " ${(0 - minYVal.toInt())}",
+                                text: " ${low}",
                                 style: TextStyle(
-                                    color: (0 - minYVal.toInt()) <= 180
+                                    color: (low) <= 180
                                         ? Colors.red
                                         : Colors.black))
                           ])),
@@ -378,7 +397,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 4),
-                  width: MediaQuery.of(context).size.width * .7,
+                  width: MediaQuery.of(context).size.width * .8,
                   height: MediaQuery.of(context).size.height * .06,
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -388,7 +407,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                     borderRadius: BorderRadius.all(
                       Radius.circular(50),
                     ),
-                    color: Colors.blue,
+                    color: Colors.yellow,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 4),

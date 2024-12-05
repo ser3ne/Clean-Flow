@@ -102,15 +102,17 @@ class _DeviceProfileState extends State<DeviceProfile> {
             child: Column(
               children: [
                 //logo top-left
-                Row(children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/cf.png"))),
-                  )
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("assets/cf.png"))),
+                      ),
+                    ]),
                 SizedBox(
                   height: 10,
                 ),
