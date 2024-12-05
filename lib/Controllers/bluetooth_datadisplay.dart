@@ -21,7 +21,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   List<FlSpot> _voltSpots = []; //this is the lists we fill values for the chart
   double _currentX = 0.1; // Relative x-value for the sine wave
   double amplitude = 200; // Height of the sine wave
-  final double _frequency = .1; // Frequency of the sine wave
+  final double _frequency = .05; // Frequency of the sine wave
   final int _maxPoints = 25; // Number of points to show on the chart
   double maxYVal = 0.0;
   double minYVal = 0.0;
@@ -226,7 +226,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
             // Increment the current x-value for the next point
             //change the wavelength
             // _currentX += 1.029;
-            _currentX += 700;
+            _currentX += 100;
 
             // Display both values in the widget
             return Column(
