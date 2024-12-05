@@ -1,7 +1,6 @@
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/historical_data_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class HistoricalDevicesPage extends StatefulWidget {
   const HistoricalDevicesPage({super.key});
