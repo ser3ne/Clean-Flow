@@ -132,7 +132,6 @@ class _BluetoothScanState extends State<BluetoothScan> {
               color: Colors.lightBlue,
               onPressed: () async {
                 bool redirect = await yes(device);
-                //if true, pops all pre-ceding pages, then reoutes to new page, essentially refreshing the pages
                 if (redirect) {
                   Navigator.push(
                     context,
@@ -178,6 +177,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
         else if (results.isNotEmpty) {
           List<BluetoothDevice> filtered = [];
 
+          //Determine if the scan contained any devices which had our MAC address
           bool isFound = results
               .any((element) => element.device.platformName == "Clean-Flow");
 
@@ -188,11 +188,6 @@ class _BluetoothScanState extends State<BluetoothScan> {
               }
             }
           }
-          //Determine if the scan contained any devices which had our MAC address
-
-          // if (device.device.platformName == "Clean-Flow") {
-          //   filtered.add(device.device);
-          // }
 
           if (filtered.isEmpty) {
             return Center(

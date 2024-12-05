@@ -136,8 +136,6 @@ class _DeviceProfileState extends State<DeviceProfile> {
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             height: MediaQuery.of(context).size.height * .15,

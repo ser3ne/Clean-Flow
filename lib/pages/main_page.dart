@@ -3,10 +3,10 @@
 import 'dart:io';
 
 import 'package:capstone/global/args.dart';
+import 'package:capstone/pages/historical_devices_page.dart';
 import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -17,7 +17,36 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  List<Widget> pages = [Home_Page(), Scanresult_Page()];
+  List<Widget> pages = [
+    Home_Page(),
+    Scanresult_Page(),
+    HistoricalDevicesPage()
+  ];
+
+  String appBartText(int currentPage) {
+    String? barText;
+    switch (currentPage) {
+      case 0:
+        setState(() {
+          barText = "Home";
+        });
+        break;
+      case 1:
+        setState(() {
+          barText = "Scan";
+        });
+        break;
+      case 2:
+        setState(() {
+          barText = "History";
+        });
+        break;
+      default:
+        break;
+    }
+    return barText!;
+  }
+
   void shouldPop(bool didPop) async {
     {
       if (!didPop) {
@@ -123,6 +152,13 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.black,
               ),
               label: "Scan",
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.devices,
+                color: Colors.black,
+              ),
+              label: "History",
             )
           ],
           onDestinationSelected: (int index) {
@@ -136,7 +172,7 @@ class _MainPageState extends State<MainPage> {
           leading: Image(image: AssetImage("assets/cf.png")),
           centerTitle: true,
           title: Text(
-            _currentIndex == 0 ? "Home" : "My Devices",
+            appBartText(_currentIndex),
             style: TextStyle(
                 color: Colors.black, fontSize: 30, fontWeight: FontWeight.w900),
           ),

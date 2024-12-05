@@ -111,11 +111,6 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30)),
                 ),
-                /*
-            FIXX THIS BUTTON
-            it starts out as null which disables the button
-            and does not allow the user to refresh
-             */
                 child: IconButton(
                     onPressed: isScanning
                         ? null

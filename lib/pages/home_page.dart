@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'package:capstone/Widgets/custom_text.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/pages/device_overview.dart';
+import 'package:capstone/Widgets/device_overview.dart';
 import 'package:capstone/pages/device_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
