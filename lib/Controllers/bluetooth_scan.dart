@@ -132,6 +132,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
               color: Colors.lightBlue,
               onPressed: () async {
                 bool redirect = await yes(device);
+                print("Device: $device");
                 if (redirect) {
                   Navigator.push(
                     context,
@@ -178,34 +179,35 @@ class _BluetoothScanState extends State<BluetoothScan> {
           List<BluetoothDevice> filtered = [];
 
           //Determine if the scan contained any devices which had our MAC address
-          bool isFound = results
-              .any((element) => element.device.platformName == "Clean-Flow");
+          // bool isFound = results
+          //     .any((element) => element.device.platformName == "Clean-Flow");
 
-          if (isFound) {
-            for (var dev in results) {
-              if (dev.device.platformName == "Clean-Flow") {
-                filtered.add(dev.device);
-              }
-            }
-          }
+          // if (isFound) {
+          //   for (var dev in results) {
+          //     if (dev.device.platformName == "Clean-Flow") {
+          //       filtered.add(dev.device);
+          //     }
+          //   }
+          // }
 
-          if (filtered.isEmpty) {
-            return Center(
-              child: Text(
-                "No Devices Found.\n",
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            );
-          }
+          // if (filtered.isEmpty) {
+          //   return Center(
+          //     child: Text(
+          //       "No Devices Found.\n",
+          //       style: TextStyle(
+          //         fontSize: 30,
+          //         fontWeight: FontWeight.w900,
+          //       ),
+          //     ),
+          //   );
+          // }
 
           //Devices
           return ListView.builder(
-            itemCount: filtered.length,
+            itemCount: results.length,
             itemBuilder: (context, index) {
-              final device = filtered[index];
+              // final device = filtered[index];
+              final device = results[index].device;
               copyResult.add(device);
               return Center(
                 child: Padding(

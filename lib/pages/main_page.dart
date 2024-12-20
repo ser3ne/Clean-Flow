@@ -9,7 +9,8 @@ import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({super.key, required this.args});
+  final HistoricalArguments args;
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -17,10 +18,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  List<Widget> pages = [
+  late String name;
+  late List<Widget> pages = [
     Home_Page(),
     Scanresult_Page(),
-    HistoricalDevicesPage()
+    HistoricalDevicesPage(
+      deviceName: name,
+    )
   ];
 
   String appBartText(int currentPage) {
@@ -45,6 +49,13 @@ class _MainPageState extends State<MainPage> {
         break;
     }
     return barText!;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    name = widget.args.deviceName;
   }
 
   void shouldPop(bool didPop) async {

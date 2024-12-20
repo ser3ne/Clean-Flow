@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/global/routes.dart';
 import 'package:capstone/Widgets/button.dart';
+import 'package:capstone/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -79,6 +79,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     isThisDeviceSaved();
   }
 
@@ -86,7 +87,16 @@ class _DeviceProfileState extends State<DeviceProfile> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => Navigator.pushReplacementNamed(context, root),
+      onPopInvoked: (didPop) => Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainPage(
+              args: HistoricalArguments(widget
+                  .args.device.platformName)), // Pass arguments via constructor
+        ),
+        (Route<dynamic> route) =>
+            false, // Condition to remove all previous routes
+      ),
       child: Scaffold(
         body: Container(
           decoration: BoxDecoration(

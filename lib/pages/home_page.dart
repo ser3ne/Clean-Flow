@@ -116,10 +116,6 @@ class Home_StatePage extends State<Home_Page> {
           ),
           (Route<dynamic> route) => false, // Removes all previous routes
         );
-        // Navigator.pushNamedAndRemoveUntil(
-        //     context, deviceprofile, (Route<dynamic> route) => false,
-        //     arguments: PairArguments(
-        //         device, device.platformName, device.remoteId.toString()));
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(

@@ -1,9 +1,13 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/historical_data_page.dart';
 import 'package:flutter/material.dart';
 
 class HistoricalDevicesPage extends StatefulWidget {
-  const HistoricalDevicesPage({super.key});
+  const HistoricalDevicesPage({super.key, required this.deviceName});
+
+  final String deviceName;
 
   @override
   State<HistoricalDevicesPage> createState() => HhistoricalDStateevicesPage();
@@ -44,8 +48,20 @@ class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
                   width: MediaQuery.of(context).size.width * 0.90,
                   height: MediaQuery.of(context).size.height * 0.7,
                   child: ListView.builder(
-                    itemCount: 25,
+                    itemCount: widget.deviceName.isEmpty ? 1 : 25,
                     itemBuilder: (context, index) {
+                      if (widget.deviceName.isEmpty ||
+                          widget.deviceName.isEmpty == "") {
+                        return Center(
+                            child: Container(
+                          width: MediaQuery.of(context).size.width * 0.90,
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: Center(
+                            child: Text("No Devices History"),
+                          ),
+                        ));
+                      }
+
                       return Container(
                         margin: EdgeInsets.only(bottom: 10),
                         child: FloatingActionButton(
@@ -60,7 +76,7 @@ class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
                               ),
                             );
                           },
-                          child: Center(child: Text("Deez Nuts")),
+                          child: Center(child: Text(widget.deviceName)),
                         ),
                       );
                     },

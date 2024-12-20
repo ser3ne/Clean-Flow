@@ -36,7 +36,6 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
     } else {
       setState(() {
         globalDevice = null;
-
         isConnected = false;
       });
     }

@@ -194,7 +194,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
               low = lowRaw;
             }
             debugPrint(
-                "Noise: $noise\t|| Volt: $voltage\t|| Reduction: $percentageReductionStr\t || Clean: $clean");
+                "Noise: $noise\t||\tVolt: $voltage\t||\tReduction: $percentageReductionStr\t||\tClean: $clean");
 
             if (voltage >= 240) {
               if (!haveAlerted) {
@@ -236,15 +236,14 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 (value, element) => value.y < element.y ? value : element);
 
             if (maxYVal < maxYValRaw.y) {
-              maxYVal = maxYValRaw.y;
+              maxYVal = maxYValRaw.y; //assign the maxY
             }
             if (minYVal > minYValRaw.y) {
-              minYVal = minYValRaw.y;
+              minYVal = minYValRaw.y; //assign the minY
             }
 
-            // Increment the current x-value for the next point
+            // Increment the _currentX value for the next point
             //change the wavelength
-            // _currentX += 1.029;
             _currentX += 100;
 
             // Display both values in the widget
@@ -262,6 +261,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                         // Spots is what we refer to as points, where users can hover and see
                         // the data in that position
                         //constant
+
+                        //Clean Electricity
                         LineChartBarData(
                           spots: _cleanSpots,
                           isCurved: false,
@@ -273,6 +274,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                           color: Colors.indigo,
                         ),
 
+                        //Noise / EMI
                         LineChartBarData(
                           spots: _noisySpots,
                           isCurved: false,
@@ -283,6 +285,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                           dotData: FlDotData(show: false),
                           color: Colors.red,
                         ),
+
+                        //Voltage
                         LineChartBarData(
                           spots: _voltSpots,
                           isCurved: false,

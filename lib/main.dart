@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/main_page.dart';
@@ -30,7 +31,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: root,
       routes: {
-        root: (context) => MainPage(),
+        root: (context) => MainPage(
+              args: HistoricalArguments(""),
+            ),
         scanresult: (context) => Scanresult_Page(),
         homepage: (context) => Home_Page()
       },
