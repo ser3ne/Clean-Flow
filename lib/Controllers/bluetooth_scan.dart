@@ -176,7 +176,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
         }
         //if we're coming from a Saved Devices/Home Page view, this will execute...
         else if (results.isNotEmpty) {
-          List<BluetoothDevice> filtered = [];
+          // List<BluetoothDevice> filtered = [];
 
           //Determine if the scan contained any devices which had our MAC address
           // bool isFound = results
