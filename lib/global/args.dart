@@ -6,7 +6,7 @@ bool globalBoolean = false;
 List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 List<dynamic> savedDevices = [];
 List<String> historicalData = [];
-List<dynamic> globalhistoricalDevices = [];
+
 List<BluetoothDevice> copyResult = [];
 
 const Color colorY = Color.fromRGBO(13, 255, 0, 0.871);

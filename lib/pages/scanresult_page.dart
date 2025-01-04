@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, avoid_print, camel_case_types, unnecessary_null_comparison
 
+import 'dart:convert';
+
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/Controllers/bluetooth_scan.dart';
 import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Scanresult_Page extends StatefulWidget {
   const Scanresult_Page({super.key});
@@ -13,13 +16,25 @@ class Scanresult_Page extends StatefulWidget {
 }
 
 class _Scanresult_PageState extends State<Scanresult_Page> {
-  Color color_1 = Color.fromRGBO(255, 255, 255, 1);
-  Color color_2 = Color.fromRGBO(194, 193, 216, 1);
-  Color color_3 = Color.fromRGBO(140, 138, 184, 1);
-  Color color_4 = Color.fromRGBO(83, 80, 139, 1);
-  Color color_5 = Color.fromRGBO(54, 50, 124, 1);
-  Color color_6 = Color.fromRGBO(18, 15, 69, 1);
-  Color color_7 = Color.fromRGBO(0, 0, 0, 1);
+  List<dynamic> historicalDevices = [];
+
+  Future<void> _loadHistoricalDevices() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString('historicalDevices');
+    if (jsonString != null) {
+      setState(() {
+        historicalDevices = jsonDecode(jsonString);
+      });
+    }
+  }
+
+  Future<void> _clearHistoricalDevices() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    setState(() {
+      historicalDevices.remove('name');
+    });
+  }
 
   bool isScanning = false;
   bool isSwitch = false;
@@ -48,6 +63,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
     //checks if bluetooth is on
     init2();
     super.initState();
+    _loadHistoricalDevices();
   }
 
   void isSearching() {
@@ -93,6 +109,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                           setState(() {
                             connectedDevices.clear();
                             globalDevice = null;
+                            _clearHistoricalDevices();
                           });
                         }
                       : null,

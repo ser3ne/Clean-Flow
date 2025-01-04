@@ -25,7 +25,6 @@ class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
     if (jsonString != null) {
       setState(() {
         historicalDevices = jsonDecode(jsonString);
-        globalhistoricalDevices.add(historicalDevices);
       });
     }
   }
