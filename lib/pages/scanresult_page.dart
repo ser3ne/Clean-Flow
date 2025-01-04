@@ -143,7 +143,9 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 15),
                 //Stream
-                child: BluetoothScan(mac: "normalscan"),
+                child: BluetoothScan(
+                  mac: "normalscan",
+                ),
               ),
             ),
           ),

@@ -1,14 +1,16 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, prefer_const_literals_to_create_immutables, avoid_print
 
+import 'dart:convert';
+
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/device_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BluetoothScan extends StatefulWidget {
   const BluetoothScan({super.key, required this.mac});
-
   final String mac;
   @override
   State<BluetoothScan> createState() => _BluetoothScanState();
@@ -24,6 +26,29 @@ the startscan() is in the controller.dart
 */
 
 class _BluetoothScanState extends State<BluetoothScan> {
+  List<dynamic> historicalDevices = [];
+  Future<void> _historicalDevices(String pfName) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? jsonString = prefs.getString('historicalDevices');
+    historicalDevices = jsonString != null ? jsonDecode(jsonString) : [];
+
+    //Searches savedDevices list for any hits for device['mac']
+    //returns true if it exists, false if it doesn't
+    bool deviceExists = historicalDevices.any(
+      (device) => device['name'] == pfName,
+    );
+
+    //if it doesn't exists, we add
+    if (!deviceExists) {
+      setState(() {
+        historicalDevices.add({'name': pfName});
+      });
+
+      await prefs.setString('historicalDevices', jsonEncode(historicalDevices));
+    }
+  }
+
   bool autoConn = false;
   Future<bool> yes(BluetoothDevice device) async {
     bool canINowGoToAnotherPagePlease = false;
@@ -134,6 +159,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
                 bool redirect = await yes(device);
                 print("Device: $device");
                 if (redirect) {
+                  _historicalDevices(device.platformName);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

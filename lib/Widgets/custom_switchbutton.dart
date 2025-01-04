@@ -1,10 +1,13 @@
 // ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+// import 'dart:convert';
+
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomSwitchButtonBig extends StatefulWidget {
   const CustomSwitchButtonBig(
@@ -21,6 +24,47 @@ class CustomSwitchButtonBig extends StatefulWidget {
 }
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
+  // Future<void> _historicalData(String pfName, DateTime dnt, int high, int low) async {
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   String? jsonString = prefs.getString('historicalData');
+  //   historicalData = jsonString != null ? jsonDecode(jsonString) : [];
+
+  //   bool deviceExists = historicalData.any(
+  //     (device) => device['pfname'] == pfName,
+  //   );
+
+  //   //if it doesn't exists, we add
+  //   if (!deviceExists) {
+  //     setState(() {
+  //       historicalData.add({'pfname': pfName, 'dnt': dnt, 'high' : high, 'low' : low});
+  //     });
+
+  //     await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+  //     const snackBar =
+  //         SnackBar(content: Text("Device added to saved devices."));
+  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  //   }
+
+  //   //if there are hits, with the mac address
+  //   else {
+  //     // Remove the existing device by filtering it out
+  //     setState(() {
+  //       savedDevices.removeWhere(
+  //           (device) => device['mac'] == macAdd && device['pfname'] == pfName);
+  //     });
+
+  //     // Save the updated list back to Shared Preferences
+  //     await prefs.setString('savedDevices', jsonEncode(savedDevices));
+
+  //     // Show a SnackBar to confirm device removal
+  //     const snackBar =
+  //         SnackBar(content: Text("Device removed from saved devices."));
+  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  //   }
+  // }
+
   void dialogueActionDisconnect(BluetoothDevice device) async {
     var sub = BluetoothController().bluetoothConnectState(device);
     await widget.device.disconnect();
