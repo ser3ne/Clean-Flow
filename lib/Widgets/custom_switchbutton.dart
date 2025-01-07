@@ -2,11 +2,14 @@
 
 // import 'dart:convert';
 
+import 'dart:convert';
+
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/global/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomSwitchButtonBig extends StatefulWidget {
@@ -24,46 +27,38 @@ class CustomSwitchButtonBig extends StatefulWidget {
 }
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
-  // Future<void> _historicalData(String pfName, DateTime dnt, int high, int low) async {
-  //   final prefs = await SharedPreferences.getInstance();
+  List<dynamic> historicalData = [];
+  Future<void> _historicalData(
+    String pfName,
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    /*perc, int voltage, high, low*/
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
 
-  //   String? jsonString = prefs.getString('historicalData');
-  //   historicalData = jsonString != null ? jsonDecode(jsonString) : [];
+    String? jsonString = prefs.getString('historicalData');
+    historicalData = jsonString != null ? jsonDecode(jsonString) : [];
 
-  //   bool deviceExists = historicalData.any(
-  //     (device) => device['pfname'] == pfName,
-  //   );
+    setState(() {
+      historicalData.add({
+        'pfname': pfName,
+        'year': year,
+        'month': month,
+        'day': day,
+        'hour': hour,
+        'minute': minute,
+        /*'perc': perc,
+        'volt': voltage,
+        'high': high,
+        'low': low*/
+      });
+    });
 
-  //   //if it doesn't exists, we add
-  //   if (!deviceExists) {
-  //     setState(() {
-  //       historicalData.add({'pfname': pfName, 'dnt': dnt, 'high' : high, 'low' : low});
-  //     });
-
-  //     await prefs.setString('savedDevices', jsonEncode(savedDevices));
-
-  //     const snackBar =
-  //         SnackBar(content: Text("Device added to saved devices."));
-  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  //   }
-
-  //   //if there are hits, with the mac address
-  //   else {
-  //     // Remove the existing device by filtering it out
-  //     setState(() {
-  //       savedDevices.removeWhere(
-  //           (device) => device['mac'] == macAdd && device['pfname'] == pfName);
-  //     });
-
-  //     // Save the updated list back to Shared Preferences
-  //     await prefs.setString('savedDevices', jsonEncode(savedDevices));
-
-  //     // Show a SnackBar to confirm device removal
-  //     const snackBar =
-  //         SnackBar(content: Text("Device removed from saved devices."));
-  //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  //   }
-  // }
+    await prefs.setString('historicalData', jsonEncode(historicalData));
+  }
 
   void dialogueActionDisconnect(BluetoothDevice device) async {
     var sub = BluetoothController().bluetoothConnectState(device);
@@ -149,6 +144,20 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           MaterialButton(
               color: Colors.redAccent,
               onPressed: () {
+                DateTime current = DateTime.now();
+                String year = current.year.toString();
+                String month = current.month.toString();
+                String day = current.day.toString();
+                String hour = current.hour.toString();
+                String minute = current.minute.toString();
+                _historicalData(
+                  device.platformName,
+                  year,
+                  month,
+                  day,
+                  hour,
+                  minute, /*perc, voltage, high, low*/
+                );
                 dialogueActionDisconnect(device);
               },
               child: Text(

@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:capstone/Widgets/custom_chart.dart';
 import 'package:capstone/global/args.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoricalDataPage extends StatefulWidget {
   const HistoricalDataPage({super.key});
@@ -13,7 +16,23 @@ class HistoricalDataPage extends StatefulWidget {
 }
 
 class _HistoricalDataPageState extends State<HistoricalDataPage> {
+  List<dynamic> historicalData = [];
+  Future<void> _loadHistoricalData() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString('historicalData');
+    if (jsonString != null) {
+      setState(() {
+        historicalData = jsonDecode(jsonString);
+      });
+    }
+  }
+
   @override
+  void initState() {
+    super.initState();
+    _loadHistoricalData();
+  }
+
   Widget build(BuildContext context) {
     List<FlSpot> high = [
       FlSpot(2, 5),

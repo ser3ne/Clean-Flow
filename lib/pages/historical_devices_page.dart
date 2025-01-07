@@ -113,3 +113,5 @@ class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
     );
   }
 }
+
+// if (d&t == historical)
