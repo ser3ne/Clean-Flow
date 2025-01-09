@@ -18,7 +18,7 @@ class MyButton extends StatelessWidget {
             arrowHeight: 0,
             arrowWidth: 10,
             width: 350,
-            height: 360,
+            height: 330,
             backgroundColor: Color.fromARGB(142, 255, 255, 255)),
         child: const Icon(
           Icons.info_outline,

@@ -4,12 +4,18 @@ import 'dart:convert';
 
 import 'package:capstone/Widgets/custom_chart.dart';
 import 'package:capstone/global/args.dart';
+import 'package:capstone/global/args.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoricalDataPage extends StatefulWidget {
-  const HistoricalDataPage({super.key});
+  const HistoricalDataPage(
+      {super.key, required this.index, this.device, required this.nigga});
+
+  final int index;
+  final dynamic device;
+  final shit nigga;
 
   @override
   State<HistoricalDataPage> createState() => _HistoricalDataPageState();
@@ -19,6 +25,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
   List<dynamic> historicalData = [];
   Future<void> _loadHistoricalData() async {
     final prefs = await SharedPreferences.getInstance();
+
     String? jsonString = prefs.getString('historicalData');
     if (jsonString != null) {
       setState(() {
@@ -30,10 +37,14 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
   @override
   void initState() {
     super.initState();
-    _loadHistoricalData();
+    // _loadHistoricalData();
   }
 
   Widget build(BuildContext context) {
+    final dynamic device = widget.device;
+    double headerSize = 8;
+    int dataSize = 10;
+
     List<FlSpot> high = [
       FlSpot(2, 5),
       FlSpot(4, 20),
@@ -117,7 +128,9 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                     .middle,
                                             child: Padding(
                                               padding: EdgeInsets.all(10),
-                                              child: Text("DATE/TIME",
+                                              child: Text("DATE & TIME",
+                                                  style: TextStyle(
+                                                      fontSize: headerSize),
                                                   textAlign: TextAlign.center),
                                             )),
                                         TableCell(
@@ -127,7 +140,22 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                             child: Padding(
                                               padding: EdgeInsets.all(10),
                                               child: Text(
+                                                "VOLTAGE",
+                                                style: TextStyle(
+                                                    fontSize: headerSize),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            )),
+                                        TableCell(
+                                            verticalAlignment:
+                                                TableCellVerticalAlignment
+                                                    .middle,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(10),
+                                              child: Text(
                                                 "HIGHEST",
+                                                style: TextStyle(
+                                                    fontSize: headerSize),
                                                 textAlign: TextAlign.center,
                                               ),
                                             )),
@@ -138,63 +166,133 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                             child: Padding(
                                               padding: EdgeInsets.all(10),
                                               child: Text("LOWEST",
+                                                  style: TextStyle(
+                                                      fontSize: headerSize),
                                                   textAlign: TextAlign.center),
                                             )),
-                                      ]),
-                                ],
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.327,
-                                child: SingleChildScrollView(
-                                  child: Table(
-                                    border:
-                                        TableBorder.all(color: Colors.black),
-                                    defaultVerticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    children: [
-                                      ...List.generate(
-                                        30,
-                                        (index) => TableRow(children: [
-                                          TableCell(
+                                        TableCell(
                                             verticalAlignment:
                                                 TableCellVerticalAlignment
                                                     .middle,
                                             child: Padding(
                                               padding: EdgeInsets.all(10),
                                               child: Text(
-                                                "${now.day}/${now.month}/${now.year}\n${now.hour}:${now.minute}",
+                                                "PERCENT",
+                                                style: TextStyle(
+                                                    fontSize: headerSize),
                                                 textAlign: TextAlign.center,
                                               ),
-                                            ),
-                                          ),
-                                          TableCell(
-                                              verticalAlignment:
-                                                  TableCellVerticalAlignment
-                                                      .middle,
-                                              child: Padding(
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Text(
-                                                      "Data ${index + 1} Highest",
-                                                      textAlign:
-                                                          TextAlign.center))),
-                                          TableCell(
-                                              verticalAlignment:
-                                                  TableCellVerticalAlignment
-                                                      .middle,
-                                              child: Padding(
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Text(
-                                                      "Data ${index + 1} Lowest",
-                                                      textAlign:
-                                                          TextAlign.center)))
-                                        ]),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                            ))
+                                      ]),
+                                ],
                               ),
+                              device.isEmpty
+                                  ? Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.8,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.327,
+                                      child: Center(
+                                        child: Text("NO DATA"),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.8,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.327,
+                                      child: SingleChildScrollView(
+                                        child: Table(
+                                          border: TableBorder.all(
+                                              color: Colors.black),
+                                          defaultVerticalAlignment:
+                                              TableCellVerticalAlignment.middle,
+                                          children: [
+                                            ...device.map(
+                                              (data) {
+                                                return TableRow(children:
+                                                    data.map<Widget>((cell) {
+                                                  return [
+                                                    TableCell(
+                                                      verticalAlignment:
+                                                          TableCellVerticalAlignment
+                                                              .middle,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                          "${data['year']}/${data['month']}/${data['day']}\n${data['hour']}:${data['minute']}",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TableCell(
+                                                      verticalAlignment:
+                                                          TableCellVerticalAlignment
+                                                              .middle,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                          "${data['voltage']}",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TableCell(
+                                                      verticalAlignment:
+                                                          TableCellVerticalAlignment
+                                                              .middle,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                          "${data['high']}",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TableCell(
+                                                      verticalAlignment:
+                                                          TableCellVerticalAlignment
+                                                              .middle,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                          "${data['low']}",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TableCell(
+                                                      verticalAlignment:
+                                                          TableCellVerticalAlignment
+                                                              .middle,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                          "${data['perc']}",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ];
+                                                }));
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                         ),

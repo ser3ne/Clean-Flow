@@ -145,24 +145,6 @@ class Menu extends StatelessWidget {
                             style: TextStyle(color: Colors.black)))
                   ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10),
-                      height: 20,
-                      width: 20,
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 2), color: Colors.indigo),
-                    ),
-                    RichText(
-                        text: TextSpan(
-                            text: "Optimal",
-                            style: TextStyle(color: Colors.black)))
-                  ],
-                ),
               ],
             ),
           )

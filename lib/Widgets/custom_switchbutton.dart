@@ -17,10 +17,15 @@ class CustomSwitchButtonBig extends StatefulWidget {
       {super.key,
       required this.device,
       required this.dialogueText,
-      required this.size});
+      required this.size,
+      required this.percentReduction,
+      required this.high,
+      required this.low,
+      required this.voltage});
   final BluetoothDevice device;
-  final String dialogueText;
+  final String dialogueText, percentReduction;
   final double size;
+  final int high, low, voltage;
 
   @override
   State<CustomSwitchButtonBig> createState() => _CustomSwitchButtonBigState();
@@ -28,36 +33,75 @@ class CustomSwitchButtonBig extends StatefulWidget {
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
   List<dynamic> historicalData = [];
-  Future<void> _historicalData(
-    String pfName,
-    year,
-    month,
-    day,
-    hour,
-    minute,
-    /*perc, int voltage, high, low*/
-  ) async {
+  Future<void> _historicalData(String macAdd, pfName, year, month, day, hour,
+      minute, perc, voltage, high, low) async {
     final prefs = await SharedPreferences.getInstance();
 
     String? jsonString = prefs.getString('historicalData');
     historicalData = jsonString != null ? jsonDecode(jsonString) : [];
 
-    setState(() {
-      historicalData.add({
-        'pfname': pfName,
+    bool doesDeviceExists = historicalData.any(
+      (uid) => uid['mac'] == macAdd,
+    );
+
+    //if it does not exist we will add it and give it an ID
+    if (!doesDeviceExists) {
+      //acquire the ID with the biggest value
+      int autoIncrementID = historicalData.isNotEmpty
+          ? historicalData.map((item) => item['id']).reduce(
+                (current, next) => current > next ? current : next,
+              )
+          : 0;
+      autoIncrementID = autoIncrementID + 1;
+
+      setState(() {
+        historicalData.add({
+          'id': autoIncrementID.toString(),
+          'mac': macAdd,
+          'info': [
+            {
+              'year': year,
+              'month': month,
+              'day': day,
+              'hour': hour,
+              'minute': minute,
+              'perc': perc,
+              'voltage': voltage,
+              'high': high,
+              'low': low
+            }
+          ]
+        });
+      });
+    }
+    //if it already exists, we find the mac address,
+    //get the "info" key, then add the new data
+    else {
+      var info = historicalData.firstWhere(
+        (data) => data['mac'] == macAdd,
+      );
+
+      info['info'].add({
         'year': year,
         'month': month,
         'day': day,
         'hour': hour,
         'minute': minute,
-        /*'perc': perc,
-        'volt': voltage,
+        'perc': perc,
+        'voltage': voltage,
         'high': high,
-        'low': low*/
+        'low': low
       });
-    });
+    }
 
     await prefs.setString('historicalData', jsonEncode(historicalData));
+
+    List<dynamic> sample = [];
+    sample = jsonString != null ? jsonDecode(jsonString) : [];
+
+    var item = sample.firstWhere((item) => item['id'] == 1);
+    print("ITEM:");
+    print(item);
   }
 
   void dialogueActionDisconnect(BluetoothDevice device) async {
@@ -125,6 +169,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           ),
         ),
         actions: [
+          //~~~~~~~~~~~~~~~~NO~~~~~~~~~~~~~~~~~~
           MaterialButton(
               color: Colors.red,
               onPressed: () {
@@ -140,7 +185,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           SizedBox(
             width: 60,
           ),
-          //Yes
+          //~~~~~~~~~~~~~~~~YES~~~~~~~~~~~~~~~~~~
           MaterialButton(
               color: Colors.redAccent,
               onPressed: () {
@@ -151,52 +196,26 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
                 String hour = current.hour.toString();
                 String minute = current.minute.toString();
                 _historicalData(
-                  device.platformName,
-                  year,
-                  month,
-                  day,
-                  hour,
-                  minute, /*perc, voltage, high, low*/
-                );
+                    device.remoteId.toString(),
+                    device.platformName,
+                    year,
+                    month,
+                    day,
+                    hour,
+                    minute,
+                    widget.percentReduction,
+                    widget.voltage.toString(),
+                    widget.high.toString(),
+                    widget.low.toString());
                 dialogueActionDisconnect(device);
               },
               child: Text(
                 "Yes",
                 style: TextStyle(color: Colors.black),
               ))
-          //No
         ],
       ),
     );
-
-    // showDialog(
-    //   context: context,
-    //   builder: (context) => AlertDialog(
-    //     title: Text(widget.device.platformName),
-    //     contentPadding: EdgeInsets.all(10),
-    //     content: Text(widget.dialogueText),
-    //     actions: [
-    //       MaterialButton(
-    //         color: Colors.lightBlue,
-    //         onPressed: () {
-    //           isConnected = false;
-    //           Navigator.pop(context);
-    //         },
-    //         child: Text("No"),
-    //       ),
-    //       MaterialButton(
-    //         color: Colors.lightBlue,
-    //         onPressed: () {
-    //           dialogueActionDisconnect(device);
-    //         },
-    //         child: Text(
-    //           "Yes",
-    //           style: TextStyle(color: Colors.white),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
     return isConnected;
   }
 
@@ -209,8 +228,9 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           //starts as active, then press to de-activate
           //starts as false, then become true
           isConnected = !isConnected;
-          confirmDisconnectionDialogue(widget.device);
         });
+        //double check line 177
+        isConnected = await confirmDisconnectionDialogue(widget.device);
       },
       child: Center(
         child: Container(
@@ -271,8 +291,8 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
               AnimatedPositioned(
                 curve: Curves.easeInOut,
                 left: isConnected
-                    ? (MediaQuery.of(context).size.width * .07)
-                    : (MediaQuery.of(context).size.width * .78),
+                    ? (MediaQuery.of(context).size.width * .03)
+                    : (MediaQuery.of(context).size.width * .66),
                 duration: Duration(milliseconds: 400),
                 child: Container(
                   height: 50,

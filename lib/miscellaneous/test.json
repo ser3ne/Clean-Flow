@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "info": {}
+    },
+    {
+        "id": 2,
+        "info": {
+            "uid": "grabage",
+            "name": "grabage",
+            "info": "grabage"
+        }
+    },
+    {
+        "id": 3,
+        "info": {
+            "uid": "grabage",
+            "name": "grabage",
+            "info": "grabage"
+        }
+    }
+]

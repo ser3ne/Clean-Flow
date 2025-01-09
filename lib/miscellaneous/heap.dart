@@ -4,6 +4,81 @@
 
 
 
+TableRow(children: [
+                                                TableCell(
+                                                  verticalAlignment:
+                                                      TableCellVerticalAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "${now.day}/${now.month}/${now.year}\n${now.hour}:${now.minute}",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ),
+                                                TableCell(
+                                                    verticalAlignment:
+                                                        TableCellVerticalAlignment
+                                                            .middle,
+                                                    child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                            "${index + 1}00",
+                                                            textAlign: TextAlign
+                                                                .center))),
+                                                TableCell(
+                                                    verticalAlignment:
+                                                        TableCellVerticalAlignment
+                                                            .middle,
+                                                    child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                            "${index + 1}00",
+                                                            textAlign: TextAlign
+                                                                .center))),
+                                                TableCell(
+                                                    verticalAlignment:
+                                                        TableCellVerticalAlignment
+                                                            .middle,
+                                                    child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                            "${index + 1}00",
+                                                            textAlign: TextAlign
+                                                                .center))),
+                                                TableCell(
+                                                    verticalAlignment:
+                                                        TableCellVerticalAlignment
+                                                            .middle,
+                                                    child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: Text(
+                                                            "${index + 1}00",
+                                                            textAlign: TextAlign
+                                                                .center))),
+                                              ])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // if (value.toInt() >= 12) {

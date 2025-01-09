@@ -130,7 +130,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                 Padding(
                   padding: const EdgeInsets.only(top: 3, bottom: 3),
                   child: Container(
-                    height: MediaQuery.of(context).size.height * .75, //.3
+                    height: MediaQuery.of(context).size.height * .90, //.3
                     width: MediaQuery.of(context).size.width * .9, //.42
                     decoration: BoxDecoration(
                         border: Border.all(width: 3),
@@ -205,7 +205,7 @@ class _DeviceProfileState extends State<DeviceProfile> {
                           Container(
                             // decoration:
                             //     BoxDecoration(border: Border.all(width: 3)),
-                            height: 475,
+                            height: MediaQuery.of(context).size.height * .704,
                             width: MediaQuery.of(context).size.width,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5, bottom: 5),
@@ -227,17 +227,17 @@ class _DeviceProfileState extends State<DeviceProfile> {
                     ),
                   ),
                 ),
-                //Custom Disconnect Switch
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .1, //10%
-                  width: MediaQuery.of(context).size.width,
-                  child: CustomSwitchButtonBig(
-                    device: widget.args.device,
-                    dialogueText:
-                        isConnected ? "Are You Sure?" : "Disconnect Device",
-                    size: 55,
-                  ),
-                )
+                // //Custom Disconnect Switch
+                // SizedBox(
+                //   height: MediaQuery.of(context).size.height * .1, //10%
+                //   width: MediaQuery.of(context).size.width,
+                //   child: CustomSwitchButtonBig(
+                //     device: widget.args.device,
+                //     dialogueText:
+                //         isConnected ? "Are You Sure?" : "Disconnect Device",
+                //     size: 55,
+                //   ),
+                // )
               ],
             ),
           ),

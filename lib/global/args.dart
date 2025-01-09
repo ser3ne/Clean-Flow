@@ -5,7 +5,6 @@ BluetoothDevice? globalDevice;
 bool globalBoolean = false;
 List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 List<dynamic> savedDevices = [];
-List<String> historicalData = [];
 
 List<BluetoothDevice> copyResult = [];
 
@@ -23,4 +22,10 @@ class PairArguments {
 class HistoricalArguments {
   final String deviceName;
   HistoricalArguments(this.deviceName);
+}
+
+class shit {
+  final String id, mac, year, month, day, hour, minute, perc, voltag, high, low;
+  shit(this.id, this.mac, this.year, this.month, this.day, this.hour,
+      this.minute, this.perc, this.voltag, this.high, this.low);
 }

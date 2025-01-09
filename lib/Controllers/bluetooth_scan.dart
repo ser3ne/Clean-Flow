@@ -27,22 +27,36 @@ the startscan() is in the controller.dart
 
 class _BluetoothScanState extends State<BluetoothScan> {
   List<dynamic> historicalDevices = [];
-  Future<void> _historicalDevices(String pfName) async {
+  Future<void> _historicalDevices(BluetoothDevice device) async {
     final prefs = await SharedPreferences.getInstance();
 
     String? jsonString = prefs.getString('historicalDevices');
     historicalDevices = jsonString != null ? jsonDecode(jsonString) : [];
 
     //Searches savedDevices list for any hits for device['mac']
-    //returns true if it exists, false if it doesn't
+    //returns true if it exists, false if it doesn't\
+
+    //change this to something more unique
     bool deviceExists = historicalDevices.any(
-      (device) => device['name'] == pfName,
+      (bleDevice) => bleDevice['name'] == device.platformName,
     );
+
+    int autoIncrementID = historicalDevices.isNotEmpty
+        ? historicalDevices.map((item) => item['id']).reduce(
+              (current, next) => current > next ? current : next,
+            )
+        : 0;
+    autoIncrementID = autoIncrementID + 1;
 
     //if it doesn't exists, we add
     if (!deviceExists) {
       setState(() {
-        historicalDevices.add({'name': pfName});
+        historicalDevices.add({
+          'id': autoIncrementID,
+          'name': device.platformName,
+          'mac': device.remoteId.toString(),
+          'info': {}
+        });
       });
 
       await prefs.setString('historicalDevices', jsonEncode(historicalDevices));
@@ -159,7 +173,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
                 bool redirect = await yes(device);
                 print("Device: $device");
                 if (redirect) {
-                  _historicalDevices(device.platformName);
+                  _historicalDevices(device);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

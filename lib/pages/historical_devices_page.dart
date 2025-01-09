@@ -18,15 +18,37 @@ class HistoricalDevicesPage extends StatefulWidget {
 
 class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
   List<dynamic> historicalDevices = [];
+  List<dynamic> historicalData = [];
+  List<dynamic> conjoinedHistory = [];
+
+  Future<dynamic> history() async {}
 
   Future<void> _loadHistoricalDevices() async {
     final prefs = await SharedPreferences.getInstance();
-    String? jsonString = prefs.getString('historicalDevices');
-    if (jsonString != null) {
-      setState(() {
-        historicalDevices = jsonDecode(jsonString);
-      });
-    }
+    String? devicesString = prefs.getString('historicalDevices');
+    String? dataString = prefs.getString('historicalData');
+    setState(() {
+      historicalDevices =
+          devicesString != null ? jsonDecode(devicesString) : [];
+      historicalData = dataString != null ? jsonDecode(dataString) : [];
+    });
+
+
+    var matchID = historicalDevices.firstWhere((id) => id['id'] == 1, orElse: () => null,);
+    historicalData['info'] = matchID;
+
+
+
+    // var mac = historicalDevices.firstWhere((device) {
+    //   var datamac = historicalData.firstWhere(
+    //     (data) => data['mac'] == device['mac'],
+    //     orElse: () => null,
+    //   );
+    //   return datamac != null;
+    // });
+
+    // //checking if mac is null, if it's not we add it to the list
+    // mac == null ? [] : conjoinedHistory.add(mac);
   }
 
   @override
@@ -72,38 +94,57 @@ class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
                         ? 1
                         : historicalDevices.length,
                     itemBuilder: (context, index) {
-                      var device = historicalDevices.isEmpty
-                          ? 0
-                          : historicalDevices[index];
+                      var device = historicalDevices.isEmpty ? 0 : historicalData[index];
+                      //Check if it is empty
                       if (historicalDevices.isEmpty ||
-                          historicalDevices.isEmpty == "") {
+                          historicalDevices.isEmpty == "" ||
+                          historicalDevices.isEmpty == []) {
                         return Center(
                             child: Container(
                           width: MediaQuery.of(context).size.width * 0.90,
                           height: MediaQuery.of(context).size.height * 0.7,
                           child: Center(
-                            child: Text("No Devices History"),
+                            child: Text(
+                              "No Devices History",
+                              style: TextStyle(fontSize: 20),
+                            ),
                           ),
                         ));
                       }
+                      for (var item1 in historicalDevices) {
+                        var matchID = historicalData.firstWhere(
+                          (item2) => item2['id'] == item1['id'],
+                          orElse: () => null,
+                        );
+
+                        matchID.remove('id');
+
+                        if (item1['info'] == null) {
+                          item1['info'] == [];
+                        }
+
+                        
+                      }
 
                       return Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        child: FloatingActionButton(
-                          heroTag: index,
-                          shape: BeveledRectangleBorder(
-                              side: BorderSide(width: 1)),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HistoricalDataPage(),
-                              ),
-                            );
-                          },
-                          child: Center(child: Text(device['name'])),
-                        ),
-                      );
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: FloatingActionButton(
+                              heroTag: index,
+                              shape: BeveledRectangleBorder(
+                                  side: BorderSide(width: 1)),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HistoricalDataPage(index: index,device: device, nigga: shit(historicalDevices[], mac, year, month, day, hour, minute, perc, voltag, high, low),),
+                                  ),
+                                );
+                              },
+                              child: Center(child: Text(device['name']))));
+
+                      //this is for taking the respective data from a device.
+                      //we cannot use the mac address because we don't have a reference
+                      //therefore we use an ID which fits perfectly with our ID system
                     },
                   ),
                 ),
