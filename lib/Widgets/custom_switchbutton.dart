@@ -13,19 +13,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomSwitchButtonBig extends StatefulWidget {
-  const CustomSwitchButtonBig(
-      {super.key,
-      required this.device,
-      required this.dialogueText,
-      required this.size,
-      required this.percentReduction,
-      required this.high,
-      required this.low,
-      required this.voltage});
+  const CustomSwitchButtonBig({
+    super.key,
+    required this.device,
+    required this.dialogueText,
+    required this.size,
+    required this.percentReduction,
+    required this.high,
+    required this.low,
+    required this.voltage,
+  });
   final BluetoothDevice device;
-  final String dialogueText, percentReduction;
+  final String dialogueText;
+  final List<String> percentReduction;
   final double size;
-  final int high, low, voltage;
+  final int low;
+  final List<int> voltage, high;
 
   @override
   State<CustomSwitchButtonBig> createState() => _CustomSwitchButtonBigState();
@@ -33,55 +36,16 @@ class CustomSwitchButtonBig extends StatefulWidget {
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
   List<dynamic> historicalData = [];
-  Future<void> _historicalData(String macAdd, pfName, year, month, day, hour,
-      minute, perc, voltage, high, low) async {
+  Future<void> _historicalData(String name, year, month, day, hour, minute,
+      perc, voltage, high, low) async {
     final prefs = await SharedPreferences.getInstance();
 
     String? jsonString = prefs.getString('historicalData');
     historicalData = jsonString != null ? jsonDecode(jsonString) : [];
 
-    bool doesDeviceExists = historicalData.any(
-      (uid) => uid['mac'] == macAdd,
-    );
-
-    //if it does not exist we will add it and give it an ID
-    if (!doesDeviceExists) {
-      //acquire the ID with the biggest value
-      int autoIncrementID = historicalData.isNotEmpty
-          ? historicalData.map((item) => item['id']).reduce(
-                (current, next) => current > next ? current : next,
-              )
-          : 0;
-      autoIncrementID = autoIncrementID + 1;
-
-      setState(() {
-        historicalData.add({
-          'id': autoIncrementID.toString(),
-          'mac': macAdd,
-          'info': [
-            {
-              'year': year,
-              'month': month,
-              'day': day,
-              'hour': hour,
-              'minute': minute,
-              'perc': perc,
-              'voltage': voltage,
-              'high': high,
-              'low': low
-            }
-          ]
-        });
-      });
-    }
-    //if it already exists, we find the mac address,
-    //get the "info" key, then add the new data
-    else {
-      var info = historicalData.firstWhere(
-        (data) => data['mac'] == macAdd,
-      );
-
-      info['info'].add({
+    setState(() {
+      historicalData.add({
+        'name': name,
         'year': year,
         'month': month,
         'day': day,
@@ -92,16 +56,9 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
         'high': high,
         'low': low
       });
-    }
+    });
 
     await prefs.setString('historicalData', jsonEncode(historicalData));
-
-    List<dynamic> sample = [];
-    sample = jsonString != null ? jsonDecode(jsonString) : [];
-
-    var item = sample.firstWhere((item) => item['id'] == 1);
-    print("ITEM:");
-    print(item);
   }
 
   void dialogueActionDisconnect(BluetoothDevice device) async {
@@ -196,8 +153,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
                 String hour = current.hour.toString();
                 String minute = current.minute.toString();
                 _historicalData(
-                    device.remoteId.toString(),
-                    device.platformName,
+                    device.platformName.toString(),
                     year,
                     month,
                     day,

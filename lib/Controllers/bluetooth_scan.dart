@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'dart:convert';
-
 import 'package:capstone/Controllers/bluetooth_controller.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/device_profile.dart';
@@ -20,14 +19,12 @@ class BluetoothScan extends StatefulWidget {
 No, This is not the page where we start scanning
 this is the page where we process the results of
 the scanning.
-
 the startscan() is in the controller.dart
-
 */
 
 class _BluetoothScanState extends State<BluetoothScan> {
   List<dynamic> historicalDevices = [];
-  Future<void> _historicalDevices(BluetoothDevice device) async {
+  Future<void> _historicalDevices(String device) async {
     final prefs = await SharedPreferences.getInstance();
 
     String? jsonString = prefs.getString('historicalDevices');
@@ -37,30 +34,20 @@ class _BluetoothScanState extends State<BluetoothScan> {
     //returns true if it exists, false if it doesn't\
 
     //change this to something more unique
+
     bool deviceExists = historicalDevices.any(
-      (bleDevice) => bleDevice['name'] == device.platformName,
+      (name) => name['name'] == device,
     );
-
-    int autoIncrementID = historicalDevices.isNotEmpty
-        ? historicalDevices.map((item) => item['id']).reduce(
-              (current, next) => current > next ? current : next,
-            )
-        : 0;
-    autoIncrementID = autoIncrementID + 1;
-
     //if it doesn't exists, we add
     if (!deviceExists) {
       setState(() {
         historicalDevices.add({
-          'id': autoIncrementID,
-          'name': device.platformName,
-          'mac': device.remoteId.toString(),
-          'info': {}
+          'name': device,
         });
       });
-
-      await prefs.setString('historicalDevices', jsonEncode(historicalDevices));
     }
+
+    await prefs.setString('historicalDevices', jsonEncode(historicalDevices));
   }
 
   bool autoConn = false;
@@ -173,7 +160,7 @@ class _BluetoothScanState extends State<BluetoothScan> {
                 bool redirect = await yes(device);
                 print("Device: $device");
                 if (redirect) {
-                  _historicalDevices(device);
+                  _historicalDevices(device.platformName);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

@@ -36,6 +36,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   bool isConnected = false;
   bool haveAlerted = false;
   List<int> _high = [];
+  List<int> voltList = [];
+  List<String> perc = [];
   // List<int> _low = [];
   String percentReduction = "";
   int intVoltage = 0;
@@ -182,6 +184,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 String noiseStr = noiseTemp[0].trim();
 
                 percentReduction = percentageReductionStr;
+                perc.add(percentageReductionStr);
                 // Parse as an integer
                 if (voltsStr.isNotEmpty && voltsStr.startsWith('-')) {
                   voltsStr = voltsStr.substring(1);
@@ -198,6 +201,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 intVoltage = doubleVoltage.toInt();
 
                 _high.add(doubleVoltage.toInt());
+                voltList.add(doubleVoltage.toInt());
                 if (_high.length > 100) {
                   _high.remove(0);
                 }
@@ -460,14 +464,28 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
         SizedBox(
           height: MediaQuery.of(context).size.height * .1, //10%
           width: MediaQuery.of(context).size.width,
-          child: CustomSwitchButtonBig(
-              device: widget.device,
-              dialogueText: isConnected ? "Are You Sure?" : "Disconnect Device",
-              size: 55,
-              high: high,
-              low: low,
-              voltage: intVoltage,
-              percentReduction: percentReduction),
+          child: GestureDetector(
+            onTap: () {
+              WidgetsBinding.instance.addPostFrameCallback(
+                (timeStamp) {
+                  setState(() {
+                    voltList;
+                    _high;
+                    perc;
+                  });
+                },
+              );
+            },
+            child: CustomSwitchButtonBig(
+                device: widget.device,
+                dialogueText:
+                    isConnected ? "Are You Sure?" : "Disconnect Device",
+                size: 55,
+                high: _high,
+                low: low,
+                voltage: voltList,
+                percentReduction: perc),
+          ),
         )
       ],
     );

@@ -10,12 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoricalDataPage extends StatefulWidget {
-  const HistoricalDataPage(
-      {super.key, required this.index, this.device, required this.nigga});
+  const HistoricalDataPage({super.key, required this.name});
 
-  final int index;
-  final dynamic device;
-  final shit nigga;
+  final String name;
 
   @override
   State<HistoricalDataPage> createState() => _HistoricalDataPageState();
@@ -23,6 +20,8 @@ class HistoricalDataPage extends StatefulWidget {
 
 class _HistoricalDataPageState extends State<HistoricalDataPage> {
   List<dynamic> historicalData = [];
+  List<dynamic> filteredData = [];
+
   Future<void> _loadHistoricalData() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -30,18 +29,25 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
     if (jsonString != null) {
       setState(() {
         historicalData = jsonDecode(jsonString);
+        _filterData();
       });
     }
+  }
+
+  void _filterData() {
+    setState(() {
+      filteredData =
+          historicalData.where((data) => data['name'] == widget.name).toList();
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    // _loadHistoricalData();
+    _loadHistoricalData();
   }
 
   Widget build(BuildContext context) {
-    final dynamic device = widget.device;
     double headerSize = 8;
     int dataSize = 10;
 
@@ -108,96 +114,97 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                     child: Column(
                       children: [
                         //Table
-                        Container(
-                          decoration:
-                              BoxDecoration(border: Border.all(width: 2)),
-                          child: Column(
-                            children: [
-                              Table(
-                                border: TableBorder.all(color: Colors.black),
-                                defaultVerticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                children: [
-                                  TableRow(
-                                      decoration:
-                                          BoxDecoration(color: Colors.white),
+                        filteredData.isEmpty
+                            ? Center(
+                                child: Text("Noo Data Available"),
+                              )
+                            : Container(
+                                decoration:
+                                    BoxDecoration(border: Border.all(width: 2)),
+                                child: Column(
+                                  children: [
+                                    Table(
+                                      border:
+                                          TableBorder.all(color: Colors.black),
+                                      defaultVerticalAlignment:
+                                          TableCellVerticalAlignment.middle,
                                       children: [
-                                        TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text("DATE & TIME",
-                                                  style: TextStyle(
-                                                      fontSize: headerSize),
-                                                  textAlign: TextAlign.center),
-                                            )),
-                                        TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text(
-                                                "VOLTAGE",
-                                                style: TextStyle(
-                                                    fontSize: headerSize),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            )),
-                                        TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text(
-                                                "HIGHEST",
-                                                style: TextStyle(
-                                                    fontSize: headerSize),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            )),
-                                        TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text("LOWEST",
-                                                  style: TextStyle(
-                                                      fontSize: headerSize),
-                                                  textAlign: TextAlign.center),
-                                            )),
-                                        TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text(
-                                                "PERCENT",
-                                                style: TextStyle(
-                                                    fontSize: headerSize),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ))
-                                      ]),
-                                ],
-                              ),
-                              device.isEmpty
-                                  ? Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.8,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.327,
-                                      child: Center(
-                                        child: Text("NO DATA"),
-                                      ),
-                                    )
-                                  : Container(
+                                        TableRow(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white),
+                                            children: [
+                                              TableCell(
+                                                  verticalAlignment:
+                                                      TableCellVerticalAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text("DATE & TIME",
+                                                        style: TextStyle(
+                                                            fontSize:
+                                                                headerSize),
+                                                        textAlign:
+                                                            TextAlign.center),
+                                                  )),
+                                              TableCell(
+                                                  verticalAlignment:
+                                                      TableCellVerticalAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "VOLTAGE",
+                                                      style: TextStyle(
+                                                          fontSize: headerSize),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  )),
+                                              TableCell(
+                                                  verticalAlignment:
+                                                      TableCellVerticalAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "HIGHEST",
+                                                      style: TextStyle(
+                                                          fontSize: headerSize),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  )),
+                                              TableCell(
+                                                  verticalAlignment:
+                                                      TableCellVerticalAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text("LOWEST",
+                                                        style: TextStyle(
+                                                            fontSize:
+                                                                headerSize),
+                                                        textAlign:
+                                                            TextAlign.center),
+                                                  )),
+                                              TableCell(
+                                                  verticalAlignment:
+                                                      TableCellVerticalAlignment
+                                                          .middle,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "PERCENT",
+                                                      style: TextStyle(
+                                                          fontSize: headerSize),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ))
+                                            ]),
+                                      ],
+                                    ),
+                                    Container(
                                       width: MediaQuery.of(context).size.width *
                                           0.8,
                                       height:
@@ -210,18 +217,18 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                           defaultVerticalAlignment:
                                               TableCellVerticalAlignment.middle,
                                           children: [
-                                            ...device.map(
+                                            ...filteredData.map(
                                               (data) {
-                                                return TableRow(children:
-                                                    data.map<Widget>((cell) {
-                                                  return [
+                                                return TableRow(
+                                                  children: [
                                                     TableCell(
                                                       verticalAlignment:
                                                           TableCellVerticalAlignment
                                                               .middle,
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(10),
+                                                            const EdgeInsets
+                                                                .all(10),
                                                         child: Text(
                                                           "${data['year']}/${data['month']}/${data['day']}\n${data['hour']}:${data['minute']}",
                                                           textAlign:
@@ -235,7 +242,8 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                               .middle,
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(10),
+                                                            const EdgeInsets
+                                                                .all(10),
                                                         child: Text(
                                                           "${data['voltage']}",
                                                           textAlign:
@@ -249,7 +257,8 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                               .middle,
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(10),
+                                                            const EdgeInsets
+                                                                .all(10),
                                                         child: Text(
                                                           "${data['high']}",
                                                           textAlign:
@@ -263,7 +272,8 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                               .middle,
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(10),
+                                                            const EdgeInsets
+                                                                .all(10),
                                                         child: Text(
                                                           "${data['low']}",
                                                           textAlign:
@@ -277,7 +287,8 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                               .middle,
                                                       child: Padding(
                                                         padding:
-                                                            EdgeInsets.all(10),
+                                                            const EdgeInsets
+                                                                .all(10),
                                                         child: Text(
                                                           "${data['perc']}",
                                                           textAlign:
@@ -285,17 +296,17 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                         ),
                                                       ),
                                                     ),
-                                                  ];
-                                                }));
+                                                  ],
+                                                );
                                               },
                                             )
                                           ],
                                         ),
                                       ),
                                     ),
-                            ],
-                          ),
-                        ),
+                                  ],
+                                ),
+                              ),
                         SizedBox(
                           height: 50,
                         ),

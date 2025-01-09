@@ -25,7 +25,18 @@ class HistoricalArguments {
 }
 
 class shit {
-  final String id, mac, year, month, day, hour, minute, perc, voltag, high, low;
+  final String id,
+      name,
+      mac,
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      perc,
+      voltag,
+      high,
+      low;
   shit(this.id, this.mac, this.year, this.month, this.day, this.hour,
-      this.minute, this.perc, this.voltag, this.high, this.low);
+      this.minute, this.perc, this.voltag, this.high, this.low, this.name);
 }
