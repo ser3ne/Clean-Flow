@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:capstone/Controllers/bluetooth_datadisplay.dart';
-import 'package:capstone/Widgets/custom_switchbutton.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/Widgets/button.dart';
 import 'package:capstone/pages/main_page.dart';

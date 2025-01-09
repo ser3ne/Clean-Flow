@@ -1,14 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'package:capstone/Widgets/custom_switchbutton.dart';
-import 'package:capstone/global/args.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BLEDataDisplay extends StatefulWidget {
   const BLEDataDisplay({super.key, required this.device});

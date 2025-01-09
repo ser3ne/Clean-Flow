@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:capstone/Widgets/custom_chart.dart';
 import 'package:capstone/global/args.dart';
-import 'package:capstone/global/args.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,7 +48,6 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
 
   Widget build(BuildContext context) {
     double headerSize = 8;
-    int dataSize = 10;
 
     List<FlSpot> high = [
       FlSpot(2, 5),
