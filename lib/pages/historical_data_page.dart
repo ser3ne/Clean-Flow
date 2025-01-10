@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:capstone/Widgets/custom_chart.dart';
 import 'package:capstone/global/args.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +19,7 @@ class HistoricalDataPage extends StatefulWidget {
 class _HistoricalDataPageState extends State<HistoricalDataPage> {
   List<dynamic> historicalData = [];
   List<dynamic> filteredData = [];
+  double headerSize = 8;
 
   Future<void> _loadHistoricalData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -47,26 +47,6 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
   }
 
   Widget build(BuildContext context) {
-    double headerSize = 8;
-
-    List<FlSpot> high = [
-      FlSpot(2, 5),
-      FlSpot(4, 20),
-      FlSpot(6, 30),
-      FlSpot(8, 5),
-      FlSpot(10, 24),
-      FlSpot(12, 2),
-    ];
-    List<FlSpot> low = [
-      FlSpot(1, 28),
-      FlSpot(3, 17),
-      FlSpot(5, 25),
-      FlSpot(7, 0),
-      FlSpot(9, 20),
-      FlSpot(11, 25),
-    ];
-    DateTime now = DateTime.now();
-
     return Scaffold(
       appBar: AppBar(
         leading: const Image(image: AssetImage("assets/cf.png")),
@@ -114,7 +94,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                         //Table
                         filteredData.isEmpty
                             ? Center(
-                                child: Text("Noo Data Available"),
+                                child: Text("No Data Available"),
                               )
                             : Container(
                                 decoration:
@@ -192,7 +172,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                   child: Padding(
                                                     padding: EdgeInsets.all(10),
                                                     child: Text(
-                                                      "PERCENT",
+                                                      "REDUCED %",
                                                       style: TextStyle(
                                                           fontSize: headerSize),
                                                       textAlign:
@@ -328,48 +308,14 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      height: 250,
-                                      width: 300,
+                                      height: 270,
+                                      width: 500,
                                       child: CustomChart(
-                                        high: high,
-                                        highColor: Colors.red,
-                                        low: low,
-                                        lowColor: Colors.blue,
-                                        isCurved: false,
-                                        barWidth: 2.0,
-                                        month: now.month,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Container(
-                                      height: 250,
-                                      width: 250,
-                                      child: CustomChart(
-                                        high: high,
-                                        highColor: Colors.red,
-                                        low: low,
-                                        lowColor: Colors.blue,
-                                        isCurved: false,
-                                        barWidth: 2.0,
-                                        month: now.month,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Container(
-                                      height: 250,
-                                      width: 250,
-                                      child: CustomChart(
-                                        high: high,
-                                        highColor: Colors.red,
-                                        low: low,
-                                        lowColor: Colors.blue,
-                                        isCurved: false,
-                                        barWidth: 2.0,
-                                        month: now.month,
+                                        name: widget.name, //String
+                                        highColor: Colors.red, //Color
+                                        lowColor: Colors.blue, //Color
+                                        isCurved: false, //boolean
+                                        barWidth: 2.0, //double
                                       ),
                                     ),
                                     SizedBox(

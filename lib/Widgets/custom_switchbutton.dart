@@ -43,15 +43,15 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
     String hour = current.hour.toString();
     String minute = current.minute.toString();
 
-    //Finding the latest index in Voltage
+    //Finding the latest Value (index) in Voltage
     String voltage = voltageList[voltageList.length - 1].toString();
 
-    //Finding the Highest Value
+    //Finding the Highest Voltage Value
     String high = highList
         .reduce((current, next) => current > next ? current : next)
         .toString();
 
-    //Finding the Lowest Value
+    //Finding the Lowest Voltage Value
     String low = highList
         .reduce((current, next) => current < next ? current : next)
         .toString();
@@ -76,8 +76,8 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
         low);
   }
 
-  Future<void> _historicalData(String name, year, month, day, hour, minute,
-      perc, voltage, high, low) async {
+  Future<void> _historicalData(String name, String year, String month,
+      String day, String hour, String minute, perc, voltage, high, low) async {
     final prefs = await SharedPreferences.getInstance();
 
     String? jsonString = prefs.getString('historicalData');

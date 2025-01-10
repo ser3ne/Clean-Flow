@@ -18,11 +18,10 @@ class BLEDataDisplay extends StatefulWidget {
 class _BLEDataDisplayState extends State<BLEDataDisplay> {
   final double _frequency = .05; // Frequency of the sine wave
   final int _maxPoints = 100; // Number of points to show on the chart
-
   List<dynamic> historicalData = [];
+//this is the lists we fill values for the chart
   List<FlSpot> _cleanSpots = [];
-  List<FlSpot> _noisySpots =
-      []; //this is the lists we fill values for the chart
+  List<FlSpot> _noisySpots = [];
   List<FlSpot> _voltSpots = []; //this is the lists we fill values for the chart
 
   double _currentX = 0.1; // Relative x-value for the sine wave
@@ -32,6 +31,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
 
   bool isConnected = false;
   bool haveAlerted = false;
+
   List<int> _high = [];
   List<int> voltList = [];
   List<int> perc = [];
@@ -167,6 +167,7 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                     dataSnapshot.data!.isEmpty) {
                   return Center(child: Text("No data received"));
                 }
+
                 String receivedData = String.fromCharCodes(dataSnapshot.data!);
                 List<String> values = receivedData.split(',');
                 List<String> voltTemp = values[0].split('.');
@@ -181,7 +182,6 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
 
                 percentReduction = int.parse(percentageReductionStr);
                 perc.add(percentReduction);
-                // Parse as an integer
                 if (voltsStr.isNotEmpty && voltsStr.startsWith('-')) {
                   voltsStr = voltsStr.substring(1);
                 }
@@ -191,6 +191,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 if (cleanStr.isNotEmpty && cleanStr.startsWith('-')) {
                   cleanStr = cleanStr.substring(1);
                 }
+
+                // Parse as a double
                 double doubleVoltage = double.parse(voltsStr);
                 double noise = double.parse(noiseStr);
                 double clean = double.parse(cleanStr);
@@ -280,7 +282,6 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                             // Spots is what we refer to as points, where users can hover and see
                             // the data in that position
                             //constant
-
                             //Clean Electricity
                             LineChartBarData(
                               spots: _cleanSpots,

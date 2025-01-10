@@ -111,10 +111,6 @@ class HhistoricalDStateevicesPage extends State<HistoricalDevicesPage> {
                                 );
                               },
                               child: Center(child: Text(device['name']))));
-
-                      //this is for taking the respective data from a device.
-                      //we cannot use the mac address because we don't have a reference
-                      //therefore we use an ID which fits perfectly with our ID system
                     },
                   ),
                 ),
