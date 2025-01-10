@@ -34,9 +34,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
   bool haveAlerted = false;
   List<int> _high = [];
   List<int> voltList = [];
-  List<String> perc = [];
-  // List<int> _low = [];
-  String percentReduction = "";
+  List<int> perc = [];
+  int percentReduction = 0;
   int intVoltage = 0;
   int high = 0;
   int low = 0;
@@ -180,8 +179,8 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                 String cleanStr = cleanTemp[0].trim();
                 String noiseStr = noiseTemp[0].trim();
 
-                percentReduction = percentageReductionStr;
-                perc.add(percentageReductionStr);
+                percentReduction = int.parse(percentageReductionStr);
+                perc.add(percentReduction);
                 // Parse as an integer
                 if (voltsStr.isNotEmpty && voltsStr.startsWith('-')) {
                   voltsStr = voltsStr.substring(1);
@@ -479,7 +478,6 @@ class _BLEDataDisplayState extends State<BLEDataDisplay> {
                     isConnected ? "Are You Sure?" : "Disconnect Device",
                 size: 55,
                 high: _high,
-                low: low,
                 voltage: voltList,
                 percentReduction: perc),
           ),

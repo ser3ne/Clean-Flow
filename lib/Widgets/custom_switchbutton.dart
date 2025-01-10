@@ -20,15 +20,12 @@ class CustomSwitchButtonBig extends StatefulWidget {
     required this.size,
     required this.percentReduction,
     required this.high,
-    required this.low,
     required this.voltage,
   });
   final BluetoothDevice device;
   final String dialogueText;
-  final List<String> percentReduction;
   final double size;
-  final int low;
-  final List<int> voltage, high;
+  final List<int> percentReduction, voltage, high;
 
   @override
   State<CustomSwitchButtonBig> createState() => _CustomSwitchButtonBigState();
@@ -36,6 +33,49 @@ class CustomSwitchButtonBig extends StatefulWidget {
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
   List<dynamic> historicalData = [];
+
+  Future<void> _processData(BluetoothDevice device, List<int> percList,
+      List<int> voltageList, List<int> highList) async {
+    DateTime current = DateTime.now();
+    String year = current.year.toString();
+    String month = current.month.toString();
+    String day = current.day.toString();
+    String hour = current.hour.toString();
+    String minute = current.minute.toString();
+
+    //Finding the latest index in Voltage
+    String voltage = voltageList[voltageList.length - 1].toString();
+
+    //Finding the Highest Value
+    String high = highList
+        .reduce((current, next) => current > next ? current : next)
+        .toString();
+
+    //Finding the Lowest Value
+    String low = highList
+        .reduce((current, next) => current < next ? current : next)
+        .toString();
+
+    //Finding the Average of the Percentage Reduction
+    double perc = 0;
+    for (int percent in percList) {
+      perc += percent;
+    }
+    perc = (perc / (percList.length - 1));
+
+    _historicalData(
+        device.platformName.toString(), //Device Name
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        perc.toInt(), //perc
+        voltage, //voltage
+        high,
+        low);
+  }
+
   Future<void> _historicalData(String name, year, month, day, hour, minute,
       perc, voltage, high, low) async {
     final prefs = await SharedPreferences.getInstance();
@@ -146,23 +186,8 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
           MaterialButton(
               color: Colors.redAccent,
               onPressed: () {
-                DateTime current = DateTime.now();
-                String year = current.year.toString();
-                String month = current.month.toString();
-                String day = current.day.toString();
-                String hour = current.hour.toString();
-                String minute = current.minute.toString();
-                _historicalData(
-                    device.platformName.toString(),
-                    year,
-                    month,
-                    day,
-                    hour,
-                    minute,
-                    widget.percentReduction,
-                    widget.voltage.toString(),
-                    widget.high.toString(),
-                    widget.low.toString());
+                _processData(device, widget.percentReduction, widget.voltage,
+                    widget.high);
                 dialogueActionDisconnect(device);
               },
               child: Text(
