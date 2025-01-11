@@ -56,6 +56,23 @@ class _MainPageState extends State<MainPage> {
     // TODO: implement initState
     super.initState();
     name = widget.args.deviceName;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showMaterialBanner();
+    });
+  }
+
+  void _showMaterialBanner() {
+    ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+      content: Text(
+          "You have reduced 82% of dirty electricity in your last session!"),
+      actions: [SizedBox()],
+      onVisible: () {
+        Future.delayed(const Duration(milliseconds: 3000), () {
+          ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+        });
+      },
+    ));
   }
 
   void shouldPop(bool didPop) async {
