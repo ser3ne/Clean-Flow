@@ -1,5 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:capstone/global/args.dart';
@@ -7,6 +8,7 @@ import 'package:capstone/pages/historical_devices_page.dart';
 import 'package:capstone/pages/home_page.dart';
 import 'package:capstone/pages/scanresult_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key, required this.args});
@@ -17,6 +19,18 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  List<dynamic> historicalData = [];
+  Future<void> _loadHistoricalData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? jsonString = prefs.getString('historicalData');
+    if (jsonString != null) {
+      setState(() {
+        historicalData = jsonDecode(jsonString);
+      });
+    }
+  }
+
   int _currentIndex = 0;
   late String name;
   late List<Widget> pages = [
@@ -53,25 +67,41 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     name = widget.args.deviceName;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showSnackBar();
+    _loadHistoricalData().then((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showSnackBar();
+      });
     });
   }
 
   void _showSnackBar() {
+    String reductionPercentage = _getLatestPercentage();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
-          "You have reduced 82% of dirty electricity in your last session!"),
+          "You have reduced $reductionPercentage of dirty electricity in your last session!"),
       onVisible: () {
         Future.delayed(const Duration(milliseconds: 3000), () {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
         });
       },
     ));
+  }
+
+  String _getLatestPercentage() {
+    if (historicalData.isEmpty) {
+      return "0%";
+    }
+
+    final lastSession = historicalData.last;
+
+    final perc = lastSession['perc'];
+    if (perc != null) {
+      return "$perc%";
+    } else {
+      return "0%";
+    }
   }
 
   void shouldPop(bool didPop) async {
