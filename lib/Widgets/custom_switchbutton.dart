@@ -33,7 +33,6 @@ class CustomSwitchButtonBig extends StatefulWidget {
 
 class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
   List<dynamic> historicalData = [];
-
   Future<void> _processData(BluetoothDevice device, List<int> percList,
       List<int> voltageList, List<int> highList) async {
     DateTime current = DateTime.now();
@@ -42,6 +41,8 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
     String day = current.day.toString();
     String hour = current.hour.toString();
     String minute = current.minute.toString();
+
+    debugPrint("Process Data Day: $day\t:\t${day.runtimeType}");
 
     //Finding the latest Value (index) in Voltage
     String voltage = voltageList[voltageList.length - 1].toString();
@@ -82,6 +83,8 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
 
     String? jsonString = prefs.getString('historicalData');
     historicalData = jsonString != null ? jsonDecode(jsonString) : [];
+
+    debugPrint("Historical Data Day: $day\t:\t${day.runtimeType}");
 
     setState(() {
       historicalData.add({

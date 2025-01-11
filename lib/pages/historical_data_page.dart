@@ -19,6 +19,7 @@ class HistoricalDataPage extends StatefulWidget {
 class _HistoricalDataPageState extends State<HistoricalDataPage> {
   List<dynamic> historicalData = [];
   List<dynamic> filteredData = [];
+  List<dynamic> filteredDataX2 = [];
   double headerSize = 8;
 
   Future<void> _loadHistoricalData() async {
@@ -101,6 +102,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                     BoxDecoration(border: Border.all(width: 2)),
                                 child: Column(
                                   children: [
+                                    //Table Header
                                     Table(
                                       border:
                                           TableBorder.all(color: Colors.black),
@@ -195,8 +197,11 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                           defaultVerticalAlignment:
                                               TableCellVerticalAlignment.middle,
                                           children: [
+                                            //Table Contents
                                             ...filteredData.map(
                                               (data) {
+                                                debugPrint(
+                                                    "Table Day: ${data['day']}\t:\t${data['day'].runtimeType}");
                                                 return TableRow(
                                                   children: [
                                                     TableCell(
@@ -297,36 +302,25 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                           decoration: BoxDecoration(
                               // border: Border.all(width: 2)
                               ),
-                          child: SizedBox(
-                            width: 400,
-                            height: 400,
-                            child: Center(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      height: 270,
-                                      width: 500,
-                                      child: CustomChart(
-                                        name: widget.name, //String
-                                        highColor: Colors.red, //Color
-                                        lowColor: Colors.blue, //Color
-                                        isCurved: false, //boolean
-                                        barWidth: 2.0, //double
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                  ],
+                          child: Center(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Container(
+                                margin: EdgeInsets.all(5),
+                                height: 280,
+                                width: 700,
+                                child: CustomChart(
+                                  name: widget.name, //String
+                                  highColor: Colors.red, //Color
+                                  lowColor: Colors.blue, //Color
+                                  isCurved: false, //boolean
+                                  barWidth: 2.0, //double
+                                  dnt: filteredData,
                                 ),
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
