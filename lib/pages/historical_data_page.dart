@@ -18,9 +18,30 @@ class HistoricalDataPage extends StatefulWidget {
 
 class _HistoricalDataPageState extends State<HistoricalDataPage> {
   List<dynamic> historicalData = [];
-  List<dynamic> filteredData = [];
-  List<dynamic> filteredDataX2 = [];
+  List<dynamic> filteredDataTable = [];
+  List<dynamic> filteredDataChart = [];
   double headerSize = 8;
+
+  final List<String> monthNames = [
+    "JANUARY",
+    "FEBRUARY",
+    "MARCH",
+    "APRIL",
+    "MAY",
+    "JUNE",
+    "JULY",
+    "AUGUST",
+    "SEPTEMBER",
+    "OCTOBER",
+    "NOVEMBER",
+    "DECEMBER"
+  ];
+  final List<String> yearNames = ["2025", "2026"];
+
+  int monthIndex = 1;
+  int yearIndex = 1;
+  String monthText = "JANUARY";
+  String yearText = "2025";
 
   Future<void> _loadHistoricalData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -29,22 +50,55 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
     if (jsonString != null) {
       setState(() {
         historicalData = jsonDecode(jsonString);
-        _filterData();
+        _filterDataTable();
+        _filterDataChart(monthIndex.toString(), yearText);
       });
     }
   }
 
-  void _filterData() {
+  void _filterDataTable() {
     setState(() {
-      filteredData =
+      filteredDataTable =
           historicalData.where((data) => data['name'] == widget.name).toList();
     });
+  }
+
+  void _filterDataChart(String month, String year) {
+    debugPrint("_filterDataChart: $month");
+    setState(() {
+      filteredDataChart = historicalData
+          .where((data) =>
+              data['name'] == widget.name &&
+              data['month'] == month &&
+              data['year'] == year)
+          .toList();
+    });
+  }
+
+  void _changeMonthTextAndIndex(int month) {
+    setState(() {
+      monthText = monthNames[month - 1];
+      monthIndex = month;
+    });
+    debugPrint(
+        "monthName: ${monthNames[month]} | MonthText: $monthText | Month: $month | MonthIndex: $monthIndex");
+    _filterDataChart(month.toString(), yearText);
+  }
+
+  void _changeYearTextAndIndex(int year) {
+    setState(() {
+      yearText = yearNames[year];
+      yearIndex = year;
+    });
+    _filterDataChart(monthIndex.toString(), yearText);
   }
 
   @override
   void initState() {
     super.initState();
     _loadHistoricalData();
+    _changeMonthTextAndIndex(monthIndex);
+    // _changeYearTextAndIndex(yearIndex);
   }
 
   Widget build(BuildContext context) {
@@ -84,8 +138,8 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(40))),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.8,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               child: Padding(
                 padding: const EdgeInsets.all(25),
                 child: Center(
@@ -93,13 +147,14 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                     child: Column(
                       children: [
                         //Table
-                        filteredData.isEmpty
+                        filteredDataTable.isEmpty
                             ? Center(
                                 child: Text("No Data Available"),
                               )
                             : Container(
-                                decoration:
-                                    BoxDecoration(border: Border.all(width: 2)),
+                                decoration: BoxDecoration(
+                                  border: Border.all(width: 2),
+                                ),
                                 child: Column(
                                   children: [
                                     //Table Header
@@ -198,7 +253,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                               TableCellVerticalAlignment.middle,
                                           children: [
                                             //Table Contents
-                                            ...filteredData.map(
+                                            ...filteredDataTable.map(
                                               (data) {
                                                 debugPrint(
                                                     "Table Day: ${data['day']}\t:\t${data['day'].runtimeType}");
@@ -290,34 +345,137 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                   ],
                                 ),
                               ),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        //Line Graph
-                        Container(
-                          height: MediaQuery.of(context).size.height * .3,
-                          width: MediaQuery.of(context).size.width * 2,
-                          margin: EdgeInsets.only(
-                              right: MediaQuery.of(context).size.width * .05),
-                          decoration: BoxDecoration(
-                              // border: Border.all(width: 2)
-                              ),
-                          child: Center(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Container(
-                                margin: EdgeInsets.all(5),
-                                height: 280,
-                                width: 700,
-                                child: CustomChart(
-                                  name: widget.name, //String
-                                  highColor: Colors.red, //Color
-                                  lowColor: Colors.blue, //Color
-                                  isCurved: false, //boolean
-                                  barWidth: 2.0, //double
-                                  dnt: filteredData,
+
+                        //Dropdown and Line Graph
+                        Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                // border: Border.all(width: 1),
                                 ),
-                              ),
+                            height: MediaQuery.of(context).size.height * .49,
+                            width: MediaQuery.of(context).size.width,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                Divider(
+                                  color: Colors.black,
+                                  height: 2,
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 5),
+                                  height:
+                                      MediaQuery.of(context).size.height * .1,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                      // border: Border.all(width: 1),
+                                      // color: Colors.orange
+                                      ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      //Month DropDown Menu
+                                      DropdownMenu(
+                                          onSelected: (value) {
+                                            _changeMonthTextAndIndex(value!);
+                                          },
+                                          inputDecorationTheme:
+                                              InputDecorationTheme(
+                                            border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                          ),
+                                          initialSelection: 0,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .36,
+                                          label: Text("Month"),
+                                          dropdownMenuEntries: <DropdownMenuEntry<
+                                              int>>[
+                                            DropdownMenuEntry(
+                                                value: 1, label: "JANUARY"),
+                                            DropdownMenuEntry(
+                                                value: 2, label: "FEBRUARY"),
+                                            DropdownMenuEntry(
+                                                value: 3, label: "MARCH"),
+                                            DropdownMenuEntry(
+                                                value: 4, label: "APRIL"),
+                                            DropdownMenuEntry(
+                                                value: 5, label: "MAY"),
+                                            DropdownMenuEntry(
+                                                value: 6, label: "JUNE"),
+                                            DropdownMenuEntry(
+                                                value: 7, label: "JULY"),
+                                            DropdownMenuEntry(
+                                                value: 8, label: "AUGUST"),
+                                            DropdownMenuEntry(
+                                                value: 9, label: "SEPTEMBER"),
+                                            DropdownMenuEntry(
+                                                value: 10, label: "OCTOBER"),
+                                            DropdownMenuEntry(
+                                                value: 11, label: "NOVEMBER"),
+                                            DropdownMenuEntry(
+                                                value: 12, label: "DECEMBER"),
+                                          ]),
+                                      //Year DrowDown Menu
+                                      DropdownMenu(
+                                          onSelected: (value) {
+                                            _changeYearTextAndIndex(value!);
+                                          },
+                                          inputDecorationTheme:
+                                              InputDecorationTheme(
+                                            border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                          ),
+                                          initialSelection: 0,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .28,
+                                          label: Text("Year"),
+                                          dropdownMenuEntries: <DropdownMenuEntry<
+                                              int>>[
+                                            DropdownMenuEntry(
+                                                value: 0, label: "2025"),
+                                            DropdownMenuEntry(
+                                                value: 1, label: "2026")
+                                          ])
+                                    ],
+                                  ),
+                                ),
+                                Center(
+                                  child: Text("$monthText, $yearText"),
+                                ),
+                                //Line Graph
+                                filteredDataChart.isEmpty
+                                    ? SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                .1,
+                                        child: Center(
+                                          child:
+                                              Text("No Chart Data Available"),
+                                        ),
+                                      )
+                                    : CustomChart(
+                                        name: widget.name, //String
+                                        highColor: Colors.red, //Color
+                                        lowColor: Colors.blue, //Color
+                                        isCurved: false, //boolean
+                                        barWidth: 2.0, //double
+                                        dnt: filteredDataChart,
+                                      ),
+                                Center(
+                                  child: filteredDataChart.isEmpty
+                                      ? SizedBox.shrink()
+                                      : Text("DAYS"),
+                                )
+                              ],
                             ),
                           ),
                         ),

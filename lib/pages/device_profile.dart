@@ -226,17 +226,6 @@ class _DeviceProfileState extends State<DeviceProfile> {
                     ),
                   ),
                 ),
-                // //Custom Disconnect Switch
-                // SizedBox(
-                //   height: MediaQuery.of(context).size.height * .1, //10%
-                //   width: MediaQuery.of(context).size.width,
-                //   child: CustomSwitchButtonBig(
-                //     device: widget.args.device,
-                //     dialogueText:
-                //         isConnected ? "Are You Sure?" : "Disconnect Device",
-                //     size: 55,
-                //   ),
-                // )
               ],
             ),
           ),

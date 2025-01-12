@@ -23,7 +23,15 @@ class CustomChart extends StatefulWidget {
 }
 
 class _CustomChartState extends State<CustomChart> {
-  int day = 0, month = 0;
+  int localDay = 0;
+  int localMonth = 0;
+
+  List<FlSpot> test = [
+    FlSpot(2, 228),
+    FlSpot(13, 233),
+  ];
+  List<FlSpot> highList = [];
+
   FlSpot high = FlSpot(0, 0);
   FlSpot localHigh = FlSpot(0, 0);
 
@@ -64,8 +72,6 @@ class _CustomChartState extends State<CustomChart> {
     double highY = double.parse(highYString);
 
     //these are for indexing months and days
-    day = int.parse(xString);
-    month = int.parse(mString);
 
     //checkking if the values happen to be infinite
     //plano ko gawing try/catch pero meh...
@@ -75,7 +81,11 @@ class _CustomChartState extends State<CustomChart> {
     } else {
       debugPrint("x, lowY, and highY is infinite");
     }
+
     setState(() {
+      localDay = int.parse(xString);
+      localMonth = int.parse(mString);
+      debugPrint("Month:Day: $localMonth:$day");
       localHigh = FlSpot(x, highY);
     });
   }
@@ -97,72 +107,78 @@ class _CustomChartState extends State<CustomChart> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 260,
-      width: 480,
-      child: LineChart(
-        LineChartData(
-            lineBarsData: [
-              //High
-              LineChartBarData(
-                  spots: [
-                    ...widget.dnt.map(
-                      (data) {
-                        getHighValues(data['day'], data['high'], data['month']);
-
-                        return localHigh;
-                      },
-                    )
-                  ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        margin: EdgeInsets.only(top: 5),
+        // decoration: BoxDecoration(border: Border.all(width: 1)),
+        height: MediaQuery.of(context).size.height * .3,
+        width: MediaQuery.of(context).size.width,
+        child: LineChart(
+          LineChartData(
+              lineBarsData: [
+                //High
+                // [
+                //   ...widget.dnt.map(
+                //     (data) {
+                //       getHighValues(data['day'], data['high'], data['month']);
+                //       return localHigh;
+                //     },
+                //   )
+                // ]
+                LineChartBarData(
+                  spots: [],
                   isCurved: widget.isCurved,
                   barWidth: widget.barWidth,
-                  color: widget.highColor),
-              //Low
-              LineChartBarData(
-                  spots: [
-                    ...widget.dnt.map(
-                      (data) {
-                        getLowValues(data['day'], data['low']);
-
-                        return localLow;
-                      },
-                    )
-                  ],
-                  isCurved: widget.isCurved,
-                  barWidth: widget.barWidth,
-                  color: widget.lowColor)
-            ],
-            titlesData: FlTitlesData(
+                  color: widget.highColor,
+                ),
+                //Low
+                // [
+                //       ...widget.dnt.map(
+                //         (data) {
+                //           getLowValues(data['day'], data['low']);
+                //           return localLow;
+                //         },
+                //       )
+                //     ]
+                LineChartBarData(
+                    spots: test,
+                    isCurved: widget.isCurved,
+                    barWidth: widget.barWidth,
+                    color: widget.lowColor)
+              ],
+              maxY: 260,
+              minY: 160,
+              titlesData: FlTitlesData(
                 topTitles: AxisTitles(
-                    axisNameWidget: Text(
-                      monthNames[month],
-                    ),
                     sideTitles: const SideTitles(
-                      showTitles: false,
-                    )),
+                  showTitles: false,
+                )),
                 rightTitles: const AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: false,
                   ),
                 ),
                 bottomTitles: AxisTitles(
-                    axisNameWidget: const Text("WEEKS"),
                     sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        if (day < 8 && day > 0) {
-                          return const Text("WEEK 1");
-                        } else if (day < 15) {
-                          return const Text("WEEK 2");
-                        } else if (day < 22) {
-                          return const Text("WEEK 3");
-                        } else if (day < 29) {
-                          return const Text("WEEK 4");
-                        } else {
-                          return const Text("WEEK 5");
-                        }
-                      },
-                    )))),
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    debugPrint("Current DAY: $localDay");
+                    debugPrint("Value/Meta: $value/$meta");
+                    if (value <= 7 && value > 0) {
+                      return Text("1");
+                    } else if (value <= 14) {
+                      return Text("2");
+                    } else if (value <= 21) {
+                      return Text("3");
+                    } else if (value <= 28) {
+                      return Text("4");
+                    }
+                    return Text("5");
+                  },
+                )),
+              )),
+        ),
       ),
     );
   }

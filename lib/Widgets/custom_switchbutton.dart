@@ -62,7 +62,7 @@ class _CustomSwitchButtonBigState extends State<CustomSwitchButtonBig> {
     for (int percent in percList) {
       perc += percent;
     }
-    perc = (perc / (percList.length - 1));
+    perc = (perc / (percList.length));
 
     _historicalData(
         device.platformName.toString(), //Device Name
