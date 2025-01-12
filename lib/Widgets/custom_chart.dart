@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_final_fields, prefer_const_constructors
 
+import 'dart:ffi';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -27,8 +29,18 @@ class _CustomChartState extends State<CustomChart> {
   int localMonth = 0;
 
   List<FlSpot> test = [
-    FlSpot(2, 228),
-    FlSpot(13, 233),
+    FlSpot(1, 228),
+    FlSpot(2, 233),
+    FlSpot(3, 220),
+    FlSpot(4, 190),
+    FlSpot(5, 240),
+    FlSpot(6, 240),
+    FlSpot(7, 222),
+    FlSpot(28, 247),
+    FlSpot(29, 210),
+    FlSpot(30, 221),
+    FlSpot(31, 212),
+    FlSpot(31, 190),
   ];
 
   List<FlSpot> highList = [];
@@ -150,6 +162,8 @@ class _CustomChartState extends State<CustomChart> {
               ],
               maxY: 260,
               minY: 160,
+              maxX: 31,
+              minX: 1,
               titlesData: FlTitlesData(
                 topTitles: AxisTitles(
                     sideTitles: const SideTitles(
@@ -167,27 +181,16 @@ class _CustomChartState extends State<CustomChart> {
                     debugPrint("Current DAY: $localDay");
                     debugPrint("Value/Meta: $value/$meta");
 
-                    final FlSpot match = test.firstWhere(
+                    final match = test.firstWhere(
                       (spot) => spot.x == value,
                       orElse: () => FlSpot.nullSpot,
                     );
 
-                    if (match.x != null) {
+                    if (!match.x.isNaN) {
                       return Text(value.toInt().toString(),
                           style: const TextStyle(fontSize: 12));
                     }
                     return const SizedBox.shrink();
-
-                    // if (value <= 7 && value > 0) {
-                    //   return Text("1");
-                    // } else if (value <= 14) {
-                    //   return Text("2");
-                    // } else if (value <= 21) {
-                    //   return Text("3");
-                    // } else if (value <= 28) {
-                    //   return Text("4");
-                    // }
-                    // return Text("5");
                   },
                 )),
               )),
