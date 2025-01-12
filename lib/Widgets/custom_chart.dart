@@ -30,6 +30,7 @@ class _CustomChartState extends State<CustomChart> {
     FlSpot(2, 228),
     FlSpot(13, 233),
   ];
+
   List<FlSpot> highList = [];
 
   FlSpot high = FlSpot(0, 0);
@@ -113,7 +114,7 @@ class _CustomChartState extends State<CustomChart> {
         margin: EdgeInsets.only(top: 5),
         // decoration: BoxDecoration(border: Border.all(width: 1)),
         height: MediaQuery.of(context).size.height * .3,
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery.of(context).size.width - 100,
         child: LineChart(
           LineChartData(
               lineBarsData: [
@@ -165,16 +166,28 @@ class _CustomChartState extends State<CustomChart> {
                   getTitlesWidget: (value, meta) {
                     debugPrint("Current DAY: $localDay");
                     debugPrint("Value/Meta: $value/$meta");
-                    if (value <= 7 && value > 0) {
-                      return Text("1");
-                    } else if (value <= 14) {
-                      return Text("2");
-                    } else if (value <= 21) {
-                      return Text("3");
-                    } else if (value <= 28) {
-                      return Text("4");
+
+                    final FlSpot match = test.firstWhere(
+                      (spot) => spot.x == value,
+                      orElse: () => FlSpot.nullSpot,
+                    );
+
+                    if (match.x != null) {
+                      return Text(value.toInt().toString(),
+                          style: const TextStyle(fontSize: 12));
                     }
-                    return Text("5");
+                    return const SizedBox.shrink();
+
+                    // if (value <= 7 && value > 0) {
+                    //   return Text("1");
+                    // } else if (value <= 14) {
+                    //   return Text("2");
+                    // } else if (value <= 21) {
+                    //   return Text("3");
+                    // } else if (value <= 28) {
+                    //   return Text("4");
+                    // }
+                    // return Text("5");
                   },
                 )),
               )),
