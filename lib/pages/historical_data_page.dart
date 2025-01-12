@@ -66,14 +66,89 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
   void _filterDataChart(String month, String year) {
     debugPrint("_filterDataChart: $month");
     setState(() {
-      filteredDataChart = historicalData
+      // Filter data for the specific name, month, and year
+      var relevantData = historicalData
           .where((data) =>
               data['name'] == widget.name &&
               data['month'] == month &&
               data['year'] == year)
           .toList();
+
+      if (relevantData.isNotEmpty) {
+        // Group data by day
+        var groupedByDay = <String, List<Map<String, dynamic>>>{};
+
+        for (var entry in relevantData) {
+          String day = entry['day'];
+          groupedByDay.putIfAbsent(day, () => []).add(entry);
+        }
+
+        // Filter the highest high and lowest low for each day
+        filteredDataChart = groupedByDay.entries.map((entry) {
+          var dayData = entry.value;
+
+          // Find the highest high and lowest low for this day
+          var maxHighEntry = dayData.reduce((a, b) =>
+              double.parse(a['high']) > double.parse(b['high']) ? a : b);
+          var minLowEntry = dayData.reduce((a, b) =>
+              double.parse(a['low']) < double.parse(b['low']) ? a : b);
+
+          // Return a single combined entry per day with max high and min low
+          return {
+            'day': entry.key,
+            'high': maxHighEntry['high'],
+            'low': minLowEntry['low'],
+            // Include additional fields like timestamp or voltage if needed
+            'name': widget.name,
+            'month': month,
+            'year': year,
+          };
+        }).toList();
+      } else {
+        filteredDataChart = [];
+      }
     });
   }
+
+  // void _filterDataChart(String month, String year) {
+  //   debugPrint("_filterDataChart: $month");
+  //   setState(() {
+  //     // Filter the data for the specific name, month, and year
+  //     var relevantData = historicalData
+  //         .where((data) =>
+  //             data['name'] == widget.name &&
+  //             data['month'] == month &&
+  //             data['year'] == year)
+  //         .toList();
+
+  //     if (relevantData.isNotEmpty) {
+  //       // Find the highest high and lowest low values
+  //       var maxHigh = relevantData
+  //           .reduce((a, b) => a['high'] > b['high'] ? a : b)['high'];
+  //       var minLow =
+  //           relevantData.reduce((a, b) => a['low'] < b['low'] ? a : b)['low'];
+
+  //       // Filter the data to only include items matching the maxHigh or minLow
+  //       filteredDataChart = relevantData
+  //           .where((data) => data['high'] == maxHigh || data['low'] == minLow)
+  //           .toList();
+  //     } else {
+  //       filteredDataChart = [];
+  //     }
+  //   });
+  // }
+
+  // void _filterDataChart(String month, String year) {
+  //   debugPrint("_filterDataChart: $month");
+  //   setState(() {
+  //     filteredDataChart = historicalData
+  //         .where((data) =>
+  //             data['name'] == widget.name &&
+  //             data['month'] == month &&
+  //             data['year'] == year)
+  //         .toList();
+  //   });
+  // }
 
   void _changeMonthTextAndIndex(int month) {
     setState(() {

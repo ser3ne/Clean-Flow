@@ -131,39 +131,37 @@ class _CustomChartState extends State<CustomChart> {
           LineChartData(
               lineBarsData: [
                 //High
-                // [
-                //   ...widget.dnt.map(
-                //     (data) {
-                //       getHighValues(data['day'], data['high'], data['month']);
-                //       return localHigh;
-                //     },
-                //   )
-                // ]
+
                 LineChartBarData(
-                  spots: [],
+                  spots: [
+                    ...widget.dnt.map(
+                      (data) {
+                        getHighValues(data['day'], data['high'], data['month']);
+                        return localHigh;
+                      },
+                    )
+                  ],
                   isCurved: widget.isCurved,
                   barWidth: widget.barWidth,
                   color: widget.highColor,
                 ),
                 //Low
-                // [
-                //       ...widget.dnt.map(
-                //         (data) {
-                //           getLowValues(data['day'], data['low']);
-                //           return localLow;
-                //         },
-                //       )
-                //     ]
+
                 LineChartBarData(
-                    spots: test,
+                    spots: [
+                      ...widget.dnt.map(
+                        (data) {
+                          getLowValues(data['day'], data['low']);
+                          return localLow;
+                        },
+                      )
+                    ],
                     isCurved: widget.isCurved,
                     barWidth: widget.barWidth,
                     color: widget.lowColor)
               ],
               maxY: 260,
               minY: 160,
-              maxX: 31,
-              minX: 1,
               titlesData: FlTitlesData(
                 topTitles: AxisTitles(
                     sideTitles: const SideTitles(
@@ -183,14 +181,15 @@ class _CustomChartState extends State<CustomChart> {
 
                     final match = test.firstWhere(
                       (spot) => spot.x == value,
-                      orElse: () => FlSpot.nullSpot,
+                      orElse: () => FlSpot.zero,
                     );
 
-                    if (!match.x.isNaN) {
-                      return Text(value.toInt().toString(),
+                    if (true) {
+                      int title = value.toInt();
+                      return Text(title.toString(),
                           style: const TextStyle(fontSize: 12));
                     }
-                    return const SizedBox.shrink();
+                    // return const SizedBox.shrink();
                   },
                 )),
               )),
