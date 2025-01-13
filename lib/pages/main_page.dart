@@ -234,6 +234,7 @@ class _MainPageState extends State<MainPage> {
             style: TextStyle(
                 color: Colors.black, fontSize: 30, fontWeight: FontWeight.w900),
           ),
+          // Button for the notice/alert of saving historical data
           actions: [NoticeButton()],
           backgroundColor: colorY,
         ),
