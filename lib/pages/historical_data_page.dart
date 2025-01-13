@@ -110,46 +110,6 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
     });
   }
 
-  // void _filterDataChart(String month, String year) {
-  //   debugPrint("_filterDataChart: $month");
-  //   setState(() {
-  //     // Filter the data for the specific name, month, and year
-  //     var relevantData = historicalData
-  //         .where((data) =>
-  //             data['name'] == widget.name &&
-  //             data['month'] == month &&
-  //             data['year'] == year)
-  //         .toList();
-
-  //     if (relevantData.isNotEmpty) {
-  //       // Find the highest high and lowest low values
-  //       var maxHigh = relevantData
-  //           .reduce((a, b) => a['high'] > b['high'] ? a : b)['high'];
-  //       var minLow =
-  //           relevantData.reduce((a, b) => a['low'] < b['low'] ? a : b)['low'];
-
-  //       // Filter the data to only include items matching the maxHigh or minLow
-  //       filteredDataChart = relevantData
-  //           .where((data) => data['high'] == maxHigh || data['low'] == minLow)
-  //           .toList();
-  //     } else {
-  //       filteredDataChart = [];
-  //     }
-  //   });
-  // }
-
-  // void _filterDataChart(String month, String year) {
-  //   debugPrint("_filterDataChart: $month");
-  //   setState(() {
-  //     filteredDataChart = historicalData
-  //         .where((data) =>
-  //             data['name'] == widget.name &&
-  //             data['month'] == month &&
-  //             data['year'] == year)
-  //         .toList();
-  //   });
-  // }
-
   void _changeMonthTextAndIndex(int month) {
     setState(() {
       monthText = monthNames[month - 1];
@@ -463,7 +423,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(10))),
                                           ),
-                                          initialSelection: 0,
+                                          initialSelection: 1,
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width *

@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_final_fields, prefer_const_constructors
 
-import 'dart:ffi';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -26,100 +24,79 @@ class CustomChart extends StatefulWidget {
 
 class _CustomChartState extends State<CustomChart> {
   int localDay = 0;
-  int localMonth = 0;
-
-  List<FlSpot> test = [
-    FlSpot(1, 228),
-    FlSpot(2, 233),
-    FlSpot(3, 220),
-    FlSpot(4, 190),
-    FlSpot(5, 240),
-    FlSpot(6, 240),
-    FlSpot(7, 222),
-    FlSpot(28, 247),
-    FlSpot(29, 210),
-    FlSpot(30, 221),
-    FlSpot(31, 212),
-    FlSpot(31, 190),
-  ];
+  bool isLoading = true;
+  // int localMonth = 0;
 
   List<FlSpot> highList = [];
+  List<FlSpot> lowList = [];
 
-  FlSpot high = FlSpot(0, 0);
-  FlSpot localHigh = FlSpot(0, 0);
+  // List<FlSpot> testHigh = [
+  //   FlSpot(11, 210),
+  //   FlSpot(12, 250),
+  //   FlSpot(16, 250),
+  //   FlSpot(17, 250),
+  //   FlSpot(19, 250),
+  //   FlSpot(31, 100),
+  // ];
 
-  FlSpot low = FlSpot(0, 0);
-  FlSpot localLow = FlSpot(0, 0);
+  // List<FlSpot> testLow = [
+  //   FlSpot(11, 220),
+  //   FlSpot(12, 244),
+  //   FlSpot(16, 250),
+  //   FlSpot(17, 250),
+  //   FlSpot(31, 100),
+  // ];
 
-  void getLowValues(day, low) async {
-    debugPrint("CHART: Low $low");
+  Future<void> getLowValues(day, low) async {
+    //Convert to String so that when we can cleanly convert to double
     String xString = day.toString();
     String lowYString = low.toString();
 
     double x = double.parse(xString);
     double lowY = double.parse(lowYString);
 
-    if (x.isFinite && lowY.isFinite) {
-      debugPrint(
-          "NOT infinite: Day: ($x ${x.runtimeType})\tHigh: ($lowY ${lowY.runtimeType})");
-    } else if (!x.isNaN && !lowY.isNaN) {
-      debugPrint(
-          "NOT NaN: Day: ($x ${x.runtimeType})\tHigh: ($lowY ${lowY.runtimeType})");
-    } else {
-      debugPrint("x, lowY, and highY is infinite");
-    }
-
     setState(() {
-      localLow = FlSpot(x, lowY);
+      lowList.add(FlSpot(x, lowY));
     });
+    debugPrint("lowList: $lowList");
   }
 
-  void getHighValues(day, high, months) {
-    debugPrint("CHART: High $high");
+  Future<void> getHighValues(day, high) async {
     //Convert to String so that when we can cleanly convert to double
-    String mString = months.toString();
     String xString = day.toString();
     String highYString = high.toString();
 
     double x = double.parse(xString);
     double highY = double.parse(highYString);
 
-    //these are for indexing months and days
-
-    //checkking if the values happen to be infinite
-    //plano ko gawing try/catch pero meh...
-    if ((x.isFinite && highY.isFinite) && (!x.isNaN && !highY.isNaN)) {
-      debugPrint(
-          "NOT infinite/NaN: Day: ($x ${x.runtimeType})\tHigh: ($highY ${highY.runtimeType})");
-    } else {
-      debugPrint("x, lowY, and highY is infinite");
-    }
-
     setState(() {
-      localDay = int.parse(xString);
-      localMonth = int.parse(mString);
-      debugPrint("Month:Day: $localMonth:$day");
-      localHigh = FlSpot(x, highY);
+      highList.add(FlSpot(x, highY));
+    });
+    debugPrint("HighList: $highList");
+  }
+
+  Future<void> _processData() async {
+    for (var e in widget.dnt) {
+      await getHighValues(e['day'], e['high']);
+      await getLowValues(e['day'], e['low']);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _processData().then((_) {
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
-  final List<String> monthNames = [
-    "JANUARY",
-    "FEBRUARY",
-    "MARCH",
-    "APRIL",
-    "MAY",
-    "JUNE",
-    "JULY",
-    "AUGUST",
-    "SEPTEMBER",
-    "OCTOBER",
-    "NOVEMBER",
-    "DECEMBER"
-  ];
-
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
@@ -129,33 +106,17 @@ class _CustomChartState extends State<CustomChart> {
         width: MediaQuery.of(context).size.width - 100,
         child: LineChart(
           LineChartData(
+              //High
               lineBarsData: [
-                //High
-
                 LineChartBarData(
-                  spots: [
-                    ...widget.dnt.map(
-                      (data) {
-                        getHighValues(data['day'], data['high'], data['month']);
-                        return localHigh;
-                      },
-                    )
-                  ],
+                  spots: highList,
                   isCurved: widget.isCurved,
                   barWidth: widget.barWidth,
                   color: widget.highColor,
                 ),
                 //Low
-
                 LineChartBarData(
-                    spots: [
-                      ...widget.dnt.map(
-                        (data) {
-                          getLowValues(data['day'], data['low']);
-                          return localLow;
-                        },
-                      )
-                    ],
+                    spots: lowList,
                     isCurved: widget.isCurved,
                     barWidth: widget.barWidth,
                     color: widget.lowColor)
@@ -174,24 +135,32 @@ class _CustomChartState extends State<CustomChart> {
                 ),
                 bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, meta) {
-                    debugPrint("Current DAY: $localDay");
-                    debugPrint("Value/Meta: $value/$meta");
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          // Check if the current value matches any x value in dataPoints
 
-                    final match = test.firstWhere(
-                      (spot) => spot.x == value,
-                      orElse: () => FlSpot.zero,
-                    );
+                          final roundedValue =
+                              double.parse(value.toStringAsFixed(2));
 
-                    if (true) {
-                      int title = value.toInt();
-                      return Text(title.toString(),
-                          style: const TextStyle(fontSize: 12));
-                    }
-                    // return const SizedBox.shrink();
-                  },
-                )),
+                          final Set<double> lowHigh = {
+                            ...highList.map(
+                              (e) => e.x,
+                            ),
+                            ...lowList.map(
+                              (e) => e.x,
+                            )
+                          };
+
+                          debugPrint("VALUES1| lowHigh: $lowHigh");
+                          debugPrint("VALUES1| value: $value");
+                          if (lowHigh.contains(roundedValue)) {
+                            return Text(roundedValue.toInt().toString(),
+                                style: const TextStyle(fontSize: 12));
+                          }
+
+                          // Return empty for non-matching ticks
+                          return const SizedBox.shrink();
+                        })),
               )),
         ),
       ),
