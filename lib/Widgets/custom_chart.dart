@@ -30,23 +30,6 @@ class _CustomChartState extends State<CustomChart> {
   List<FlSpot> highList = [];
   List<FlSpot> lowList = [];
 
-  // List<FlSpot> testHigh = [
-  //   FlSpot(11, 210),
-  //   FlSpot(12, 250),
-  //   FlSpot(16, 250),
-  //   FlSpot(17, 250),
-  //   FlSpot(19, 250),
-  //   FlSpot(31, 100),
-  // ];
-
-  // List<FlSpot> testLow = [
-  //   FlSpot(11, 220),
-  //   FlSpot(12, 244),
-  //   FlSpot(16, 250),
-  //   FlSpot(17, 250),
-  //   FlSpot(31, 100),
-  // ];
-
   Future<void> getLowValues(day, low) async {
     //Convert to String so that when we can cleanly convert to double
     String xString = day.toString();

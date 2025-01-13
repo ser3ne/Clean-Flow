@@ -17,23 +17,128 @@ class Scanresult_Page extends StatefulWidget {
 
 class _Scanresult_PageState extends State<Scanresult_Page> {
   List<dynamic> historicalDevices = [];
+  List<dynamic> historicalData = [];
 
-  Future<void> _loadHistoricalDevices() async {
+  Future<void> _loadHistory() async {
     final prefs = await SharedPreferences.getInstance();
-    String? jsonString = prefs.getString('historicalDevices');
-    if (jsonString != null) {
+    String? jsonStringDevices = prefs.getString('historicalDevices');
+    String? jsonStringData = prefs.getString('historicalData');
+    if (jsonStringDevices != null) {
       setState(() {
-        historicalDevices = jsonDecode(jsonString);
+        historicalDevices = jsonDecode(jsonStringDevices);
+      });
+    }
+    if (jsonStringData != null) {
+      setState(() {
+        historicalData = jsonDecode(jsonStringData);
       });
     }
   }
 
-  Future<void> _clearHistoricalDevices() async {
+  Future<void> deleteAlert() async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          width: double.infinity,
+          height: 65, //65
+          // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.blueAccent),
+          child: Center(
+            child: Icon(
+              Icons.save,
+              color: Colors.black,
+              size: 40,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          width: 100,
+          height: 100, //147
+          child: Column(
+            children: const [
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Text(
+                    "Remove Saved Data?",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    "Which data will you remove?",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MaterialButton(
+                  color: Color.fromARGB(255, 60, 193, 255),
+                  onPressed: () async {
+                    await _clearHistoricalDevices(1);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Devices")),
+              MaterialButton(
+                  color: Colors.lightBlue,
+                  onPressed: () async {
+                    await _clearHistoricalDevices(3);
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Both",
+                    style: TextStyle(color: Colors.white),
+                  )),
+              MaterialButton(
+                  color: Color.fromARGB(255, 60, 193, 255),
+                  onPressed: () async {
+                    await _clearHistoricalDevices(2);
+                    Navigator.pop(context);
+                  },
+                  child: Text("Data"))
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> _clearHistoricalDevices(int which) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    setState(() {
-      historicalDevices.remove('name');
-    });
+    switch (which) {
+      case 1:
+        await prefs.remove('historicalDevice');
+        setState(() {
+          historicalDevices.remove('name');
+        });
+        break;
+      case 2:
+        await prefs.remove('historicalData');
+        break;
+      case 3:
+        await prefs.clear();
+        break;
+      default:
+        break;
+    }
   }
 
   bool isScanning = false;
@@ -63,7 +168,7 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
     //checks if bluetooth is on
     init2();
     super.initState();
-    _loadHistoricalDevices();
+    _loadHistory();
   }
 
   void isSearching() {
@@ -109,11 +214,31 @@ class _Scanresult_PageState extends State<Scanresult_Page> {
                           setState(() {
                             connectedDevices.clear();
                             globalDevice = null;
-                            _clearHistoricalDevices();
                           });
                         }
                       : null,
                   icon: Icon(Icons.bluetooth_disabled_rounded,
+                      color: globalDevice != null
+                          ? Colors.black
+                          : Color.fromARGB(56, 0, 0, 0),
+                      size: 30),
+                ),
+              ),
+              //clear devices
+              Container(
+                margin: EdgeInsets.fromLTRB(20, 0, 0, 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30)),
+                ),
+                child: IconButton(
+                  onPressed: globalDevice != null
+                      ? () async {
+                          deleteAlert();
+                        }
+                      : null,
+                  icon: Icon(Icons.remove_circle_outline,
                       color: globalDevice != null
                           ? Colors.black
                           : Color.fromARGB(56, 0, 0, 0),

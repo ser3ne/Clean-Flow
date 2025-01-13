@@ -78,7 +78,6 @@ class _DeviceProfileState extends State<DeviceProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
     isThisDeviceSaved();
   }
 

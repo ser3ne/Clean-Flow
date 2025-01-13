@@ -66,13 +66,106 @@ class _MainPageState extends State<MainPage> {
     return barText!;
   }
 
+  Future<void> dataAlert() async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        titlePadding: EdgeInsets.zero,
+        title: Container(
+          width: double.infinity,
+          height: 85, //65
+          // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+              color: Colors.blueAccent),
+          child: Center(
+            child: Icon(
+              Icons.save,
+              color: Colors.black,
+              size: 40,
+            ),
+          ),
+        ),
+        content: SizedBox(
+          height: 250, //147
+          child: Column(
+            children: const [
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Text(
+                    "How to save your data",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    // overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    "Unsaved data will be lost.\nPlease press the disconnect button and confirm disconnection to save your data",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    "NOTE:",
+                    softWrap: true,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 15),
+                  ),
+                ),
+              ),
+              Icon(Icons.bluetooth_disabled_rounded),
+              Expanded(
+                flex: 3,
+                child: Center(
+                  child: Text(
+                    "The quick disconnect button does not save data.",
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Center(
+            child: MaterialButton(
+                color: Colors.lightBlue,
+                onPressed: () {
+                  Navigator.pop(context); //closes the pop-up
+                },
+                child: Text("Got It")),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void initiateDataAlert() {
+    dataAlert();
+  }
+
   @override
   void initState() {
     super.initState();
     name = widget.args.deviceName;
     _loadHistoricalData().then((_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showSnackBar();
+        if (historicalData.isEmpty) {
+          initiateDataAlert();
+        } else {
+          _showSnackBar();
+        }
       });
     });
   }
@@ -227,7 +320,10 @@ class _MainPageState extends State<MainPage> {
           selectedIndex: _currentIndex,
         ),
         appBar: AppBar(
-          leading: Image(image: AssetImage("assets/cf.png")),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Image(image: AssetImage("assets/cf.png")),
+          ),
           centerTitle: true,
           title: Text(
             appBartText(_currentIndex),
@@ -235,7 +331,12 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.black, fontSize: 30, fontWeight: FontWeight.w900),
           ),
           // Button for the notice/alert of saving historical data
-          actions: [NoticeButton()],
+          actions: [
+            NoticeButton(),
+            SizedBox(
+              width: 20,
+            )
+          ],
           backgroundColor: colorY,
         ),
         body: pages[_currentIndex],
