@@ -1,0 +1,27 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:capstone/Widgets/history.dart';
+import 'package:flutter/material.dart';
+import 'package:popover/popover.dart';
+
+class NewButton extends StatelessWidget {
+  const NewButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () => showPopover(
+            arrowDxOffset: -146.4,
+            context: context,
+            bodyBuilder: (context) => New(),
+            direction: PopoverDirection.bottom,
+            arrowHeight: 0,
+            arrowWidth: 10,
+            width: 350,
+            height: 330,
+            backgroundColor: Color.fromARGB(142, 255, 255, 255)),
+        child: const Icon(
+          Icons.info_outline,
+        ));
+  }
+}

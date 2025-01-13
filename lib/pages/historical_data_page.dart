@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:capstone/Widgets/custom_chart.dart';
+import 'package:capstone/Widgets/history_button.dart';
 import 'package:capstone/global/args.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -146,7 +147,7 @@ class _HistoricalDataPageState extends State<HistoricalDataPage> {
           style: TextStyle(
               color: Colors.black, fontSize: 30, fontWeight: FontWeight.w900),
         ),
-        actions: [],
+        actions: [NewButton()],
         backgroundColor: colorY,
       ),
       body: Container(

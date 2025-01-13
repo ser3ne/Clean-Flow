@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:capstone/Widgets/notice_button.dart';
 import 'package:capstone/global/args.dart';
 import 'package:capstone/pages/historical_devices_page.dart';
 import 'package:capstone/pages/home_page.dart';
@@ -233,6 +234,7 @@ class _MainPageState extends State<MainPage> {
             style: TextStyle(
                 color: Colors.black, fontSize: 30, fontWeight: FontWeight.w900),
           ),
+          actions: [NoticeButton()],
           backgroundColor: colorY,
         ),
         body: pages[_currentIndex],
